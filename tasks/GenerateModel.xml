@@ -91,6 +91,8 @@
 		</Source>		
 		<Source name="Converter.out_cloud_xyzrgb">
 			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		<Source name="Converter.out_cloud_xyz">
 			<sink>SHOTConverter.in_points</sink>
 			<sink>SHOTConverter.in_keypoints</sink>
 		</Source>

@@ -244,7 +244,7 @@ S2CloudPtr getPointXYZSIFTSHOTCloud(XYZSIFTCloudPtr sifts, XYZSHOTCloudPtr shots
 }
 
 void S2ObjectGenerator::addViewToModel() {
-	CLOG(LTRACE)<< "S2ObjectGenerator::addViewToModel";
+	CLOG(LINFO)<< "S2ObjectGenerator::addViewToModel";
 
 	PointCloudPtr cloud = in_cloud_xyzrgb.read();
 	XYZSIFTCloudPtr cloud_sift = in_cloud_xyzsift.read();
@@ -252,9 +252,9 @@ void S2ObjectGenerator::addViewToModel() {
 
 	// TODO if empty()
 
-	CLOG(LDEBUG) << "cloud_xyzrgb size: "<<cloud->size();
-	CLOG(LDEBUG) << "cloud_xyzsift size: "<<cloud_sift->size();
-	CLOG(LDEBUG) << "cloud_xyzsift size: "<<cloud_shot->size();
+	CLOG(LINFO) << "cloud_xyzrgb size: "<<cloud->size();
+	CLOG(LINFO) << "cloud_xyzsift size: "<<cloud_sift->size();
+	CLOG(LINFO) << "cloud_xyzsift size: "<<cloud_shot->size();
 
 	// Remove NaNs.
 	std::vector<int> indices;

@@ -116,6 +116,10 @@ void SHOTConverter::process() {
 	pcl::copyPointCloud(*xyzshotcloud, *shotCloud);
 	pcl::copyPointCloud(*xyzshotcloud, *cloud);
 
+	out_cloud_xyzshot.write(xyzshotcloud);
+
+	CLOG(LNOTICE) << "SHOTConverter: write!";
+
 }
 
 } //: namespace SHOTConverter
