@@ -2,3 +2,5 @@
 
 
 ADD_COMPONENT(S2ObjectGenerator)
+
+ADD_COMPONENT(SHOTConverter)
