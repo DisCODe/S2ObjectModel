@@ -2,5 +2,5 @@
 
 
 ADD_COMPONENT(S2ObjectGenerator)
-
 ADD_COMPONENT(SHOTConverter)
+ADD_COMPONENT(Harris3DKeypoints)
