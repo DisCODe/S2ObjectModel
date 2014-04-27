@@ -6,11 +6,13 @@ FILE(GLOB files *.cpp)
 
 # Find required packages
 
+find_package(PCL 1.6 REQUIRED)
 
 # Create an executable file from sources:
-ADD_LIBRARY(Harris3DKeypoints SHARED ${files})
+ADD_LIBRARY(ISS3DKeypoints SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(Harris3DKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(ISS3DKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
-INSTALL_COMPONENT(Harris3DKeypoints)
+INSTALL_COMPONENT(ISS3DKeypoints)
+

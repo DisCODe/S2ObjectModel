@@ -29,9 +29,8 @@
 				</Component>
 				
 	
-				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="6" bump="0">
-					<param name="radius_search">0.1</param>
-					<param name="radius">0.1</param>
+				<Component name="Keypoints" type="S2ObjectModel:ISS3DKeypoints" priority="6" bump="0">
+
 				</Component>
 
 			</Executor>

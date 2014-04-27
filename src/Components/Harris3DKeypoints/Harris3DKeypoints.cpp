@@ -13,12 +13,17 @@
 #include <pcl/keypoints/harris_3d.h>
 #include <boost/bind.hpp>
 
+typedef pcl::HarrisKeypoint3D<pcl::PointXYZ, pcl::PointXYZI> HarrisKeypoint;
+
 namespace Processors {
 namespace Harris3DKeypoints {
 
 Harris3DKeypoints::Harris3DKeypoints(const std::string & name) :
-		Base::Component(name) {
-
+				Base::Component(name),
+				radius_search("radius_search", 0.01),
+				radius("radius", 0.01) {
+				registerProperty(radius_search);
+				registerProperty(radius);
 }
 
 Harris3DKeypoints::~Harris3DKeypoints() {
@@ -54,30 +59,47 @@ bool Harris3DKeypoints::onStart() {
 
 void Harris3DKeypoints::compute() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud.read();
-	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*copy, *cloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(
+			new pcl::PointCloud<pcl::PointXYZ>());
 
-	// ERROR:
-	//INFO: Loading components from S2ObjectModel
-	//INFO: ComponentFactory: Library open error: libHarris3DKeypoints.so: undefined symbol: _ZN3pcl7PCLBaseINS_8PointXYZEE13setInputCloudERKN5boost10shared_ptrIKNS_10PointCloudIS1_EEEE
+	pcl::copyPointCloud(*cloud, *copy);
+
+	LOG(LNOTICE)<< "Harris3DKeypoints: copy size :" << copy->size();
+	LOG(LNOTICE)<< "Harris3DKeypoints: cloud size :" << cloud->size();
+
+	if (copy->size() > 0) {
+
+		CLOG(LNOTICE)<< "Harris3DKeypoints: : computing keypoints... ";
+
+		pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+
+		pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints_temp(
+				new pcl::PointCloud<pcl::PointXYZI>());
+
+		HarrisKeypoint* detector = new HarrisKeypoint(HarrisKeypoint::HARRIS);
+
+		detector->setNonMaxSupression(true);
+		detector->setRadius(radius);
+		detector->setRadiusSearch(radius_search);
+		detector->setMethod(HarrisKeypoint::HARRIS);
+	//	detector->setKSearch();
+		detector->setNumberOfThreads(1);
+		detector->setSearchMethod(tree);
+	//	detector->setThreshold();
+	//	detector->use_indices_ = false;
+		detector->setInputCloud(copy);
 
 
-	pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints_temp(new pcl::PointCloud<pcl::PointXYZI>());
-		pcl::HarrisKeypoint3D<pcl::PointXYZ, pcl::PointXYZI>* detector = new pcl::HarrisKeypoint3D<pcl::PointXYZ,pcl::PointXYZI> (pcl::HarrisKeypoint3D<pcl::PointXYZ,pcl::PointXYZI>::HARRIS);
-	detector->setNonMaxSupression(true);
-	detector->setRadius(20);
-	detector->setInputCloud(copy);
+		detector->compute(*keypoints_temp);
 
-	detector->compute(*keypoints_temp);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints(
+				new pcl::PointCloud<pcl::PointXYZ>());
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*keypoints, *keypoints_temp);
+		pcl::copyPointCloud(*keypoints_temp, *keypoints);
 
-	CLOG(LNOTICE) << " keypoints_temp size :" << keypoints_temp->size() << "\n";
-	CLOG(LNOTICE) << " keypoints size :" << keypoints->size() << "\n";
-
-
-	out_keypoints.write(keypoints);
+		CLOG(LNOTICE)<< " keypoints size :" << keypoints->size();
+		out_keypoints.write(keypoints);
+	}
 }
 
 } //: namespace Harris3DKeypoints

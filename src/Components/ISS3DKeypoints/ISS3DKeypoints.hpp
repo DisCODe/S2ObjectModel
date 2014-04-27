@@ -1,11 +1,11 @@
 /*!
  * \file
  * \brief 
- * \author jkrasnod
+ * \author Joanna,,,
  */
 
-#ifndef HARRIS3DKEYPOINTS_HPP_
-#define HARRIS3DKEYPOINTS_HPP_
+#ifndef ISS3DKEYPOINTS_HPP_
+#define ISS3DKEYPOINTS_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -13,38 +13,33 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
+
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-/*
-typedef pcl::PointXYZ PointXYZ;
-typedef pcl::PointCloud<PointXYZ> pcl::PointCloud<pcl::PointXYZ>;
-typedef pcl::PointCloud<pcl::PointXYZ>::Ptr pcl::PointCloud<pcl::PointXYZ>::Ptr;
-
-typedef pcl::PointXYZI PointXYZI;
-typedef pcl::PointCloud<PointXYZI> pcl::PointCloud<pcl::PointXYZI>;
-typedef pcl::PointCloud<pcl::PointXYZI>::Ptr pcl::PointCloud<pcl::PointXYZI>::Ptr;*/
+#include <pcl/pcl_base.h>
+#include <boost/function.hpp>
 
 namespace Processors {
-namespace Harris3DKeypoints {
+namespace ISS3DKeypoints {
 
 /*!
- * \class Harris3DKeypoints
- * \brief Harris3DKeypoints processor class.
+ * \class ISS3DKeypoints
+ * \brief ISS3DKeypoints processor class.
  *
- * Harris3DKeypoints processor.
+ * ISS3DKeypoints processor.
  */
-class Harris3DKeypoints: public Base::Component {
+class ISS3DKeypoints: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	Harris3DKeypoints(const std::string & name = "Harris3DKeypoints");
+	ISS3DKeypoints(const std::string & name = "ISS3DKeypoints");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~Harris3DKeypoints();
+	virtual ~ISS3DKeypoints();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -75,7 +70,6 @@ protected:
 	 */
 	bool onStop();
 
-
 	/// Input data stream containing point cloud from a given view.
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud;
 
@@ -85,20 +79,18 @@ protected:
 	// Handlers
     Base::EventHandler2 h_compute;
 
-	Base::Property<double> radius;
-	Base::Property<double> radius_search;
-
-
 	// Handlers
     void compute();
+	
+
 };
 
-} //: namespace Harris3DKeypoints
+} //: namespace ISS3DKeypoints
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("Harris3DKeypoints", Processors::Harris3DKeypoints::Harris3DKeypoints)
+REGISTER_COMPONENT("ISS3DKeypoints", Processors::ISS3DKeypoints::ISS3DKeypoints)
 
-#endif /* HARRIS3DKEYPOINTS_HPP_ */
+#endif /* ISS3DKEYPOINTS_HPP_ */

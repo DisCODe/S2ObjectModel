@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(Harris3DKeypoints SHARED ${files})
+ADD_LIBRARY(SusanKeypoints SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(Harris3DKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(SusanKeypoints ${DisCODe_LIBRARIES} )
 
-INSTALL_COMPONENT(Harris3DKeypoints)
+INSTALL_COMPONENT(SusanKeypoints)

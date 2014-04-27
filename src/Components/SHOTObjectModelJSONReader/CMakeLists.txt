@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(Harris3DKeypoints SHARED ${files})
+ADD_LIBRARY(SHOTObjectModelJSONReader SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(Harris3DKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(SHOTObjectModelJSONReader ${DisCODe_LIBRARIES} )
 
-INSTALL_COMPONENT(Harris3DKeypoints)
+INSTALL_COMPONENT(SHOTObjectModelJSONReader)
