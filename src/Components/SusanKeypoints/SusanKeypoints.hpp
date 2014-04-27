@@ -13,7 +13,8 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 namespace Processors {
 namespace SusanKeypoints {
@@ -65,7 +66,17 @@ protected:
 	 */
 	bool onStop();
 
+	/// Input data stream containing point cloud from a given view.
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
 
+	/// Output data stream containing object model point cloud.
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_keypoints;
+
+	// Handlers
+    Base::EventHandler2 h_compute;
+
+	// Handlers
+    void compute();
 	
 
 };

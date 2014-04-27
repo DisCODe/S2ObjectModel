@@ -11,6 +11,6 @@ FILE(GLOB files *.cpp)
 ADD_LIBRARY(SusanKeypoints SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SusanKeypoints ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(SusanKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
 INSTALL_COMPONENT(SusanKeypoints)

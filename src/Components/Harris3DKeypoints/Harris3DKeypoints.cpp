@@ -83,7 +83,7 @@ void Harris3DKeypoints::compute() {
 		detector->setRadiusSearch(radius_search);
 		detector->setMethod(HarrisKeypoint::HARRIS);
 	//	detector->setKSearch();
-		detector->setNumberOfThreads(1);
+		detector->setNumberOfThreads(10);
 		detector->setSearchMethod(tree);
 	//	detector->setThreshold();
 	//	detector->use_indices_ = false;

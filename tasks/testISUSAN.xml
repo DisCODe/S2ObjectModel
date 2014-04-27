@@ -29,9 +29,8 @@
 				</Component>
 				
 	
-				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="6" bump="0">
-					<param name="radius_search">0.05</param>
-					<param name="radius">0.05</param>
+				<Component name="Keypoints" type="S2ObjectModel:SusanKeypoints" priority="6" bump="0">
+
 				</Component>
 
 			</Executor>
@@ -41,24 +40,20 @@
 	</Subtasks>
 	
 	<!-- pipes connecting datastreams -->
-	<DataStreams>
-	<!--	<Source name="SequenceRGB.out_img"> -->
-	<!--		<sink>Converter.in_color</sink> -->
-	<!--	</Source> -->
+	<DataStreams>		<Source name="SequenceRGB.out_img">
+			<sink>Converter.in_color</sink>
+		</Source>
 		<Source name="SequenceDepth.out_img">	
 			<sink>Converter.in_depth</sink>	
-
 		</Source>
 		<Source name="SequenceMask.out_img">
-			<sink>Converter.in_mask</sink>	
-	
+			<sink>Converter.in_mask</sink>		
 		</Source>
 		<Source name="CameraInfo.out_camera_info">
 			<sink>Converter.in_camera_info</sink>	
-
 		</Source>
 	
-		<Source name="Converter.out_cloud_xyz">
+		<Source name="Converter.out_cloud_xyzrgb">
 			<sink>Keypoints.in_cloud</sink>
 		</Source>
 
