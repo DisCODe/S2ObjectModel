@@ -30,6 +30,7 @@ void SusanKeypoints::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_cloud", &in_cloud);
 	registerStream("out_keypoints", &out_keypoints);
+	registerStream("out_keypoints_rgb", &out_keypoints_rgb);
 
 	h_compute.setup(boost::bind(&SusanKeypoints::compute, this));
 	registerHandler("compute", &h_compute);
@@ -83,8 +84,13 @@ void SusanKeypoints::compute() {
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr keypoints (new pcl::PointCloud<pcl::PointXYZRGB> ());
 		susan3D->compute(*keypoints);
 
+		pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_xyz(new pcl::PointCloud<pcl::PointXYZ>());
+
+		pcl::copyPointCloud(*keypoints, *keypoints_xyz);
+
 		CLOG(LNOTICE)<< "SusanKeypoints size :" << keypoints->size();
-		out_keypoints.write(keypoints);
+		out_keypoints_rgb.write(keypoints);
+		out_keypoints.write(keypoints_xyz);
 	}
 }
 

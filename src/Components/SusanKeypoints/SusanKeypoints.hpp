@@ -70,7 +70,8 @@ protected:
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
 
 	/// Output data stream containing object model point cloud.
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_keypoints;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_keypoints_rgb;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_keypoints;
 
 	// Handlers
     Base::EventHandler2 h_compute;
