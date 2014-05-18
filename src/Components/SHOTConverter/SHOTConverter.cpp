@@ -106,9 +106,20 @@ void SHOTConverter::process() {
 	PointCloudPtr temp2 = in_keypoints.read();
 	PointCloudPtr keypoints( new PointCloud(*temp2));
 
+	// Remove NaNs.
+	std::vector<int> indices;
+	keypoints->is_dense = false;
+	cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*keypoints, *keypoints, indices);
+	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+
+	CLOG(LNOTICE) << "SHOTConverter: process!\nin_points " << cloud->size() << "\nkeypoints: " << keypoints->size();
+
+	CLOG(LNOTICE) << "SHOTConverter: getNormals";
 	NormalCloudPtr normals = getNormals(cloud);
 
 	// compute shots
+	CLOG(LNOTICE) << "SHOTConverter: getSHOT";
 	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
 	out_shots.write(shotCloud);
 

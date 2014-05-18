@@ -31,10 +31,12 @@
 				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="6" bump="0">
 				</Component>
 				
-				<Component name="Keypoints" type="S2ObjectModel:SusanKeypoints" priority="6" bump="0">
+				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="6" bump="0">
 				</Component>
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
+					<param name="normal_radius">0.002</param>	
+					<param name="shot_radius">0.005</param>	
 				</Component>
 							
 				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="8" bump="0">
