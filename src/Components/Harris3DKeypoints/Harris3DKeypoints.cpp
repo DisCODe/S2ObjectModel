@@ -62,7 +62,10 @@ void Harris3DKeypoints::compute() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(
 			new pcl::PointCloud<pcl::PointXYZ>());
 
-	pcl::copyPointCloud(*cloud, *copy);
+	// Remove NaNs.
+	std::vector<int> indices;
+	cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*cloud, *copy, indices);
 
 	LOG(LNOTICE)<< "Harris3DKeypoints: copy size :" << copy->size();
 	LOG(LNOTICE)<< "Harris3DKeypoints: cloud size :" << cloud->size();

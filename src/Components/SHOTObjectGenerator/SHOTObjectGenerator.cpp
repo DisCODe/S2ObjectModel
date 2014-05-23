@@ -159,8 +159,8 @@ bool SHOTObjectGenerator::onInit() {
 
 
 
-	//cloud_merged = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
-	//cloud_shot_merged = pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>());
+	cloud_merged = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
+	cloud_shot_merged = pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>());
 
 	return true;
 }
@@ -313,18 +313,21 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
 void SHOTObjectGenerator::addViewToModel() {
     CLOG(LTRACE) << "SHOTObjectGenerator::addViewToModel";
 
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
-	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_shot = in_cloud_xyzshot.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_temp = in_cloud_xyzrgb.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>(*cloud_temp));
+	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_shot_temp = in_cloud_xyzshot.read();
+	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_shot(new pcl::PointCloud<PointXYZSHOT>(*cloud_shot_temp));
 
 	// TODO if empty()
 
 	CLOG(LDEBUG) << "cloud_xyzrgb size: "<<cloud->size();
 	CLOG(LDEBUG) << "cloud_xyzshot size: "<<cloud_shot->size();
 
-	// Remove NaNs.
 	std::vector<int> indices;
 	cloud->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+
+	// TODO remove
 	cloud_shot->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud_shot, *cloud_shot, indices);
 
@@ -332,12 +335,11 @@ void SHOTObjectGenerator::addViewToModel() {
 	CLOG(LDEBUG) << "cloud_xyzshot size without NaN: "<<cloud_shot->size();
 
 	CLOG(LINFO) << "view number: "<< counter;
-	CLOG(LINFO) << "view cloud->size(): "<<cloud->size();
-	CLOG(LINFO) << "view cloud_shot->size(): "<<cloud_shot->size();
 
 	// First cloud.
 	if (counter == 0 ){
 		global_trans = Eigen::Matrix4f::Identity();
+
 		*cloud_merged = *cloud;
 		*cloud_shot_merged = *cloud_shot;
 
