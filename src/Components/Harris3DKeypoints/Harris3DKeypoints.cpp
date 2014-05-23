@@ -64,11 +64,7 @@ void Harris3DKeypoints::compute() {
 
 	pcl::copyPointCloud(*cloud, *copy);
 
-	std::vector<int> indices;
-	cloud->is_dense = false;
-	pcl::removeNaNFromPointCloud(*copy, *copy, indices);
-
-	LOG(LNOTICE)<< "Harris3DKeypoints: copy size  (no nan):" << copy->size();
+	LOG(LNOTICE)<< "Harris3DKeypoints: copy size :" << copy->size();
 	LOG(LNOTICE)<< "Harris3DKeypoints: cloud size :" << cloud->size();
 
 	if (copy->size() > 0) {
@@ -87,7 +83,7 @@ void Harris3DKeypoints::compute() {
 		detector->setRadiusSearch(radius_search);
 		detector->setMethod(HarrisKeypoint::HARRIS);
 	//	detector->setKSearch();
-		detector->setNumberOfThreads(15);
+		detector->setNumberOfThreads(10);
 		detector->setSearchMethod(tree);
 	//	detector->setThreshold();
 	//	detector->use_indices_ = false;

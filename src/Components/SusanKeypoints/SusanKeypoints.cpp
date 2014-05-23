@@ -15,11 +15,6 @@
 #include <pcl/keypoints/susan.h>
 #include <pcl/filters/voxel_grid.h>
 
-
-#include <iostream>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-
 namespace Processors {
 namespace SusanKeypoints {
 
@@ -65,12 +60,12 @@ void SusanKeypoints::compute() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(
 			new pcl::PointCloud<pcl::PointXYZRGB>());
 
-	pcl::copyPointCloud(*cloud, *copy);
+	std::vector<int> indices;
+	cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*cloud, *copy, indices);
 
 	LOG(LNOTICE)<< "SusanKeypoints: copy size :" << copy->size();
 	LOG(LNOTICE)<< "SusanKeypoints: cloud size :" << cloud->size();
-
-	pcl::io::savePCDFileASCII("chmura.pcd", *cloud);
 
 	if (copy->size() > 0) {
 

@@ -35,17 +35,12 @@
 				</Component>
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
-					<param name="normal_radius">0.002</param>	
-					<param name="shot_radius">0.005</param>	
 				</Component>
 							
 				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="8" bump="0">
 					<param name="MeanK">300</param>
 				</Component>
 
-                <Component name="Generator" type="S2ObjectModel:S2ObjectGenerator" priority="9" bump="1">
-				</Component>
-				
 				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
 					<param name="LeafSize.x">0.005</param>
 					<param name="LeafSize.y">0.005</param>
@@ -89,7 +84,7 @@
 		</Source>
 		
 		<Source name="ConverterRGB.out_cloud_xyzrgb">
-			<sink>Keypoints.in_cloud</sink>
+<!--			<sink>Keypoints.in_cloud</sink-->
 			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
 		</Source>
 		
@@ -99,6 +94,7 @@
 		
 		<Source name="Converter.out_cloud_xyz">
 			<sink>SHOTConverter.in_points</sink>
+			<sink>Keypoints.in_cloud</sink>
 		</Source>
 		
 		<Source name="Keypoints.out_keypoints">
