@@ -12,7 +12,6 @@
 
 #include <boost/bind.hpp>
 
-
 #include <pcl/correspondence.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/shot_omp.h>
@@ -29,17 +28,15 @@
 
 #include <iostream>
 
-
+#include <pcl/io/pcd_io.h>
 
 namespace Processors {
 namespace SHOTConverter {
 
 SHOTConverter::SHOTConverter(const std::string & name) :
-		Base::Component(name),
-		normal_radius("normal_radius", 0.02),
-		shot_radius("shot_radius", 0.05) {
-		registerProperty(normal_radius);
-		registerProperty(shot_radius);
+		Base::Component(name), normal_radius("normal_radius", 0.02), shot_radius("shot_radius", 0.05) {
+	registerProperty(normal_radius);
+	registerProperty(shot_radius);
 
 }
 
@@ -79,62 +76,57 @@ bool SHOTConverter::onStart() {
 }
 
 NormalCloudPtr SHOTConverter::getNormals(PointCloudPtr cloud) {
-    NormalCloudPtr normals(new NormalCloud());
-    pcl::NormalEstimationOMP < PointT, NormalT > est;
-    est.setRadiusSearch(normal_radius);
-    est.setInputCloud(cloud);
-    est.compute(*normals);
-    return normals;
+
+	NormalCloudPtr normals(new NormalCloud());
+	pcl::NormalEstimationOMP<PointT, NormalT> est;
+	est.setRadiusSearch(normal_radius);
+	est.setInputCloud(cloud);
+	est.compute(*normals);
+	return normals;
 }
 
-
 SHOTCloudPtr SHOTConverter::getSHOT(PointCloudPtr cloud, NormalCloudPtr normals, PointCloudPtr keypoints) {
-    SHOTCloudPtr shot(new SHOTCloud());
+	SHOTCloudPtr shot(new SHOTCloud());
 
-    pcl::SHOTEstimationOMP < PointT, NormalT, SHOT > est;
-    est.setRadiusSearch(shot_radius);
-    est.setInputCloud(keypoints);
-    est.setInputNormals(normals);
-    est.setSearchSurface(cloud);
-    est.compute(*shot);
-    return shot;
+	pcl::SHOTEstimationOMP<PointT, NormalT, SHOT> est;
+	est.setRadiusSearch(shot_radius);
+	est.setInputCloud(keypoints);
+	est.setInputNormals(normals);
+	est.setSearchSurface(cloud);
+	est.compute(*shot);
+	return shot;
 }
 
 void SHOTConverter::process() {
 
-	PointCloudPtr temp = in_points.read();
-	PointCloudPtr cloud(new PointCloud(*temp));
+	PointCloudPtr cloud = in_points.read();
+//	PointCloudPtr cloud(new PointCloud(*temp));
 
-	PointCloudPtr temp2 = in_keypoints.read();
-	PointCloudPtr keypoints( new PointCloud(*temp2));
-
-	std::cout << "cloud : " << *cloud << std::endl;
-	std::cout << "keypoints : " << *keypoints << std::endl;
+	PointCloudPtr keypoints = in_keypoints.read();
+//	PointCloudPtr keypoints(new PointCloud(*temp2));
 
 	std::vector<int> indices;
 	cloud->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
 
-	std::cout << "cloud (no nans) : " << *cloud << std::endl;
-
-	CLOG(LNOTICE) << "SHOTConverter: getNormals!";
+	CLOG(LNOTICE)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
 
 	NormalCloudPtr normals = getNormals(cloud);
-
-	CLOG(LNOTICE) << "SHOTConverter: getNormals done! getSHOT";
-
-	// compute shots
 	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
-	out_shots.write(shotCloud);
 
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
-	pcl::copyPointCloud(*xyzshotcloud, *shotCloud);
-	pcl::copyPointCloud(*xyzshotcloud, *cloud);
+	pcl::copyPointCloud(*shotCloud, *xyzshotcloud);
+	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
 
+//	CLOG(LWARNING)<< "SHOTConverter: saving files...!";
+//	pcl::io::savePCDFileASCII("keypoints.pcd", *keypoints);
+//	pcl::io::savePCDFileASCII("shots.pcd", *shotCloud);
+//	pcl::io::savePCDFileASCII("shot_xyz.pcd", *xyzshotcloud);
+
+	// TODO set multiplicity, pointId
+
+	out_shots.write(shotCloud);
 	out_cloud_xyzshot.write(xyzshotcloud);
-
-	CLOG(LNOTICE) << "SHOTConverter: write!";
-
 }
 
 } //: namespace SHOTConverter

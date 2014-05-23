@@ -31,12 +31,12 @@ public:
 	/*!
 	 * Constructor.
 	 */
-    SHOTObjectGenerator(const std::string & name = "SHOTObjectGenerator");
+	SHOTObjectGenerator(const std::string & name = "SHOTObjectGenerator");
 
 	/*!
 	 * Destructor
 	 */
-    virtual ~SHOTObjectGenerator();
+	virtual ~SHOTObjectGenerator();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -73,7 +73,6 @@ protected:
 	/// Input data stream containing feature cloud from a given view.
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot;
 
-
 	/// Output data stream containing object model point cloud.
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 
@@ -83,17 +82,16 @@ protected:
 	// Mean number of features per view.
 	Base::DataStreamOut<int> out_mean_viewpoint_features_number;
 
+	// Handlers
+	Base::EventHandler2 h_addViewToModel;
 
 	// Handlers
-    Base::EventHandler2 h_addViewToModel;
-	
-	// Handlers
-    void addViewToModel();
+	void addViewToModel();
 
 	/// Computes the transformation between two XYZSHOT clouds basing on the found correspondences.
-    Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src, const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg,
-    		const pcl::CorrespondencesConstPtr& correspondences, pcl::Correspondences& inliers);
-
+	Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
+			const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg,
+			const pcl::CorrespondencesConstPtr& correspondences, pcl::Correspondences& inliers);
 
 	/// Number of views.
 	int counter;
@@ -105,8 +103,8 @@ protected:
 	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_shot_merged;
 	Eigen::Matrix4f global_trans;
 
-    /// Alignment mode: use ICP alignment or not.
-    Base::Property<bool> prop_ICP_alignment;
+	/// Alignment mode: use ICP alignment or not.
+	Base::Property<bool> prop_ICP_alignment;
 };
 
 } //: namespace SHOTObjectGenerator
