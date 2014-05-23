@@ -368,6 +368,11 @@ void SHOTObjectGenerator::addViewToModel() {
 	correst.determineReciprocalCorrespondences(*correspondences) ;
 	CLOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_shot->size() << " features";
 
+	if (correspondences->size() < 3) {
+		out_cloud_xyzrgb.write(cloud_merged);
+		out_cloud_xyzshot.write(cloud_shot_merged);
+		return;
+	}
 	// Computate multiplicity of features (designating how many multiplicity given feature appears in all views).
 	for(int i = 0; i< correspondences->size();i++){
 		if (correspondences->at(i).index_query >=cloud_shot->size() || correspondences->at(i).index_match >=cloud_shot_merged->size()){

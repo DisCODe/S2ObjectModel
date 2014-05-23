@@ -36,11 +36,18 @@
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
 				</Component>
+				
+				<Component name="Generator" type="S2ObjectModel:SHOTObjectGenerator" priority="8" bump="0">
+				</Component>
 							
-				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="8" bump="0">
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
 					<param name="MeanK">300</param>
 				</Component>
 
+								
+
+				
+				
 				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
 					<param name="LeafSize.x">0.005</param>
 					<param name="LeafSize.y">0.005</param>
@@ -52,9 +59,6 @@
 <!--			       </Component>		-->
 				
 				
-				
-				<Component name="Generator" type="S2ObjectModel:SHOTObjectGenerator" priority="11" bump="0">
-				</Component>
 
 			</Executor>
 				

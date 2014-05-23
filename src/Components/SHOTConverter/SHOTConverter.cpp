@@ -30,6 +30,9 @@
 
 #include <pcl/io/pcd_io.h>
 
+#include <time.h>
+
+
 namespace Processors {
 namespace SHOTConverter {
 
@@ -99,6 +102,8 @@ SHOTCloudPtr SHOTConverter::getSHOT(PointCloudPtr cloud, NormalCloudPtr normals,
 
 void SHOTConverter::process() {
 
+	std::clock_t t1,t2,t3;
+
 	PointCloudPtr cloud = in_points.read();
 //	PointCloudPtr cloud(new PointCloud(*temp));
 
@@ -111,8 +116,15 @@ void SHOTConverter::process() {
 
 	CLOG(LNOTICE)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
 
+	t1=clock();
 	NormalCloudPtr normals = getNormals(cloud);
+	t2=clock();
 	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
+	t3=clock();
+	float diff1 ((float)t2-(float)t1);
+	float diff2 ((float)t3-(float)t2);
+
+	CLOG(LINFO) << "Computing normals [sec] : " << float(diff1/CLOCKS_PER_SEC) << ". Computing shots [sec] : " << float(diff2/CLOCKS_PER_SEC);
 
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
 	pcl::copyPointCloud(*shotCloud, *xyzshotcloud);
