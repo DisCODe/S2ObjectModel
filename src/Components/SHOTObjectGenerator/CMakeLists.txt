@@ -11,6 +11,6 @@ FILE(GLOB files *.cpp)
 ADD_LIBRARY(SHOTObjectGenerator SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SHOTObjectGenerator ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(SHOTObjectGenerator ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} )
 
 INSTALL_COMPONENT(SHOTObjectGenerator)

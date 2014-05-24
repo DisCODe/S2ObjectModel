@@ -365,7 +365,9 @@ void SHOTObjectGenerator::addViewToModel() {
 	correst.setInputSource(cloud_shot) ;
 	correst.setInputTarget(cloud_shot_merged) ;
 	// Find correspondences.
-	correst.determineReciprocalCorrespondences(*correspondences) ;
+//	correst.determineReciprocalCorrespondences(*correspondences) ;
+
+	correst.determineCorrespondences(*correspondences, 0.20);
 	CLOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_shot->size() << " features";
 
 	if (correspondences->size() < 3) {
@@ -384,7 +386,6 @@ void SHOTObjectGenerator::addViewToModel() {
 	}
 
 	//displayCorrespondences(cloud_next, cloud_shot_next, cloud_prev, cloud_shot_prev, correspondences, viewer) ;
-
     // Compute transformation between clouds and SHOTObjectGenerator global transformation of cloud.
 	pcl::Correspondences inliers;
 	Eigen::Matrix4f current_trans = computeTransformationSAC(cloud_shot, cloud_shot_merged, correspondences, inliers) ;
