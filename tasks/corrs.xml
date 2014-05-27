@@ -46,26 +46,10 @@
 					<param name="MeanK">300</param>
 				</Component>
 
-								
-
-				
-				
-				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
-					<param name="LeafSize.x">0.005</param>
-					<param name="LeafSize.y">0.005</param>
-					<param name="LeafSize.z">0.005</param>
-				</Component>
-		               
-<!--				 <Component name="Writer" type="SIFTObjectModel:SOMJSONWriter" priority="12" bump="10"-->
-<!--					<param name="SOM">cereal_box_1_co5_v2</param-->
-<!--			       </Component>		-->
-				
-				
-
 			</Executor>
 				
 			<Executor name="Visualization" period="1">
-				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
+				<Component name="WindowPCL" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -111,14 +95,26 @@
 			<sink>Generator.in_cloud_xyzshot</sink>
 		</Source>
 		
-		<Source name="Generator.out_cloud_xyzrgb">
-			<sink>VoxelGrid.in_cloud_xyzrgb</sink>
+		<Source name="Generator.out_cloud_1">
+			<sink>WindowPCL.in_cloud_1</sink>
+		</Source>
+		<Source name="Generator.out_cloud_2">
+			<sink>WindowPCL.in_cloud_2</sink>
+		</Source>
+		<Source name="Generator.out_src">
+			<sink>WindowPCL.in_src</sink>
+		</Source>
+		<Source name="Generator.out_tgt">
+			<sink>WindowPCL.in_tgt</sink>
+		</Source>
+		<Source name="Generator.out_corrs_1">
+			<sink>WindowPCL.in_corrs_1</sink>
+		</Source>
+		<Source name="Generator.out_corrs_2">
+			<sink>WindowPCL.in_corrs_2</sink>
 		</Source>
 
-		<Source name="VoxelGrid.out_cloud_xyzrgb">
-			<sink>WindowPCL.in_cloud_xyzrgb</sink>
-		</Source>
-				
+
 	</DataStreams>
 </Task>
 

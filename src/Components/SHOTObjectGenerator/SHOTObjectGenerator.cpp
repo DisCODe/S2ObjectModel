@@ -44,6 +44,8 @@
 
 
 
+
+
 namespace Processors {
 namespace SHOTObjectGenerator {
 
@@ -151,6 +153,13 @@ void SHOTObjectGenerator::prepareInterface() {
     addDependency("addViewToModel", &in_cloud_xyzshot);
     addDependency("addViewToModel", &in_cloud_xyzrgb);
 
+	registerStream("out_cloud_1", &out_cloud_1);
+	registerStream("out_cloud_2", &out_cloud_2);
+	registerStream("out_src", &out_src);
+	registerStream("out_tgt", &out_tgt);
+	registerStream("out_corrs_1", &out_corrs_1);
+	registerStream("out_corrs_2", &out_corrs_2);
+
 }
 
 bool SHOTObjectGenerator::onInit() {
@@ -161,6 +170,14 @@ bool SHOTObjectGenerator::onInit() {
 
 	cloud_merged = pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>());
 	cloud_shot_merged = pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>());
+	//visualizer = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer());
+
+//	viewer = new pcl::visualization::PCLVisualizer ("correspondences");
+//	viewer->setBackgroundColor (0, 0, 0);
+//	viewer->addPointCloud<pcl::PointXYZ> (pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>), "sample cloud");
+//	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 0.5, "sample cloud");
+//	viewer->addCoordinateSystem (1.0, 1);
+//	viewer->initCameraParameters ();
 
 	return true;
 }
@@ -359,16 +376,82 @@ void SHOTObjectGenerator::addViewToModel() {
 	// Find corespondences between feature clouds.
 	// Initialize parameters.
 	pcl::CorrespondencesPtr correspondences(new pcl::Correspondences()) ;
+	pcl::CorrespondencesPtr correspondencesReciprocal(new pcl::Correspondences()) ;
 	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
 	SHOTFeatureRepresentation::Ptr point_representation(new SHOTFeatureRepresentation()) ;
 	correst.setPointRepresentation(point_representation) ;
 	correst.setInputSource(cloud_shot) ;
 	correst.setInputTarget(cloud_shot_merged) ;
 	// Find correspondences.
-//	correst.determineReciprocalCorrespondences(*correspondences) ;
+	correst.determineReciprocalCorrespondences(*correspondencesReciprocal) ;
 
 	correst.determineCorrespondences(*correspondences, 0.20);
 	CLOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_shot->size() << " features";
+	CLOG(LINFO) << "Number of reciprocal correspondences (recip): " << correspondencesReciprocal->size() << " out of " << cloud_shot->size() << " features";
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_1(new pcl::PointCloud<pcl::PointXYZ>());
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_2(new pcl::PointCloud<pcl::PointXYZ>());
+	pcl::PointCloud<pcl::PointXYZ>::Ptr src(new pcl::PointCloud<pcl::PointXYZ>());
+	pcl::PointCloud<pcl::PointXYZ>::Ptr tgt(new pcl::PointCloud<pcl::PointXYZ>());
+
+	pcl::copyPointCloud(*cloud_merged, *cloud_1);
+	pcl::copyPointCloud(*cloud, *cloud_2);
+	pcl::copyPointCloud(*cloud_shot, *src);
+	pcl::copyPointCloud(*cloud_shot_merged, *tgt);
+
+	out_corrs_1.write(correspondences);
+	out_corrs_2.write(correspondencesReciprocal);
+	out_cloud_1.write(cloud_1);
+	out_cloud_2.write(cloud_2);
+	out_src.write(src);
+	out_tgt.write(tgt);
+
+
+
+
+
+	// boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+//	visualizer.createViewPort (0.0, 0.0, 0.5, 1.0, v1);
+//	visualizer.createViewPort (0.5, 0.0, 1.0, 1.0, v2);
+//////
+//	visualizer.removeAllPointClouds(v1);
+//	visualizer.removeAllPointClouds(v2);
+//	visualizer.removeAllShapes(v1);
+//	visualizer.removeAllShapes(v2);
+////
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_merged(new pcl::PointCloud<pcl::PointXYZ>());
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints(new pcl::PointCloud<pcl::PointXYZ>());
+////
+//	pcl::copyPointCloud(*cloud_shot_merged, *keypoints_merged);
+//	pcl::copyPointCloud(*cloud_shot, *keypoints);
+//////
+////	pcl::PointCloud<pcl::PointXYZ>::ConstPtr keypoints_merged_const(new pcl::PointCloud<pcl::PointXYZ>());
+////	pcl::PointCloud<pcl::PointXYZ>::ConstPtr keypoints_const(new pcl::PointCloud<pcl::PointXYZ>());
+////
+//	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> green (cloud_merged, 0, 255, 0);
+//	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (cloud, 255, 0, 0);
+//////
+//	visualizer.addPointCloud<pcl::PointXYZRGB> (cloud_merged, green, "merged", v1);
+//	visualizer.addPointCloud<pcl::PointXYZRGB> (cloud_merged, green, "merged2", v2);
+//////
+//	visualizer.addPointCloud<pcl::PointXYZRGB> (cloud, red, "new", v1);
+//	visualizer.addPointCloud<pcl::PointXYZRGB> (cloud, red, "new2", v2);
+////
+////	visualizer.setBackgroundColor (0, 0, 0);
+////
+//	visualizer.addCorrespondences<pcl::PointXYZ>(keypoints, keypoints_merged, *correspondences, "id", v1);
+//	visualizer.addCorrespondences<pcl::PointXYZ>(keypoints, keypoints_merged, *correspondencesReciprocal, "id2", v2);
+//////	visualizer.addCorrespondences<pcl::PointXYZ>(*keypoints, *keypoints_merged, *correspondences, "corr1", v1);
+//////	visualizer.addCorrespondences<pcl::PointXYZ>(*keypoints, *keypoints_merged, *correspondencesReciprocal, "corr22", v2);
+////
+//
+//	while (!visualizer.wasStopped ())
+//	{
+//		visualizer.spinOnce();
+//	}
+
+
+	/* WIZUALIZACJA */
 
 	if (correspondences->size() < 3) {
 		out_cloud_xyzrgb.write(cloud_merged);

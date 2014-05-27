@@ -8,9 +8,10 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(SHOTObjectGenerator SHARED ${files})
+ADD_LIBRARY(CorrespondencesViewer SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SHOTObjectGenerator ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(CorrespondencesViewer ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_LIBRARIES})
 
-INSTALL_COMPONENT(SHOTObjectGenerator)
+
+INSTALL_COMPONENT(CorrespondencesViewer)
