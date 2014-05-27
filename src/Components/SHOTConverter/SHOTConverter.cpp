@@ -27,10 +27,15 @@
 #include <pcl/keypoints/sift_keypoint.h>
 
 #include <iostream>
+#include <sstream>
+
 
 #include <pcl/io/pcd_io.h>
 
 #include <time.h>
+
+#include <pcl/filters/extract_indices.h>
+#include <vector>
 
 
 namespace Processors {
@@ -62,7 +67,7 @@ void SHOTConverter::prepareInterface() {
 }
 
 bool SHOTConverter::onInit() {
-
+	l = 1;
 	return true;
 }
 
@@ -127,13 +132,55 @@ void SHOTConverter::process() {
 	CLOG(LINFO) << "Computing normals [sec] : " << float(diff1/CLOCKS_PER_SEC) << ". Computing shots [sec] : " << float(diff2/CLOCKS_PER_SEC);
 
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
-	pcl::copyPointCloud(*shotCloud, *xyzshotcloud);
+
 	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
 
-//	CLOG(LWARNING)<< "SHOTConverter: saving files...!";
-//	pcl::io::savePCDFileASCII("keypoints.pcd", *keypoints);
-//	pcl::io::savePCDFileASCII("shots.pcd", *shotCloud);
-//	pcl::io::savePCDFileASCII("shot_xyz.pcd", *xyzshotcloud);
+	std::vector<int> indices2;
+
+	for (int i = 0; i < xyzshotcloud->size(); ++i) {
+		if(pcl_isfinite (shotCloud->points[i].descriptor[0])) {
+			indices2.push_back(i);
+		} else {
+			continue;
+		}
+
+		for (int j = 0; j < 352; ++j) {
+			xyzshotcloud->points[i].descriptor[j] = shotCloud->points[i].descriptor[j];
+		}
+		for (int j = 0; j < 9; ++j) {
+			xyzshotcloud->points[i].rf[j] = shotCloud->points[i].rf[j];
+		}
+	}
+
+	std::cout << "SHOTCONVERTER : keypoints: " << keypoints->size() << ", indices: " << indices2.size() << "\n";
+
+	boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices2));
+
+	pcl::ExtractIndices<PointXYZSHOT> eifilter (true); // Initializing with true will allow us to extract the removed indices
+	eifilter.setInputCloud (xyzshotcloud);
+	 eifilter.setIndices (indicesptr);
+	 eifilter.filter (*xyzshotcloud);
+
+//	pcl::copyPointCloud(*shotCloud, *xyzshotcloud);
+
+
+		std::ostringstream clouds;
+		clouds << "cloud" << l << ".pcd";
+	std::ostringstream keypointss;
+	keypointss << "keypoints" << l << ".pcd";
+	std::ostringstream shotss;
+	shotss << "shot" << l << ".pcd";
+	std::ostringstream shot_xyzs;
+	shot_xyzs << "shot_xyz" << l << ".pcd";
+
+
+	CLOG(LWARNING)<< "SHOTConverter: saving files...!";
+	pcl::io::savePCDFileASCII(clouds.str(), *cloud);
+	pcl::io::savePCDFileASCII(keypointss.str(), *keypoints);
+	pcl::io::savePCDFileASCII(shotss.str(), *shotCloud);
+	pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
+
+	l++;
 
 	// TODO set multiplicity, pointId
 

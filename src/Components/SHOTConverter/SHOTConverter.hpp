@@ -112,6 +112,8 @@ protected:
 	Base::Property<float> normal_radius;
 	Base::Property<float> shot_radius;
 
+	int l;
+
 	// Handlers
 	void process();
 

@@ -127,7 +127,7 @@ void CorrespondencesViewer::display() {
 	viewer->addPointCloud<pcl::PointXYZ> (tgt, "keypoints1_2", v2);
 	//////
 	viewer->addPointCloud<pcl::PointXYZ> (src, "keypoints2_1", v1);
-	viewer->addPointCloud<pcl::PointXYZ> (tgt, "keypoints2_1", v2);
+	viewer->addPointCloud<pcl::PointXYZ> (tgt, "keypoints2_2", v2);
 
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "keypoints1_1", v1);
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "keypoints1_2", v2);
