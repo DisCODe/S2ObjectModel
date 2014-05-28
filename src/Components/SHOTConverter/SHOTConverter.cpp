@@ -32,9 +32,9 @@
 
 #include <time.h>
 
+
 #include <pcl/filters/extract_indices.h>
 #include <vector>
-
 
 namespace Processors {
 namespace SHOTConverter {
@@ -132,7 +132,6 @@ void SHOTConverter::process() {
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
 	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
 
-
 	std::vector<int> indices2;
 
 	for (int i = 0; i < xyzshotcloud->size(); ++i) {
@@ -159,7 +158,7 @@ void SHOTConverter::process() {
 	 eifilter.setIndices (indicesptr);
 	 eifilter.filter (*xyzshotcloud);
 
-		std::ostringstream clouds;
+/*		std::ostringstream clouds;
 		clouds << "cloud" << l << ".pcd";
 	std::ostringstream keypointss;
 	keypointss << "keypoints" << l << ".pcd";
@@ -175,7 +174,11 @@ void SHOTConverter::process() {
 	pcl::io::savePCDFileASCII(shotss.str(), *shotCloud);
 	pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
 
-	l++;
+	l++;*/
+
+
+
+
 	// TODO set multiplicity, pointId
 
 	out_shots.write(shotCloud);

@@ -17,10 +17,6 @@
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/point_cloud_color_handlers.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
 namespace Processors {
 namespace SHOTObjectGenerator {
 
@@ -109,22 +105,6 @@ protected:
 
 	/// Alignment mode: use ICP alignment or not.
 	Base::Property<bool> prop_ICP_alignment;
-
-	//boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer;
-	//pcl::visualization::PCLVisualizer visualizer;
-
-//	pcl::visualization::PCLVisualizer * viewer;
-
-
-
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_1;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_2;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_src;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_tgt;
-	Base::DataStreamOut<pcl::CorrespondencesPtr> out_corrs_1;
-	Base::DataStreamOut<pcl::CorrespondencesPtr> out_corrs_2;
-
-
 };
 
 } //: namespace SHOTObjectGenerator

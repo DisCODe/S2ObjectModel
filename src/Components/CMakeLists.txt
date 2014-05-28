@@ -18,5 +18,3 @@ ADD_COMPONENT(SIFTKeypoints)
 ADD_COMPONENT(ISS3DKeypoints)
 
 ADD_COMPONENT(SusanKeypoints)
-
-ADD_COMPONENT(CorrespondencesViewer)
