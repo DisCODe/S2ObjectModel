@@ -27,8 +27,6 @@
 #include <pcl/keypoints/sift_keypoint.h>
 
 #include <iostream>
-#include <sstream>
-
 
 #include <pcl/io/pcd_io.h>
 
@@ -67,7 +65,7 @@ void SHOTConverter::prepareInterface() {
 }
 
 bool SHOTConverter::onInit() {
-	l = 1;
+
 	return true;
 }
 
@@ -132,8 +130,8 @@ void SHOTConverter::process() {
 	CLOG(LINFO) << "Computing normals [sec] : " << float(diff1/CLOCKS_PER_SEC) << ". Computing shots [sec] : " << float(diff2/CLOCKS_PER_SEC);
 
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
-
 	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
+
 
 	std::vector<int> indices2;
 
@@ -161,9 +159,6 @@ void SHOTConverter::process() {
 	 eifilter.setIndices (indicesptr);
 	 eifilter.filter (*xyzshotcloud);
 
-//	pcl::copyPointCloud(*shotCloud, *xyzshotcloud);
-
-
 		std::ostringstream clouds;
 		clouds << "cloud" << l << ".pcd";
 	std::ostringstream keypointss;
@@ -181,7 +176,6 @@ void SHOTConverter::process() {
 	pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
 
 	l++;
-
 	// TODO set multiplicity, pointId
 
 	out_shots.write(shotCloud);

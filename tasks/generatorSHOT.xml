@@ -35,11 +35,11 @@
 				</Component>
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
+					<param name="normal_radius">0.01</param>
+					<param name="shot_radius">0.03</param>		
 				</Component>
 				
 				<Component name="Generator" type="S2ObjectModel:SHOTObjectGenerator" priority="8" bump="0">
-					<param name="normal_radius">0.02</param>
-					<param name="shot_radius">0.04</param>
 				</Component>
 							
 				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
