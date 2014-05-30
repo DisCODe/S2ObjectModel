@@ -1,0 +1,20 @@
+# Add all components here using ADD_COMPONENT(<COMPONENT_DIRECTORY>)
+
+
+ADD_COMPONENT(S2ObjectGenerator)
+ADD_COMPONENT(SHOTConverter)
+ADD_COMPONENT(Harris3DKeypoints)
+
+ADD_COMPONENT(SHOTObjectGenerator)
+
+ADD_COMPONENT(SHOTObjectModelJSONReader)
+
+ADD_COMPONENT(SHOTObjectModelJSONWriter)
+
+ADD_COMPONENT(SHOTObjectMatcher)
+
+ADD_COMPONENT(SIFTKeypoints)
+
+ADD_COMPONENT(ISS3DKeypoints)
+
+ADD_COMPONENT(SusanKeypoints)
