@@ -1,0 +1,70 @@
+<Task>
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="mode.loop">0</param>					
+				</Component>
+				
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+
+				<Component name="Converter" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+				
+	
+				<Component name="Keypoints" type="S2ObjectModel:ISS3DKeypoints" priority="6" bump="0">
+
+				</Component>
+
+			</Executor>
+				
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+	<!--	<Source name="SequenceRGB.out_img"> -->
+	<!--		<sink>Converter.in_color</sink> -->
+	<!--	</Source> -->
+		<Source name="SequenceDepth.out_img">	
+			<sink>Converter.in_depth</sink>	
+
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>Converter.in_mask</sink>	
+	
+		</Source>
+		<Source name="CameraInfo.out_camera_info">
+			<sink>Converter.in_camera_info</sink>	
+
+		</Source>
+	
+		<Source name="Converter.out_cloud_xyz">
+			<sink>Keypoints.in_cloud</sink>
+		</Source>
+
+				
+	</DataStreams>
+</Task>
+
+
+
+

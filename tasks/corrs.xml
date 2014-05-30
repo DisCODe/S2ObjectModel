@@ -1,0 +1,123 @@
+<Task>
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="mode.loop">0</param>					
+				</Component>
+				
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bump="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+
+				<Component name="Converter" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+				
+				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="6" bump="0">
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="6" bump="0">
+				</Component>
+	
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
+				</Component>
+				
+				<Component name="Generator" type="S2ObjectModel:SHOTObjectGenerator" priority="8" bump="0">
+					<param name="normal_radius">0.02</param>
+					<param name="shot_radius">0.04</param>
+				</Component>
+							
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
+					<param name="MeanK">300</param>
+				</Component>
+
+			</Executor>
+				
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>		<Source name="SequenceRGB.out_img">
+			<sink>ConverterRGB.in_color</sink>
+		</Source>
+		<Source name="SequenceDepth.out_img">	
+			<sink>ConverterRGB.in_depth</sink>	
+			<sink>Converter.in_depth</sink>	
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>ConverterRGB.in_mask</sink>		
+			<sink>Converter.in_mask</sink>		
+		</Source>
+		<Source name="CameraInfo.out_camera_info">
+			<sink>ConverterRGB.in_camera_info</sink>	
+			<sink>Converter.in_camera_info</sink>	
+		</Source>
+		
+		<Source name="ConverterRGB.out_cloud_xyzrgb">
+<!--			<sink>Keypoints.in_cloud</sink-->
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
+			<sink>Generator.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="Converter.out_cloud_xyz">
+			<sink>SHOTConverter.in_points</sink>
+			<sink>Keypoints.in_cloud</sink>
+		</Source>
+		
+		<Source name="Keypoints.out_keypoints">
+			<sink>SHOTConverter.in_keypoints</sink>
+		</Source>	
+	
+		<Source name="SHOTConverter.out_cloud_xyzshot">
+			<sink>Generator.in_cloud_xyzshot</sink>
+		</Source>
+		
+		<Source name="Generator.out_cloud_1">
+			<sink>WindowPCL.in_cloud_1</sink>
+		</Source>
+		<Source name="Generator.out_cloud_2">
+			<sink>WindowPCL.in_cloud_2</sink>
+		</Source>
+		<Source name="Generator.out_src">
+			<sink>WindowPCL.in_src</sink>
+		</Source>
+		<Source name="Generator.out_tgt">
+			<sink>WindowPCL.in_tgt</sink>
+		</Source>
+		<Source name="Generator.out_corrs_1">
+			<sink>WindowPCL.in_corrs_1</sink>
+		</Source>
+		<Source name="Generator.out_corrs_2">
+			<sink>WindowPCL.in_corrs_2</sink>
+		</Source>
+
+
+	</DataStreams>
+</Task>
+
+
+
+
