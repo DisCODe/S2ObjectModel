@@ -22,3 +22,6 @@ ADD_COMPONENT(SusanKeypoints)
 ADD_COMPONENT(S2OMJSONWriter)
 
 ADD_COMPONENT(S2OMJSONReader)
+ADD_COMPONENT(CorrespondencesViewer)
+
+

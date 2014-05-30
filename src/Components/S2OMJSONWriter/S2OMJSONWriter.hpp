@@ -77,6 +77,9 @@ protected:
 
 	// Handlers
 	Base::EventHandler2 h_Write;
+	Base::EventHandler2 h_on_cloud_xyzrgb;
+	Base::EventHandler2 h_on_cloud_xyzsift;
+	Base::EventHandler2 h_on_cloud_xyzshot;
 
 	// Properties
 	Base::Property<std::string> S2OMname;
@@ -85,6 +88,13 @@ protected:
 	
 	// Handlers
 	void Write();
+	void on_cloud_xyzrgb();
+	void on_cloud_xyzsift();
+	void on_cloud_xyzshot();
+	
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb; 
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift; 
+	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot; 
 
 };
 

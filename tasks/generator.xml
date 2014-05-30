@@ -4,19 +4,19 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
@@ -35,21 +35,35 @@
 				</Component>
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="7" bump="0">
+					<param name="normal_radius">0.01</param>
+					<param name="shot_radius">0.03</param>
 				</Component>
 				
 				<Component name="Generator" type="S2ObjectModel:SHOTObjectGenerator" priority="8" bump="0">
-					<param name="normal_radius">0.02</param>
-					<param name="shot_radius">0.04</param>
 				</Component>
 							
 				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
 					<param name="MeanK">300</param>
 				</Component>
 
+				
+				
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
+					<param name="LeafSize.x">0.005</param>
+					<param name="LeafSize.y">0.005</param>
+					<param name="LeafSize.z">0.005</param>
+				</Component>
+		               
+<!--				 <Component name="Writer" type="SIFTObjectModel:SOMJSONWriter" priority="12" bump="10"-->
+<!--					<param name="SOM">cereal_box_1_co5_v2</param-->
+<!--			       </Component>		-->
+				
+				
+
 			</Executor>
 				
 			<Executor name="Visualization" period="1">
-				<Component name="WindowPCL" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
+				<Component name="WindowPCL" type="PCL:CloudViewer" priority="1" bump="0">
 				</Component>
 			</Executor>
 		</Subtask>	
@@ -95,26 +109,14 @@
 			<sink>Generator.in_cloud_xyzshot</sink>
 		</Source>
 		
-		<Source name="Generator.out_cloud_1">
-			<sink>WindowPCL.in_cloud_1</sink>
-		</Source>
-		<Source name="Generator.out_cloud_2">
-			<sink>WindowPCL.in_cloud_2</sink>
-		</Source>
-		<Source name="Generator.out_src">
-			<sink>WindowPCL.in_src</sink>
-		</Source>
-		<Source name="Generator.out_tgt">
-			<sink>WindowPCL.in_tgt</sink>
-		</Source>
-		<Source name="Generator.out_corrs_1">
-			<sink>WindowPCL.in_corrs_1</sink>
-		</Source>
-		<Source name="Generator.out_corrs_2">
-			<sink>WindowPCL.in_corrs_2</sink>
+		<Source name="Generator.out_cloud_xyzrgb">
+			<sink>VoxelGrid.in_cloud_xyzrgb</sink>
 		</Source>
 
-
+		<Source name="VoxelGrid.out_cloud_xyzrgb">
+			<sink>WindowPCL.in_cloud_xyzrgb</sink>
+		</Source>
+				
 	</DataStreams>
 </Task>
 

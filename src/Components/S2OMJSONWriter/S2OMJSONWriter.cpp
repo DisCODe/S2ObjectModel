@@ -44,6 +44,19 @@ void S2OMJSONWriter::prepareInterface() {
 	h_Write.setup(boost::bind(&S2OMJSONWriter::Write, this));
 	registerHandler("Write", &h_Write);
 	addDependency("Write", NULL);
+	
+	h_on_cloud_xyzrgb.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzrgb, this));
+	registerHandler("on_cloud_xyzrgb", &h_on_cloud_xyzrgb);
+	addDependency("on_cloud_xyzrgb", &in_cloud_xyzrgb);
+	h_on_cloud_xyzsift.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzsift, this));
+	registerHandler("on_cloud_xyzsift", &h_on_cloud_xyzsift);
+	addDependency("on_cloud_xyzsift", &in_cloud_xyzsift);
+	h_on_cloud_xyzshot.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzshot, this));
+	registerHandler("on_cloud_xyzshot", &h_on_cloud_xyzshot);
+	addDependency("on_cloud_xyzshot", &in_cloud_xyzshot);
+	//addDependency("Write", &in_cloud_xyzrgb);
+	//addDependency("Write", &in_cloud_xyzsift);
+	//addDependency("Write", &in_cloud_xyzshot);
 
 }
 
@@ -62,6 +75,16 @@ bool S2OMJSONWriter::onStop() {
 
 bool S2OMJSONWriter::onStart() {
 	return true;
+}
+
+void S2OMJSONWriter::on_cloud_xyzrgb() {
+	cloud_xyzrgb = in_cloud_xyzrgb.read();
+}
+void S2OMJSONWriter::on_cloud_xyzsift() {
+	cloud_xyzsift = in_cloud_xyzsift.read();
+}
+void S2OMJSONWriter::on_cloud_xyzshot() {
+	cloud_xyzshot = in_cloud_xyzshot.read();
 }
 
 void S2OMJSONWriter::Write() {
@@ -99,16 +122,20 @@ void S2OMJSONWriter::Write() {
 		write_json (std::string(dir) + std::string("/") + std::string(S2OMname) + std::string(".json"), ptree_file);
 		return;
 	}
-
+	else{
 	// Try to save the model retrieved from the three separate data streams.
-	if (!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_cloud_xyzshot.empty() && !in_mean_viewpoint_features_number.empty()) {
-		LOG(LDEBUG) << "!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_cloud_xyzshot.empty() && !in_mean_viewpoint_features_number.empty()";
+	//if (!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_cloud_xyzshot.empty() ){//&& !in_mean_viewpoint_features_number.empty()) {
+		//LOG(LDEBUG) << "!in_cloud_xyzrgb.empty() && !in_cloud_xyzsift.empty() && !in_cloud_xyzshot.empty()";
 
 		// Get model from datastreams.
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
-		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
-		pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot = in_cloud_xyzshot.read();
-		int mean_viewpoint_features_number = in_mean_viewpoint_features_number.read();
+		//pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
+		//pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
+		//pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot = in_cloud_xyzshot.read();
+		int mean_viewpoint_features_number;
+		if(in_mean_viewpoint_features_number.empty())
+			mean_viewpoint_features_number = 0;
+		else
+			mean_viewpoint_features_number = in_mean_viewpoint_features_number.read();
 
 		// Save point cloud.
 		std::string name_cloud_xyzrgb = std::string(dir) + std::string("/") + std::string(S2OMname) + std::string("_xyzrgb.pcd");
@@ -138,6 +165,8 @@ void S2OMJSONWriter::Write() {
 	}
 	
 	CLOG(LWARNING) << "There are no required datastreams enabling save of the SOM to file.";	
+	CLOG(LWARNING) << "in_cloud_xyzrgb.empty() == "<<in_cloud_xyzrgb.empty() << " in_cloud_xyzsift.empty() == "<< in_cloud_xyzsift.empty() <<
+	" in_cloud_xyzshot.empty()== "<<in_cloud_xyzshot.empty()<<endl;	
 }
 
 

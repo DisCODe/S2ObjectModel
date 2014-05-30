@@ -17,6 +17,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <Types/PointXYZSHOT.hpp>
 
 
 namespace Processors {
@@ -73,13 +74,10 @@ protected:
 	void on_spin();
 
 	Base::EventHandler2 h_display;
+	Base::EventHandler2 h_on_spin;
 
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_1;
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_2;
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_src;
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_tgt;
-	Base::DataStreamIn<pcl::CorrespondencesPtr> in_corrs_1;
-	Base::DataStreamIn<pcl::CorrespondencesPtr> in_corrs_2;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_shots;
 
 	pcl::visualization::PCLVisualizer * viewer;
 	
