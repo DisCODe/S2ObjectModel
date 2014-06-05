@@ -62,7 +62,7 @@ bool CorrespondencesViewer::onInit() {
 	//viewer->createViewPort (0.0, 0.0, 1.0, 1.0, v1);
 //	viewer->createViewPort (0.5, 0.0, 1.0, 1.0, v2);
 
-	viewer->addCoordinateSystem (1.0);
+	viewer->addCoordinateSystem (1.0, 1);
 //	viewer->addCoordinateSystem (1.0, v2);
 
 	return true;

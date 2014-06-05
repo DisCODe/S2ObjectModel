@@ -82,6 +82,20 @@ protected:
 
 	pcl::visualization::PCLVisualizer * viewer;
 
+	Base::Property<int> shot_r;
+	Base::Property<int> shot_g;
+	Base::Property<int> shot_b;
+	Base::Property<int> sift_r;
+	Base::Property<int> sift_g;
+	Base::Property<int> sift_b;
+	Base::Property<int> cloud_r;
+	Base::Property<int> cloud_g;
+	Base::Property<int> cloud_b;
+
+	Base::Property<int> cloud_size;
+	Base::Property<int> sift_size;
+	Base::Property<int> shot_size;
+
 };
 
 } //: namespace S2ObjectViewer

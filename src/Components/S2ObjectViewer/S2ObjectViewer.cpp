@@ -17,8 +17,35 @@ namespace Processors {
 namespace S2ObjectViewer {
 
 S2ObjectViewer::S2ObjectViewer(const std::string & name) :
-		Base::Component(name)  {
+		Base::Component(name),
+		shot_r("shots.r", 255),
+		shot_g("shots.g", 0),
+		shot_b("shots.b", 0),
+		shot_size("shot.size", 3),
 
+		sift_r("sifts.r", 0),
+		sift_g("sifts.g", 255),
+		sift_b("sifts.b", 0),
+		sift_size("sift.size", 3),
+
+		cloud_r("cloud.r", 255),
+		cloud_g("cloud.g", 255),
+		cloud_b("cloud.b", 255),
+		cloud_size("cloud.size", 1) {
+	registerProperty(shot_r);
+	registerProperty(shot_g);
+	registerProperty(shot_b);
+	registerProperty(shot_size);
+
+	registerProperty(sift_r);
+	registerProperty(sift_g);
+	registerProperty(sift_b);
+	registerProperty(sift_size);
+
+	registerProperty(cloud_r);
+	registerProperty(cloud_g);
+	registerProperty(cloud_b);
+	registerProperty(cloud_size);
 }
 
 S2ObjectViewer::~S2ObjectViewer() {
@@ -82,17 +109,18 @@ void S2ObjectViewer::display() {
 
 
 	viewer->removeAllPointClouds();
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> blue (	cloud_1, 0, 0, 255);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (	cloud_2, 0, 255, 0);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (	cloud_3, 255, 0, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> blue ( cloud_1, cloud_r, cloud_g, cloud_b);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (	cloud_2, shot_r, shot_g, shot_b);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (	cloud_3, sift_r, sift_g, sift_b);
 
 
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_1, blue, "cloud");
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_2, green, "shots");
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_3, red, "sifts");
 
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sifts");
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "shots");
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, cloud_size, "cloud");
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, sift_size, "sifts");
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, shot_size, "shots");
 }
 
 void S2ObjectViewer::on_spin() {
