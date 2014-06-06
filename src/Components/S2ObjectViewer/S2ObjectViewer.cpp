@@ -32,6 +32,34 @@ S2ObjectViewer::S2ObjectViewer(const std::string & name) :
 		cloud_g("cloud.g", 100),
 		cloud_b("cloud.b", 100),
 		cloud_size("cloud.size", 1) {
+
+	shot_r.addConstraint("255");
+	shot_r.addConstraint("0");
+
+	shot_g.addConstraint("255");
+	shot_g.addConstraint("0");
+
+	shot_b.addConstraint("255");
+	shot_b.addConstraint("0");
+
+	sift_r.addConstraint("255");
+	sift_r.addConstraint("0");
+
+	sift_g.addConstraint("255");
+	sift_g.addConstraint("0");
+
+	sift_b.addConstraint("255");
+	sift_b.addConstraint("0");
+
+	cloud_r.addConstraint("255");
+	cloud_r.addConstraint("0");
+
+	cloud_g.addConstraint("255");
+	cloud_g.addConstraint("0");
+
+	cloud_b.addConstraint("255");
+	cloud_b.addConstraint("0");
+
 	registerProperty(shot_r);
 	registerProperty(shot_g);
 	registerProperty(shot_b);
@@ -46,6 +74,9 @@ S2ObjectViewer::S2ObjectViewer(const std::string & name) :
 	registerProperty(cloud_g);
 	registerProperty(cloud_b);
 	registerProperty(cloud_size);
+
+	m_hue_threshold_low.addConstraint("180");
+	m_hue_threshold_high.addConstraint("0");
 }
 
 S2ObjectViewer::~S2ObjectViewer() {
