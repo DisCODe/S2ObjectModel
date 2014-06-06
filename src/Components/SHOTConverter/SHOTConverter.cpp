@@ -134,13 +134,16 @@ void SHOTConverter::process() {
 
 	std::vector<int> indices2;
 
+	//int pointId = 1;
 	for (int i = 0; i < xyzshotcloud->size(); ++i) {
 		if(pcl_isfinite (shotCloud->points[i].descriptor[0])) {
 			indices2.push_back(i);
 		} else {
 			continue;
 		}
-
+		xyzshotcloud->points[i].multiplicity = 1;
+		//xyzshotcloud->points[i].pointId = pointId++;
+		xyzshotcloud->points[i].pointId = -1;
 		for (int j = 0; j < 352; ++j) {
 			xyzshotcloud->points[i].descriptor[j] = shotCloud->points[i].descriptor[j];
 		}
@@ -175,11 +178,6 @@ void SHOTConverter::process() {
 	pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
 
 	l++;*/
-
-
-
-
-	// TODO set multiplicity, pointId
 
 	out_shots.write(shotCloud);
 	out_cloud_xyzshot.write(xyzshotcloud);
