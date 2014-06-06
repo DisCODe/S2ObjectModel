@@ -143,7 +143,7 @@ void SHOTConverter::process() {
 		}
 		xyzshotcloud->points[i].multiplicity = 1;
 		//xyzshotcloud->points[i].pointId = pointId++;
-		xyzshotcloud->points[i].pointId = -1;
+		xyzshotcloud->points[i].pointId = 0;
 		for (int j = 0; j < 352; ++j) {
 			xyzshotcloud->points[i].descriptor[j] = shotCloud->points[i].descriptor[j];
 		}
