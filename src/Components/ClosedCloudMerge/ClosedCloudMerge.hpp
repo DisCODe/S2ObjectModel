@@ -1,11 +1,7 @@
-/*!
- * \file
- * \brief 
- * \author jkrasnod
- */
 
-#ifndef S2OBJECTGENERATOR_HPP_
-#define S2OBJECTGENERATOR_HPP_
+
+#ifndef CLOSEDCLOUDMERGE_HPP_
+#define CLOSEDCLOUDMERGE_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -16,9 +12,9 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Types/PointXYZSIFT.hpp>
+#include <Types/PointXYZSHOT.hpp>
 #include <Types/SIFTObjectModel.hpp>
 #include <Types/SIFTObjectModelFactory.hpp>
-#include <Types/PointXYZSHOT.hpp>
 
 #include <Types/MergeUtils.hpp>
 
@@ -26,36 +22,30 @@
 #include "pcl/registration/correspondence_rejection_sample_consensus.h"
 
 #include <opencv2/core/core.hpp>
+#include <pcl/registration/lum.h>
 
 
 namespace Processors {
-namespace S2ObjectGenerator {
+namespace ClosedCloudMerge {
 
-/*!
- * \class S2ObjectGenerator
- * \brief S2ObjectGenerator processor class.
- *
- * S2ObjectGenerator processor.
- */
-class S2ObjectGenerator: public Base::Component,SIFTObjectModelFactory {
+class ClosedCloudMerge: public Base::Component,SIFTObjectModelFactory {
+
 public:
 	/*!
 	 * Constructor.
 	 */
-    S2ObjectGenerator(const std::string & name = "S2ObjectGenerator");
-
+    ClosedCloudMerge(const std::string & name = "ClosedCloudMerge");
 	/*!
 	 * Destructor
 	 */
-    virtual ~S2ObjectGenerator();
+    virtual ~ClosedCloudMerge();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
-	 * At this point, all properties are already initialized and loaded to 
+	 * At this point, all properties are already initialized and loaded to
 	 * values set in config file.
 	 */
 	void prepareInterface();
-
 
 protected:
 
@@ -85,11 +75,12 @@ protected:
 	/// Input data stream containing point cloud with normals from a given view.
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> in_cloud_xyzrgb_normals;
 
-	/// Input data stream containing feature cloud from a given view.
+	/// Input data stream containing sifts cloud from a given view.
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 
-	/// Input data stream containing shot cloud from a given view.
+	/// Input data stream containing shots cloud from a given view.
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot;
+
 
 	/// Output data stream containing SIFTObjectModel - depricated.
 	Base::DataStreamOut<AbstractObject*> out_instance;
@@ -104,7 +95,7 @@ protected:
 	/// Output data stream containing object model feature cloud (SIFTs).
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
 
-	/// Output data stream containing object model feature cloud (SHOTs).
+	/// Output data stream containing object model feature cloud (SIFTs).
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_cloud_xyzshot;
 
 	// Mean number of features per view.
@@ -112,15 +103,10 @@ protected:
 
 	// Handlers
     Base::EventHandler2 h_addViewToModel;
-    Base::EventHandler2 h_addViewToModel_normals;
-	
-	// Handlers
-    void addViewToModel();
-    void addViewToModel_normals();
 
-	/// Computes the transformation between two XYZSIFT clouds basing on the found correspondences.
-	Eigen::Matrix4f computeTransformationSAC(const pcl::PointCloud<PointXYZSIFT>::ConstPtr &cloud_src, const pcl::PointCloud<PointXYZSIFT>::ConstPtr &cloud_trg,
-		const pcl::CorrespondencesConstPtr& correspondences, pcl::Correspondences& inliers);
+    void addViewToModel();
+
+    MergeUtils::Properties properties;
 
 	/// Number of views.
 	int counter;
@@ -135,8 +121,11 @@ protected:
 	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_shot_merged;
 	Eigen::Matrix4f global_trans;
 
-    /// Alignment mode: use ICP alignment or not.
-	/// ICP properties
+	std::vector<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> rgb_views;
+	std::vector<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> rgbn_views;
+    pcl::registration::LUM<PointXYZSIFT> lum_sift;
+
+
 public:
     Base::Property<bool> prop_ICP_alignment;
     Base::Property<bool> prop_ICP_alignment_normal;
@@ -149,14 +138,12 @@ public:
     Base::Property<float> RanSAC_inliers_threshold;
     Base::Property<float> RanSAC_max_iterations;
 
+    Base::Property<int> threshold, maxIterations;
 };
 
-} //: namespace S2ObjectGenerator
-} //: namespace Processors
+REGISTER_COMPONENT("ClosedCloudMerge", Processors::ClosedCloudMerge::ClosedCloudMerge)
 
-/*
- * Register processor component.
- */
-REGISTER_COMPONENT("S2ObjectGenerator", Processors::S2ObjectGenerator::S2ObjectGenerator)
+} // namespace Processors
+} // namespace ClosedCloudMerge
 
-#endif /* S2OBJECTGENERATOR_HPP_ */
+#endif /* CLOSEDCLOUDMERGE_HPP_ */

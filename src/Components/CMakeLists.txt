@@ -26,3 +26,5 @@ ADD_COMPONENT(S2OMJSONReader)
 ADD_COMPONENT(CorrespondencesViewer)
 
 ADD_COMPONENT(S2ObjectViewer)
+
+ADD_COMPONENT(ClosedCloudMerge)

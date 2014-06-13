@@ -74,9 +74,6 @@ S2ObjectViewer::S2ObjectViewer(const std::string & name) :
 	registerProperty(cloud_g);
 	registerProperty(cloud_b);
 	registerProperty(cloud_size);
-
-	m_hue_threshold_low.addConstraint("180");
-	m_hue_threshold_high.addConstraint("0");
 }
 
 S2ObjectViewer::~S2ObjectViewer() {
