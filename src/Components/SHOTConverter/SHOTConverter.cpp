@@ -40,7 +40,7 @@ namespace Processors {
 namespace SHOTConverter {
 
 SHOTConverter::SHOTConverter(const std::string & name) :
-		Base::Component(name), normal_radius("normal_radius", 0.02), shot_radius("shot_radius", 0.05) {
+		Base::Component(name), normal_radius("normal_radius", 0.01), shot_radius("shot_radius", 0.02) {
 	registerProperty(normal_radius);
 	registerProperty(shot_radius);
 

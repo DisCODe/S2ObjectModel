@@ -95,7 +95,7 @@ protected:
 	/// Output data stream containing object model feature cloud (SIFTs).
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
 
-	/// Output data stream containing object model feature cloud (SIFTs).
+	/// Output data stream containing object model feature cloud (SHOTs).
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_cloud_xyzshot;
 
 	// Mean number of features per view.
