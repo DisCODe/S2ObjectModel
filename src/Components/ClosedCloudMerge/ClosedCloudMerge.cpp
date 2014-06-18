@@ -134,7 +134,7 @@ void ClosedCloudMerge::prepareInterface() {
 	registerHandler("addViewToModel", &h_addViewToModel);
 	addDependency("addViewToModel", &in_cloud_xyzsift);
 	addDependency("addViewToModel", &in_cloud_xyzshot);
-//    addDependency("addViewToModel", &in_cloud_xyzrgb);
+    addDependency("addViewToModel", &in_cloud_xyzrgb);
 	addDependency("addViewToModel", &in_cloud_xyzrgb_normals);
 }
 

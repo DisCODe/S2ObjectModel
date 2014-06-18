@@ -16,63 +16,74 @@
 	<Subtasks>
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
+				
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
 					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
+				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
 					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
+				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
 					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
+				
 				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bum="0">
 					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
 				</Component>
+				
 				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
 				</Component>
-				<Component name="Converter" type="PCL:DepthConverter" priority="6" bump="0">
+						
+				<Component name="SIFTConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="6" bump="0">
+				</Component>
+									
+				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="7" bump="0">
 				</Component>
 				
-<!--	dodane		-->
-				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="8" bump="0">
+				<Component name="Converter" type="PCL:DepthConverter" priority="8" bump="0">
 				</Component>
 				
-				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="10" bump="0">
-				</Component>
-	
-				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="11" bump="0">
-				</Component>
-				
-				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="7" bump="0">
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
 					<param name="MeanK">15</param>
 					<param name="StddevMulThresh">0.10</param>
 				</Component>
-				<Component name="SIFTConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="8" bump="0">
+				
+				<Component name="Normals" type="SIFTObjectModel:NormalEstimation" priority="10">
+					<param name="radius">0.02</param>
 				</Component>
-				<Component name="Normals" type="SIFTObjectModel:NormalEstimation" priority="9">
-				<param name="radius">0.02</param>
+				
+				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="11" bump="0">
 				</Component>
-                <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="10" bump="1">
+	
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="12" bump="0">
+				</Component>					
+	
+                <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="13" bump="1">
 					<param name="threshold">15</param>
 					<param name="Interations.Max">10</param>
 				</Component>
-				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="11" bump="0">
+
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="14" bump="0">
 					<param name="LeafSize.x">0.005</param>
 					<param name="LeafSize.y">0.005</param>
 					<param name="LeafSize.z">0.005</param>
 				</Component>
-				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="12" bump="0">
+				
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="15" bump="0">
 					<param name="LeafSize.x">0.005</param>
 					<param name="LeafSize.y">0.005</param>
 					<param name="LeafSize.z">0.005</param>
 				</Component>
-		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="13" bump="10">
+								
+		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="16" bump="10">
 					<param name="S2OMname">cereal_box_1_test</param>
 					<param name="dir">/home/joanna/test/test</param>
 			    </Component>
@@ -115,29 +126,22 @@
 		</Source>	
 		
 		<Source name="SIFTConverter.out_cloud_xyzsift">
-			<sink>Generator.in_cloud_xyzsift</sink>
-			<sink>WindowPCL.in_sifts</sink>		
+			<sink>Generator.in_cloud_xyzsift</sink>	
 		</Source>
 		
 		<Source name="ConverterRGB.out_cloud_xyzrgb">
 			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="Converter.out_cloud_xyz">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyz</sink>
 		</Source>
 			
 		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
 			<sink>Normals.in_cloud_xyzrgb</sink>
 			<sink>Generator.in_cloud_xyzrgb</sink>
 		</Source>
-		
-<!-- TODO remove? -->
-		<Source name="Converter.out_cloud_xyz">
-			<sink>StatisticalOutlierRemoval.in_cloud_xyz</sink>
-		</Source>
-		
-		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
-			<sink>WindowPCL.in_cloud</sink>
-			<sink>Writer.in_cloud_xyzrgb</sink>
-		</Source>
-		
+
 		<Source name="StatisticalOutlierRemoval.out_cloud_xyz">
 			<sink>Keypoints.in_cloud</sink>
 			<sink>SHOTConverter.in_points</sink>
@@ -154,32 +158,35 @@
 		<Source name="Normals.out_cloud_xyzrgb_normals">
 			<sink>Generator.in_cloud_xyzrgb_normals</sink>
 		</Source>
-		
-		<Source name="Generator.out_cloud_xyzrgb_normals">
-			<sink>VoxelGrid.in_cloud_xyzrgb_normal</sink>
-		</Source>
-		
+			
 		<Source name="Generator.out_cloud_xyzrgb">
 			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
 		</Source>
 		
-	<!--	<Source name="VoxelGrid.out_cloud_xyzrgb_normal"> -->
-	<!--		<sink>Writer.in_cloud_xyzrgb_normals</sink> -->
-	<!--	</Source> -->
-		
 		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
 			<sink>Writer.in_cloud_xyzrgb</sink>
+			<sink>WindowPCL.in_cloud</sink>
 		</Source>
 			
+		<Source name="Generator.out_cloud_xyzrgb_normals">
+			<sink>VoxelGrid.in_cloud_xyzrgb_normal</sink>
+		</Source>
+		
+		<Source name="VoxelGrid.out_cloud_xyzrgb_normal">
+<!-- TODO		-->
+		</Source> 
+		
 		<Source name="Generator.out_cloud_xyzsift">
+			<sink>WindowPCL.in_sifts</sink>	
 			<sink>Writer.in_cloud_xyzsift</sink>	
 		</Source>
 
 		<Source name="Generator.out_mean_viewpoint_features_number">
-			<sink>Writer.in_mean_viewpoint_features_number</sink>
+			<!-- TODO		-->
+		<!--	<sink>Writer.in_mean_viewpoint_features_number</sink> -->
 		</Source>
 		
-		<Source name="in_cloud_xyzshot.out_cloud_xyzshot">
+		<Source name="Generator.out_cloud_xyzshot">
 			<sink>Writer.in_cloud_xyzshot</sink>
 			<sink>WindowPCL.in_shots</sink>
 		</Source>
