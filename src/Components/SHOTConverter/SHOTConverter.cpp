@@ -152,8 +152,6 @@ void SHOTConverter::process() {
 		}
 	}
 
-	std::cout << "SHOTCONVERTER : keypoints: " << keypoints->size() << ", indices: " << indices2.size() << "\n";
-
 	boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices2));
 
 	pcl::ExtractIndices<PointXYZSHOT> eifilter (true); // Initializing with true will allow us to extract the removed indices

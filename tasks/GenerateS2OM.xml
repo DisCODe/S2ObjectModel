@@ -2,7 +2,7 @@
 	<!-- reference task information -->
 	<Reference>
 		<Author>
-			<name>jkrasnod</name>
+			<name>joanna</name>
 			<link></link>
 		</Author>
 		
@@ -18,19 +18,19 @@
 			<Executor name="Processing"  period="1">
 				
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
@@ -67,8 +67,7 @@
 				</Component>					
 	
                 <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="13" bump="1">
-					<param name="threshold">15</param>
-					<param name="Interations.Max">10</param>
+				
 				</Component>
 
 				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="14" bump="0">

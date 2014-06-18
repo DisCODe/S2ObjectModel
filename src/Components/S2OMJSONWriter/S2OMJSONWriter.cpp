@@ -43,7 +43,7 @@ void S2OMJSONWriter::prepareInterface() {
 	// Register handlers
 	h_Write.setup(boost::bind(&S2OMJSONWriter::Write, this));
 	registerHandler("Write", &h_Write);
-	addDependency("Write", NULL);
+//	addDependency("Write", NULL);
 	
 	h_on_cloud_xyzrgb.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzrgb, this));
 	registerHandler("on_cloud_xyzrgb", &h_on_cloud_xyzrgb);

@@ -77,11 +77,17 @@ public:
 };
 
 ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
-		Base::Component(name), prop_ICP_alignment("ICP.Points", true), prop_ICP_alignment_normal("ICP.Normals", true), prop_ICP_alignment_color(
-				"ICP.Color", false), ICP_transformation_epsilon("ICP.Tranformation_epsilon", 1e-6), ICP_max_correspondence_distance(
-				"ICP.Correspondence_distance", 0.1), ICP_max_iterations("ICP.Iterations", 2000), RanSAC_inliers_threshold(
-				"RanSac.Inliers_threshold", 0.01f), RanSAC_max_iterations("RanSac.Iterations", 2000), threshold(
-				"threshold", 5), maxIterations("Interations.Max", 5) {
+		Base::Component(name),
+		prop_ICP_alignment("ICP.Points", true),
+		prop_ICP_alignment_normal("ICP.Normals", true),
+		prop_ICP_alignment_color("ICP.Color", false),
+		ICP_transformation_epsilon("ICP.Tranformation_epsilon", 1e-6),
+		ICP_max_correspondence_distance("ICP.Correspondence_distance", 0.1),
+		ICP_max_iterations("ICP.Iterations", 2000),
+		RanSAC_inliers_threshold("RanSac.Inliers_threshold", 0.01f),
+		RanSAC_max_iterations("RanSac.Iterations", 2000),
+		threshold("threshold", 5),
+		maxIterations("Interations.Max", 5) {
 	registerProperty(prop_ICP_alignment);
 	registerProperty(prop_ICP_alignment_normal);
 	registerProperty(prop_ICP_alignment_color);
@@ -105,7 +111,6 @@ ClosedCloudMerge::~ClosedCloudMerge() {
 
 void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
 		const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg, const pcl::CorrespondencesPtr& correspondences) {
-	//CLOG(LTRACE) << "Computing Correspondences" << std::endl;
 	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
 	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
 	correst.setPointRepresentation(point_representation);
@@ -113,7 +118,6 @@ void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud
 	correst.setInputTarget(cloud_trg);
 	// Find correspondences.
 	correst.determineReciprocalCorrespondences(*correspondences);
-	//CLOG(LINFO) << "Number of reciprocal correspondences: " << correspondences->size() << " out of " << cloud_src->size() << " features";
 }
 
 void ClosedCloudMerge::prepareInterface() {
@@ -139,6 +143,7 @@ void ClosedCloudMerge::prepareInterface() {
 }
 
 bool ClosedCloudMerge::onInit() {
+	CLOG(LDEBUG)<< "ClosedCloudMerge::onInit";
 	// Number of viewpoints.
 	counter = 0;
 	// Mean number of features per view.
@@ -150,6 +155,7 @@ bool ClosedCloudMerge::onInit() {
 	cloud_sift_merged = pcl::PointCloud<PointXYZSIFT>::Ptr(new pcl::PointCloud<PointXYZSIFT>());
 	cloud_shot_merged = pcl::PointCloud<PointXYZSHOT>::Ptr(new pcl::PointCloud<PointXYZSHOT>());
 	cloud_normal_merged = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+	CLOG(LDEBUG)<< "ClosedCloudMerge::onInit";
 	return true;
 }
 
@@ -162,6 +168,7 @@ bool ClosedCloudMerge::onStop() {
 }
 
 bool ClosedCloudMerge::onStart() {
+	CLOG(LDEBUG)<< "ClosedCloudMerge::onStart";
 	return true;
 }
 
@@ -335,8 +342,6 @@ void ClosedCloudMerge::addViewToModel() {
 			cloud_shot->at(corr.index_query).multiplicity = cloud_shot_merged->at(corr.index_match).multiplicity + 1;
 			cloud_shot_merged->at(corr.index_match).multiplicity =-1;
 		}
-
-		// Delete points.
 		pcl::PointCloud<PointXYZSHOT>::iterator pt_iter_shot = cloud_shot_merged->begin();
 		while(pt_iter_shot!=cloud_shot_merged->end()) {
 			if(pt_iter_shot->multiplicity==-1) {
@@ -347,50 +352,6 @@ void ClosedCloudMerge::addViewToModel() {
 		}
 
 		*cloud_shot_merged += *cloud_shot;
-
-		/*
-		 std::set<int> indice_set;
-
-		 for (int i = 0; i < correspondences_shot->size(); ++i) {
-
-		 indice_set.insert(correspondences_shot->at(i).index_query);
-		 // cloud_shot -> source
-
-
-		 }
-
-		 std::vector<int> indices(indice_set.begin(), indice_set.end());
-
-		 pcl::ExtractIndices<PointXYZSHOT> eifilter (true); // Initializing with true will allow us to extract the removed indices
-		 eifilter.setInputCloud (cloud_shot);
-		 eifilter.setIndices (indices);
-		 eifilter.filter (*cloud_shot);
-
-		 CLOG(LNOTICE) << "merged before : " << *cloud_shot_merged << "\ncloud_shot : " << *cloud_shot << "\nindice size : " << indice.size() << "\ncorrespondecns: "
-		 << correspondences_shot->size();
-
-		 *cloud_shot_merged += *cloud_shot;
-
-		 pcl::PointCloud<PointXYZSHOT>::iterator shots_iter = cloud_shot->begin();
-		 while(shots_iter!=cloud_shot->end()){
-
-		 pcl::KdTree<PointXYZSHOT>::Ptr tree_ (new pcl::KdTreeFLANN<PointXYZSHOT>);
-		 tree_->setInputCloud(cloud_shot_merged);
-		 tree_->setPointRepresentation(new SHOTonlyXYZRepresentation());
-
-		 std::vector<int> nn_indices ();
-
-		 // TODO add as propery
-		 std::vector<float> nn_dists (0.01);
-
-		 tree_->nearestKSearch(*shots_iter, 1, nn_indices, nn_dists);
-
-		 if(pt_iter->multiplicity==-1){
-		 pt_iter = cloud_sift_merged->erase(pt_iter);
-		 } else {
-		 ++pt_iter;
-		 }
-		 */
 	}
 
 	else {
