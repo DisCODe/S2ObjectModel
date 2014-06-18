@@ -1,0 +1,40 @@
+<Task>
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="Reader" type="S2ObjectModel:SingleS2OMJsonReader" priority="1" bump="0">
+					<param name="filenames">/home/jkrasnod/test/test/kakao_test.json</param>
+				</Component>		
+			</Executor>
+				
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+
+		<Source name="Reader.out_cloud_xyzsift">
+			<sink>WindowPCL.in_sifts</sink>	
+		</Source>
+		
+		<Source name="Reader.out_cloud_xyzrgb">
+			<sink>WindowPCL.in_cloud</sink>
+		</Source>
+
+
+		<Source name="Reader.out_cloud_xyzshot">
+			<sink>WindowPCL.in_shots</sink>
+		</Source>
+		
+	</DataStreams>
+</Task>
+
+
+
+

@@ -86,7 +86,7 @@ ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
 		ICP_max_iterations("ICP.Iterations", 2000),
 		RanSAC_inliers_threshold("RanSac.Inliers_threshold", 0.01f),
 		RanSAC_max_iterations("RanSac.Iterations", 2000),
-		threshold("threshold", 5),
+		threshold("threshold", 23),
 		maxIterations("Interations.Max", 5) {
 	registerProperty(prop_ICP_alignment);
 	registerProperty(prop_ICP_alignment_normal);
@@ -258,7 +258,7 @@ void ClosedCloudMerge::addViewToModel() {
 	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
 	pcl::transformPointCloud(*cloud_shot, *cloud_shot, current_trans);
 
-//	current_trans = MergeUtils::computeTransformationIPCNormals(cloud, cloud_normal_merged, properties);
+	current_trans = MergeUtils::computeTransformationIPCNormals(cloud, cloud_normal_merged, properties);
 //
 //	pcl::transformPointCloud(*cloud, *cloud, current_trans);
 //	pcl::transformPointCloud(*cloudrgb, *cloudrgb, current_trans);
@@ -277,7 +277,7 @@ void ClosedCloudMerge::addViewToModel() {
 		MergeUtils::computeTransformationSAC(lum_sift.getPointCloud(counter - 1), lum_sift.getPointCloud(i), correspondences2, *correspondences3, properties);
 		//cortab[counter-1][i] = inliers2;
 		CLOG(LINFO) << "  correspondences3: " << correspondences3->size() << " out of " << correspondences2->size();
-		if (correspondences3->size() > 5) {
+		if (correspondences3->size() > 8) {
 			lum_sift.setCorrespondences(counter-1, i, correspondences3);
 			added++;
 			for(int j = 0; j< correspondences3->size();j++) {
@@ -296,9 +296,6 @@ void ClosedCloudMerge::addViewToModel() {
 		//CLOG(LINFO) << "computet for "<<counter-1 <<" and "<< i << "  correspondences2: " << correspondences2->size() << " out of " << correspondences2->size();
 	}
 
-	CLOG(LINFO) << "view " << counter << " have correspondences with " << added << " views";
-	if (added == 0 )
-	CLOG(LINFO) << endl << " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" <<endl;
 
 	CLOG(LINFO) << "cloud_merged from LUM ";
 

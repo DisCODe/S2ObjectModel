@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(SHOTObjectMatcher SHARED ${files})
+ADD_LIBRARY(SingleS2OMJsonReader SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SHOTObjectMatcher ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(SingleS2OMJsonReader ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 
-INSTALL_COMPONENT(SHOTObjectMatcher)
+INSTALL_COMPONENT(SingleS2OMJsonReader)

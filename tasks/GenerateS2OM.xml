@@ -18,20 +18,20 @@
 			<Executor name="Processing"  period="1">
 				
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
-					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="sequence.directory">/home/jkrasnod/data/lipton_earl_grey_lemon/</param>
+					<param name="sequence.pattern">.*\_rgb.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
+					<param name="sequence.directory">/home/jkrasnod/data/lipton_earl_grey_lemon/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/joanna/data/cereal_box_1/</param>
-					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="sequence.directory">//home/jkrasnod/data/lipton_earl_grey_lemon/mask/</param>
+					<param name="sequence.pattern">.*\_rgb.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
 				
@@ -61,13 +61,18 @@
 				</Component>
 				
 				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="11" bump="0">
+					<param name="radius_search">0.03</param>
+					<param name="radius">0.03</param>
 				</Component>
 	
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="12" bump="0">
 				</Component>					
 	
                 <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="13" bump="1">
-				
+					<param name="ICP.Correspondence_distance">0.1</param>
+					<param name="RanSac.Inliers_threshold">0.01</param>
+					<param name="threshold">23</param>
+					<param name="Interations.Max">0.01</param>
 				</Component>
 
 				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="14" bump="0">
@@ -83,8 +88,8 @@
 				</Component>
 								
 		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="16" bump="10">
-					<param name="S2OMname">cereal_box_1_test</param>
-					<param name="dir">/home/joanna/test/test</param>
+					<param name="S2OMname">herbata_test</param>
+					<param name="dir">/home/jkrasnod/test/test</param>
 			    </Component>
 			</Executor>
 
@@ -110,7 +115,7 @@
 		<Source name="SequenceMask.out_img">
 			<sink>ConverterRGB.in_mask</sink>	
 			<sink>Converter.in_mask</sink>
-			<sink>SIFTConverter.in_mask</sink>		
+			<sink>SIFTConverter.in_mask</sink>
 		</Source>
 		<Source name="CameraInfo.out_camera_info">
 			<sink>ConverterRGB.in_camera_info</sink>	
