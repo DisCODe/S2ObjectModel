@@ -201,6 +201,7 @@ void ClosedCloudMerge::addViewToModel() {
 	CLOG(LINFO) << "view number: "<<counter;
 
 	rgb_views.push_back(pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>()));
+	shot_views.push_back(pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>()));
 	rgbn_views.push_back(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr (new pcl::PointCloud<pcl::PointXYZRGBNormal>()));
 
 	counter++;
@@ -217,6 +218,7 @@ void ClosedCloudMerge::addViewToModel() {
 
 		lum_sift.addPointCloud(cloud_sift);
 		*rgbn_views[0] = *cloud;
+		*shot_views[0] = *cloud_shot;
 
 		*cloud_merged = *cloudrgb;
 		*cloud_normal_merged = *cloud;
@@ -260,13 +262,14 @@ void ClosedCloudMerge::addViewToModel() {
 
 	current_trans = MergeUtils::computeTransformationIPCNormals(cloud, cloud_normal_merged, properties);
 //
-//	pcl::transformPointCloud(*cloud, *cloud, current_trans);
-//	pcl::transformPointCloud(*cloudrgb, *cloudrgb, current_trans);
-//	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
+	pcl::transformPointCloud(*cloud, *cloud, current_trans);
+	pcl::transformPointCloud(*cloudrgb, *cloudrgb, current_trans);
+	pcl::transformPointCloud(*cloud_sift, *cloud_sift, current_trans);
 
 	lum_sift.addPointCloud(cloud_sift);
 	*rgbn_views[counter -1] = *cloud;
 	*rgb_views[counter -1] = *cloudrgb;
+	*shot_views[counter-1] = *cloud_shot;
 
 	int added = 0;
 	for (int i = counter - 2; i >= 0; i--)
@@ -301,6 +304,7 @@ void ClosedCloudMerge::addViewToModel() {
 
 	*cloud_merged = *(rgb_views[0]);
 	*cloud_normal_merged = *(rgbn_views[0]);
+	*cloud_shot_merged = *(shot_views[0]);
 
 	if (counter > threshold) {
 		lum_sift.setMaxIterations(maxIterations);
@@ -316,6 +320,29 @@ void ClosedCloudMerge::addViewToModel() {
 			pcl::transformPointCloud(tmprgb, tmprgb, lum_sift.getTransformation (i));
 			*cloud_merged += tmprgb;
 			*cloud_normal_merged += tmp;
+
+			pcl::PointCloud<PointXYZSHOT>::Ptr temp_shots = shot_views[i];
+
+			pcl::CorrespondencesPtr correspondences_shot(new pcl::Correspondences());
+			computeCorrespondences(temp_shots, cloud_shot_merged, correspondences_shot);
+			CLOG(LINFO) << "shot correspondences: " << correspondences_shot->size();
+			for(int j = 0; j< correspondences_shot->size();j++) {
+				// TODO add checking distance between points after transformation
+				pcl::Correspondence corr = correspondences_shot->at(j);
+				cloud_shot->at(corr.index_query).multiplicity = cloud_shot_merged->at(corr.index_match).multiplicity + 1;
+				cloud_shot_merged->at(corr.index_match).multiplicity =-1;
+			}
+			pcl::PointCloud<PointXYZSHOT>::iterator pt_iter_shot = cloud_shot_merged->begin();
+			while(pt_iter_shot!=cloud_shot_merged->end()) {
+				if(pt_iter_shot->multiplicity==-1) {
+					pt_iter_shot = cloud_shot_merged->erase(pt_iter_shot);
+				} else {
+					++pt_iter_shot;
+				}
+			}
+
+			*cloud_shot_merged += *temp_shots;
+
 		}
 
 		// Delete points.
@@ -328,27 +355,6 @@ void ClosedCloudMerge::addViewToModel() {
 			}
 		}
 
-		// SHOTS delete 'duplicated' keypoints
-
-		pcl::CorrespondencesPtr correspondences_shot(new pcl::Correspondences());
-		computeCorrespondences(cloud_shot, cloud_shot_merged, correspondences_shot);
-		CLOG(LINFO) << "shot correspondences: " << correspondences_shot->size();
-		for(int j = 0; j< correspondences_shot->size();j++) {
-			// TODO add checking distance between points after transformation
-			pcl::Correspondence corr = correspondences_shot->at(j);
-			cloud_shot->at(corr.index_query).multiplicity = cloud_shot_merged->at(corr.index_match).multiplicity + 1;
-			cloud_shot_merged->at(corr.index_match).multiplicity =-1;
-		}
-		pcl::PointCloud<PointXYZSHOT>::iterator pt_iter_shot = cloud_shot_merged->begin();
-		while(pt_iter_shot!=cloud_shot_merged->end()) {
-			if(pt_iter_shot->multiplicity==-1) {
-				pt_iter_shot = cloud_shot_merged->erase(pt_iter_shot);
-			} else {
-				++pt_iter_shot;
-			}
-		}
-
-		*cloud_shot_merged += *cloud_shot;
 	}
 
 	else {

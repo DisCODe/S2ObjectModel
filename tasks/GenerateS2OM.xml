@@ -18,20 +18,20 @@
 			<Executor name="Processing"  period="1">
 				
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/lipton_earl_grey_lemon/</param>
+					<param name="sequence.directory">//home/discode/14.06.13objects/kakao/</param>
 					<param name="sequence.pattern">.*\_rgb.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/lipton_earl_grey_lemon/</param>
+					<param name="sequence.directory">//home/discode/14.06.13objects/kakao/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">//home/jkrasnod/data/lipton_earl_grey_lemon/mask/</param>
-					<param name="sequence.pattern">.*\_rgb.png</param>
+					<param name="sequence.directory">//home/discode/14.06.13objects/kakao/</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
 				
@@ -88,7 +88,7 @@
 				</Component>
 								
 		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="16" bump="10">
-					<param name="S2OMname">herbata_test</param>
+					<param name="S2OMname">kakao</param>
 					<param name="dir">/home/jkrasnod/test/test</param>
 			    </Component>
 			</Executor>
