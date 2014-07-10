@@ -183,6 +183,7 @@ void S2ObjectGenerator::prepareInterface() {
     registerHandler("addViewToModel_normals", &h_addViewToModel_normals);
     addDependency("addViewToModel_normals", &in_cloud_xyzsift);
     addDependency("addViewToModel_normals", &in_cloud_xyzrgb_normals);
+    addDependency("addViewToModel_normals", &in_cloud_xyzshot);
 
 }
 

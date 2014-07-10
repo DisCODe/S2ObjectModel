@@ -21,7 +21,7 @@ namespace Harris3DKeypoints {
 Harris3DKeypoints::Harris3DKeypoints(const std::string & name) :
 				Base::Component(name),
 				radius_search("radius_search", 0.01),
-				radius("radius", 0.01) {
+				radius("radius", 0.5) {
 				registerProperty(radius_search);
 				registerProperty(radius);
 }

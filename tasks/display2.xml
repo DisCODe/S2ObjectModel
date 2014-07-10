@@ -4,19 +4,19 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_color.png</param>
 					<param name="mode.loop">0</param>					
 				</Component>
 				
 				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_depth.png</param>	
 					<param name="mode.loop">0</param>	
 				</Component>
 				
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/mlaszkow/obiekty/cereal_box_1/</param>
+					<param name="sequence.directory">/home/joanna/data/apple_5/</param>
 					<param name="sequence.pattern">.*\_mask.png</param>
 					<param name="mode.loop">0</param>	
 				</Component>
@@ -48,8 +48,8 @@
 					<param name="LeafSize.z">0.005</param>
 				</Component>
 		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="13" bump="10">
-					<param name="S2OMname">cereal_box_1_test</param>
-					<param name="dir">/home/mlaszkow/jsonmodels/s2om/</param>
+					<param name="S2OMname">jablko</param>
+					<param name="dir">/home/joanna/test/</param>
 			    </Component>
 
 			</Executor>

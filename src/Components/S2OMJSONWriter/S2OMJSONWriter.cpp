@@ -43,7 +43,9 @@ void S2OMJSONWriter::prepareInterface() {
 	// Register handlers
 	h_Write.setup(boost::bind(&S2OMJSONWriter::Write, this));
 	registerHandler("Write", &h_Write);
-//	addDependency("Write", NULL);
+	addDependency("Write", &in_cloud_xyzrgb);
+	addDependency("Write", &in_cloud_xyzsift);
+	addDependency("Write", &in_cloud_xyzshot);
 	
 	h_on_cloud_xyzrgb.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzrgb, this));
 	registerHandler("on_cloud_xyzrgb", &h_on_cloud_xyzrgb);
@@ -54,9 +56,7 @@ void S2OMJSONWriter::prepareInterface() {
 	h_on_cloud_xyzshot.setup(boost::bind(&S2OMJSONWriter::on_cloud_xyzshot, this));
 	registerHandler("on_cloud_xyzshot", &h_on_cloud_xyzshot);
 	addDependency("on_cloud_xyzshot", &in_cloud_xyzshot);
-	//addDependency("Write", &in_cloud_xyzrgb);
-	//addDependency("Write", &in_cloud_xyzsift);
-	//addDependency("Write", &in_cloud_xyzshot);
+
 
 }
 
@@ -89,6 +89,19 @@ void S2OMJSONWriter::on_cloud_xyzshot() {
 
 void S2OMJSONWriter::Write() {
 	LOG(LTRACE) << "S2OMJSONWriter::Write";
+
+	cloud_xyzrgb = in_cloud_xyzrgb.read();
+	cloud_xyzsift = in_cloud_xyzsift.read();
+	cloud_xyzshot = in_cloud_xyzshot.read();
+
+	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzrgb size : " << cloud_xyzrgb->size() ;
+	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzsift size : " << cloud_xyzsift->size() ;
+	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzshot size : " << cloud_xyzshot->size() ;
+
+	if (cloud_xyzrgb->size() == 0 || cloud_xyzsift->size() == 0 || cloud_xyzshot->size() == 0) {
+		CLOG(LWARNING) << "S2OMJSONWriter::Write empty one or more cloud!";
+		return;
+	}
 	// Try to save the model retrieved from the S2OM data stream.
 	if (!in_s2om.empty()) {
 		LOG(LDEBUG) << "!in_s2om.empty()";

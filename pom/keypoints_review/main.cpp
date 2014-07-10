@@ -42,13 +42,13 @@ main (int argc, char** argv)
     std::cout << " Radius: " << normals_radius << "\n";
   }
   
-      double harris_radius = 0.05;
+      double harris_radius = 0.5;
   if (pcl::console::parse (argc, argv, "--hariss_radius", harris_radius) >= 0)
   {
     std::cout << " harris_radius: " << harris_radius << "\n";
   }
  
-      double harris_search_radius = 0.05;
+      double harris_search_radius = 0.01;
   if (pcl::console::parse (argc, argv, "--harris_search_radius", harris_search_radius) >= 0)
   {
     std::cout << " harris_search_radius: " << harris_search_radius << "\n";
@@ -90,6 +90,7 @@ main (int argc, char** argv)
 
 		detector->setNonMaxSupression(true);
 		detector->setRadius(harris_radius);
+
 		detector->setRadiusSearch(harris_search_radius);
 		detector->setMethod(HarrisKeypoint::HARRIS);
 	//	detector->setKSearch();
@@ -108,9 +109,11 @@ main (int argc, char** argv)
 		pcl::copyPointCloud(*keypoints_temp, *harris3d);
 }
 
-	std::cout <<  " harris3d size :" << harris3d->size();
+	std::cout <<  " harris3d size :" << harris3d->size() << std::endl;;
+	
+	
 
-
+/*
 	{
 
 		double iss_salient_radius_;
@@ -151,13 +154,19 @@ main (int argc, char** argv)
 
 	std::cout << " iss3d size :" << iss3d->size() << std::endl;
 
+	
+	
 	{
 		pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB> ());
 
 		pcl::SUSANKeypoint<pcl::PointXYZRGB, pcl::PointXYZRGB>* susan3D = new  pcl::SUSANKeypoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
 		susan3D->setInputCloud(cloudRGB);
-		susan3D->setNonMaxSupression(false);
+		susan3D->setNonMaxSupression(true);
 		susan3D->setSearchMethod(tree);
+		
+		susan3D->setRadius(harris_radius);
+		susan3D->setRadiusSearch(harris_search_radius);
+		
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr keypoints (new pcl::PointCloud<pcl::PointXYZRGB> ());
 		susan3D->compute(*keypoints);
 
@@ -168,6 +177,8 @@ main (int argc, char** argv)
 
 	std::cout <<  " susan size :" << susan->size() << std::endl;
 
+	
+	
 	{
 
 	pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB> ());
@@ -181,7 +192,8 @@ main (int argc, char** argv)
 		detector->setRadius(harris_radius);
 		detector->setRadiusSearch(harris_search_radius);
 	//	detector->setMethod(HarrisKeypoint::HARRIS);
-	//	detector->setKSearch();
+		
+
 		detector->setNumberOfThreads(10);
 		detector->setSearchMethod(tree);
 	//	detector->setThreshold();
@@ -196,7 +208,8 @@ main (int argc, char** argv)
 
 	std::cout <<  " harris6d size :" << harris6d->size() << std::endl;
 
-	
+	/*
+	*/
 
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> white (cloud, 255, 255, 255);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (harris3d, 255, 0, 0);
@@ -214,11 +227,11 @@ main (int argc, char** argv)
     viewer->addPointCloud<pcl::PointXYZ> (susan, blue, "keypoint4s");
     viewer->addPointCloud<pcl::PointXYZ> (harris6d, col2, "keypoin3ts");
     viewer->addPointCloud<pcl::PointXYZ> (sift, col3, "keypoint36");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoints2");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoints3");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoint4s");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoin3ts");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "keypoint36");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "keypoints2");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "keypoints3");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "keypoint4s");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "keypoin3ts");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, "keypoint36");
  // viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals, 5, 0.05, "normals");
   viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
