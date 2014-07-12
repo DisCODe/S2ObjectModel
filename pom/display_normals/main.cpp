@@ -55,10 +55,10 @@ main (int argc, char** argv)
 
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr keypoints (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (argv[2], *keypoints) == -1) //* load the file
-  {
-	  PCL_WARN ("Couldn't read file keypoints.pcd \n");
-  }
+//  if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (argv[2], *keypoints) == -1) //* load the file
+ // {
+//	  PCL_WARN ("Couldn't read file keypoints.pcd \n");
+ // }
   
   PCL_INFO("4");
 
@@ -70,15 +70,15 @@ main (int argc, char** argv)
 
 	
 		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> green (cloud, 0, 255, 0);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (keypoints, 255, 0, 0);
+//	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (keypoints, 255, 0, 0);
 	//////
   
-	PCL_INFO("normals_radius: " + normals_radius);
+//	PCL_INFO("normals_radius: " normals_radius);
 
    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addPointCloud<pcl::PointXYZRGB> (cloud, green, "cloud");
-    viewer->addPointCloud<pcl::PointXYZRGB> (keypoints, red, "keypoints");
+  //  viewer->addPointCloud<pcl::PointXYZRGB> (keypoints, red, "keypoints");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "keypoints");
   viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals, 3, 0.05, "normals");
   viewer->addCoordinateSystem (1.0, "global");

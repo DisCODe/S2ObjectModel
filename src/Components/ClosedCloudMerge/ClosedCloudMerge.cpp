@@ -37,6 +37,8 @@
 
 #include <pcl/registration/distances.h>
 
+#include <pcl/keypoints/uniform_sampling.h>
+
 namespace Processors {
 namespace ClosedCloudMerge {
 
@@ -114,6 +116,8 @@ void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud
 	correst.setInputTarget(cloud_trg);
 	// Find correspondences.
 	correst.determineReciprocalCorrespondences(*correspondences);
+
+
 }
 
 void ClosedCloudMerge::prepareInterface() {
@@ -195,9 +199,9 @@ void ClosedCloudMerge::addViewToModel() {
 
 	CLOG(LINFO) << "view number: "<<counter;
 
-//	rgb_views.push_back(pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>()));
-//	shot_views.push_back(pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>()));
-//	rgbn_views.push_back(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr (new pcl::PointCloud<pcl::PointXYZRGBNormal>()));
+	rgb_views.push_back(pcl::PointCloud<pcl::PointXYZRGB>::Ptr (new pcl::PointCloud<pcl::PointXYZRGB>()));
+	shot_views.push_back(pcl::PointCloud<PointXYZSHOT>::Ptr (new pcl::PointCloud<PointXYZSHOT>()));
+	rgbn_views.push_back(pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr (new pcl::PointCloud<pcl::PointXYZRGBNormal>()));
 
 	counter++;
 
@@ -211,23 +215,30 @@ void ClosedCloudMerge::addViewToModel() {
 		out_mean_viewpoint_features_number.write(cloud_sift->size());
 
 		lum_sift.addPointCloud(cloud_sift);
-		/*		*rgbn_views[0] = *cloud;
+				*rgbn_views[0] = *cloud;
 		 *rgb_views[0] = *cloudrgb;
-		 *shot_views[0] = *cloud_shot;*/
+		 *shot_views[0] = *cloud_shot;
 
-		rgb_views.push_back(cloudrgb);// index == 0
+/*		rgb_views.push_back(cloudrgb);// index == 0
 		shot_views.push_back(cloud_shot);
-		rgbn_views.push_back(cloud);
+		rgbn_views.push_back(cloud);*/
 
-		*cloud_merged = *cloudrgb;
-		*cloud_normal_merged = *cloud;
-		*cloud_sift_merged = *cloud_sift;
-		*cloud_shot_merged = *cloud_shot;
+			*cloud_merged = *cloudrgb;
+			*cloud_normal_merged = *cloud;
+			*cloud_sift_merged = *cloud_sift;
+			*cloud_shot_merged = *cloud_shot;
 
-		out_cloud_xyzrgb.write(cloud_merged);
-		out_cloud_xyzrgb_normals.write(cloud_normal_merged);
-		out_cloud_xyzsift.write(cloud_sift_merged);
-		out_cloud_xyzshot.write(cloud_shot_merged);
+/*
+		pcl::copyPointCloud (*cloud_merged, *cloudrgb);
+		pcl::copyPointCloud (*cloud_normal_merged, *cloud);
+		pcl::copyPointCloud (*cloud_sift_merged, *cloud_sift);
+		pcl::copyPointCloud (*cloud_shot_merged, *cloud_shot);
+*/
+
+		out_cloud_xyzrgb.write(cloudrgb);
+		out_cloud_xyzrgb_normals.write(cloud);
+		out_cloud_xyzsift.write(cloud_sift);
+		out_cloud_xyzshot.write(cloud_shot);
 
 		CLOG(LINFO) << "first clouds - return";
 
@@ -272,14 +283,17 @@ void ClosedCloudMerge::addViewToModel() {
 
 	lum_sift.addPointCloud(cloud_sift);
 	// poprzednie chmury
-	/*		*rgbn_views[counter -1] = *cloud;
+			*rgbn_views[counter -1] = *cloud;
 	 *rgb_views[counter -1] = *cloudrgb;
 	 *shot_views[counter-1] = *cloud_shot;
-	 */
 
+	 CLOG(LWARNING) << " ADD RGB_VIEW SIZE :" << cloudrgb->size() << "INDEX :" << counter-1;
+
+
+/*
 	rgb_views.push_back(cloudrgb);// index == counter - 1
 	shot_views.push_back(cloud_shot);
-	rgbn_views.push_back(cloud);
+	rgbn_views.push_back(cloud);*/
 
 	int added = 0;
 	for (int i = counter - 2; i >= 0; i--)
@@ -311,9 +325,11 @@ void ClosedCloudMerge::addViewToModel() {
 
 	CLOG(LINFO) << "cloud_merged from LUM ";
 
-	cloud_merged = rgb_views[0];
-	cloud_normal_merged = rgbn_views[0];
-	cloud_shot_merged = shot_views[0];
+//	cloud_merged = rgb_views[0];
+	pcl::copyPointCloud(*(rgb_views[0]), *cloud_merged);
+//	cloud_normal_merged = rgbn_views[0];
+	//cloud_shot_merged = shot_views[0];
+	pcl::copyPointCloud(*(shot_views[0]), *cloud_shot_merged);
 
 	CLOG(LINFO) << "addViewToModel 1. cloud_merged size: "<<cloud_merged->size();
 	CLOG(LINFO) << "addViewToModel 1. cloud_normal_merged size: "<<cloud_normal_merged->size();
@@ -328,50 +344,71 @@ void ClosedCloudMerge::addViewToModel() {
 		for (int i = 1; i < threshold; i++)
 		{
 			pcl::PointCloud<pcl::PointXYZRGB> tmprgb = *(rgb_views[i]);
-			pcl::PointCloud<pcl::PointXYZRGBNormal> tmp = *(rgbn_views[i]);
-			pcl::transformPointCloud(tmp, tmp, lum_sift.getTransformation (i));
+			pcl::copyPointCloud(*(rgb_views[i]), tmprgb);
+		//	pcl::PointCloud<pcl::PointXYZRGBNormal> tmp = *(rgbn_views[i]);
+		//	pcl::transformPointCloud(tmp, tmp, lum_sift.getTransformation (i));
 			pcl::transformPointCloud(tmprgb, tmprgb, lum_sift.getTransformation (i));
 			*cloud_merged += tmprgb;
-			*cloud_normal_merged += tmp;
+		//	*cloud_normal_merged += tmp;
 
 			pcl::PointCloud<PointXYZSHOT>::Ptr temp_shots = shot_views[i];
 
 			CLOG(LINFO) << "addViewToModel tmprgb size: "<<tmprgb.size()<<" for " << i;
-			CLOG(LINFO) << "addViewToModel tmp size: "<<tmp.size()<<" for " << i;
+	//		CLOG(LINFO) << "addViewToModel tmp size: "<<tmp.size()<<" for " << i;
 			CLOG(LINFO) << "addViewToModel temp_shots size: "<<temp_shots->size() <<" for " << i;
 
-			/*
-			 pcl::CorrespondencesPtr correspondences_shot(new pcl::Correspondences());
-			 computeCorrespondences(temp_shots, cloud_shot_merged, correspondences_shot);
-			 CLOG(LINFO) << "shot correspondences: " << correspondences_shot->size();
-			 for(int j = 0; j< correspondences_shot->size();j++) {
+			int removed = 0;
 
-			 pcl::Correspondence corr = correspondences_shot->at(j);
+		//	CLOG(LINFO) << "POINT 1";
 
-			 double dist = pcl::distances::l2(
-			 cloud_shot->at(corr.index_query).getVector4fMap(),
-			 cloud_shot_merged->at(corr.index_match).getVector4fMap()
+			pcl::CorrespondencesPtr correspondences_shot(new pcl::Correspondences());
 
-			 );
+			computeCorrespondences(temp_shots, cloud_shot_merged, correspondences_shot);
 
-			 // TODO parametryzacja
+		//	CLOG(LINFO) << "POINT 2";
 
-			 CLOG(LINFO) << "DIST: " << dist;
+			CLOG(LINFO) << "shot correspondences: " << correspondences_shot->size();
+			for(int j = 0; j< correspondences_shot->size();j++) {
+			//	CLOG(LINFO) << "POINT 3";
 
-			 if (dist < 0.001) {
-			 cloud_shot->at(corr.index_query).multiplicity = cloud_shot_merged->at(corr.index_match).multiplicity + 1;
-			 cloud_shot_merged->at(corr.index_match).multiplicity =-1;
-			 }
-			 }
-			 pcl::PointCloud<PointXYZSHOT>::iterator pt_iter_shot = cloud_shot_merged->begin();
-			 while(pt_iter_shot!=cloud_shot_merged->end()) {
-			 if(pt_iter_shot->multiplicity==-1) {
-			 pt_iter_shot = cloud_shot_merged->erase(pt_iter_shot);
-			 } else {
-			 ++pt_iter_shot;
-			 }
-			 }
-			 */
+				pcl::Correspondence corr = correspondences_shot->at(j);
+			//	CLOG(LINFO) << "POINT 4";
+			//	CLOG(LINFO) << "temp_shots" << temp_shots->size();
+			///	CLOG(LINFO) << "cloud_shot_merged" << cloud_shot_merged->size();
+			//	CLOG(LINFO) << "index_query" << corr.index_query;
+			//	CLOG(LINFO) << "index_match" << corr.index_match;
+
+
+
+				double dist = pcl::distances::l2(
+						temp_shots->at(corr.index_query).getVector4fMap(),
+						cloud_shot_merged->at(corr.index_match).getVector4fMap()
+
+				);
+
+			//	CLOG(LINFO) << "POINT 5";
+
+				// TODO parametryzacja
+
+				CLOG(LINFO) << "DIST: " << dist;
+
+				if (dist < 0.01) {
+					temp_shots->at(corr.index_query).multiplicity = cloud_shot_merged->at(corr.index_match).multiplicity + 1;
+					cloud_shot_merged->at(corr.index_match).multiplicity =-1;
+					removed ++;
+				}
+			}
+			pcl::PointCloud<PointXYZSHOT>::iterator pt_iter_shot = cloud_shot_merged->begin();
+			while(pt_iter_shot!=cloud_shot_merged->end()) {
+				if(pt_iter_shot->multiplicity==-1) {
+					pt_iter_shot = cloud_shot_merged->erase(pt_iter_shot);
+				} else {
+					++pt_iter_shot;
+				}
+			}
+
+			CLOG(LINFO) << "addViewToModel removed size: "<<removed ;
+
 
 			*cloud_shot_merged += *temp_shots;
 
@@ -399,16 +436,32 @@ void ClosedCloudMerge::addViewToModel() {
 			pcl::transformPointCloud(tmp, tmp, lum_sift.getTransformation (i));
 			pcl::transformPointCloud(tmprgb, tmprgb, lum_sift.getTransformation (i));
 			*cloud_merged += tmprgb;
-			*cloud_normal_merged += tmp;
+	//		*cloud_normal_merged += tmp;
+
+
 		}
+
+		CLOG(LINFO) << "addViewToModel before uniform sampling: "<<cloud_merged->size();
 
 		cloud_sift_merged = lum_sift.getConcatenatedCloud ();
 	}
 
+	CLOG(LINFO) << "addViewToModel before uniform sampling: "<<cloud_merged->size();
+
+	pcl::PointCloud<int> sampled_indices;
+	pcl::UniformSampling<pcl::PointXYZRGB> uniform_sampling;
+	  uniform_sampling.setInputCloud (cloud_merged);
+	  uniform_sampling.setRadiusSearch (0.001);
+	  uniform_sampling.compute (sampled_indices);
+	  pcl::copyPointCloud (*cloud_merged, sampled_indices.points, *cloud_merged);
+
+	  CLOG(LINFO) << "addViewToModel after uniform sampling: "<<cloud_merged->size();
+
+
 //*cloud_sift_merged += *cloud_sift;
 //
 	CLOG(LINFO) << "SENDING ... model cloud_merged->size(): "<< cloud_merged->size();
-	CLOG(LINFO) << "SENDING ... model cloud_normal_merged->size(): "<< cloud_normal_merged->size();
+//	CLOG(LINFO) << "SENDING ... model cloud_normal_merged->size(): "<< cloud_normal_merged->size();
 	CLOG(LINFO) << "SENDING ... model cloud_sift_merged->size(): "<< cloud_sift_merged->size();
 	CLOG(LINFO) << "SENDING ... model cloud_shot_merged->size(): "<< cloud_shot_merged->size();
 
