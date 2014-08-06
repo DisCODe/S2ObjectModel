@@ -67,7 +67,7 @@
 				</Component>					
 	
                 <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="13" bump="1">
-					<param name="threshold">18</param>
+					<param name="threshold">19</param>
 					<param name="Interations.Max">10</param>
 				</Component>
 
@@ -163,8 +163,8 @@
 			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
 		</Source>
 		
-	<!--	<Source name="VoxelGridRGB.out_cloud_xyzrgb"> -->
-		<Source name="Generator.out_cloud_xyzrgb">
+		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+	<!--	<Source name="Generator.out_cloud_xyzrgb"> -->
 			<sink>Writer.in_cloud_xyzrgb</sink>
 			<sink>WindowPCL.in_cloud</sink>
 		</Source>
@@ -174,7 +174,7 @@
 		</Source>
 		
 <!--		<Source name="VoxelGrid.out_cloud_xyzrgb_normal">-->
-<!-- TODO		-->
+
 <!--		</Source> -->
 		
 		<Source name="Generator.out_cloud_xyzsift">
