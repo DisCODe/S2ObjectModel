@@ -21,9 +21,18 @@ typedef NormalCloud::Ptr NormalCloudPtr;
 #include <pcl/keypoints/susan.h>
 #include <pcl/keypoints/iss_3d.h>
 #include <iostream>
+#include <pcl/keypoints/agast_2d.h>
+#include <pcl/keypoints/brisk_2d.h>
+//#include <pcl/keypoints/trajkovic_3d.h>
+#include <pcl/keypoints/uniform_sampling.h>
 
 typedef pcl::HarrisKeypoint3D<pcl::PointXYZ, pcl::PointXYZI> HarrisKeypoint;
 typedef pcl::HarrisKeypoint6D<pcl::PointXYZRGBA, pcl::PointXYZI> HarrisKeypoint6D;
+
+
+// Agast_2d - only organized clouds!
+// Brisk_2d - only organized clouds!
+// Trajkovic_3d - not available in 1.7.1
 
 // iss keypoints : ./keypoints_review /home/joanna/chmury/shampoo_4_1_2.pcd --res 0.001 --hariss-radius 0.1 --harris_search_radius 0.0005 -n 0.001
 
@@ -128,7 +137,7 @@ int main(int argc, char** argv) {
 	// ISS 3D
 	{
 
-		double iss_salient_radius_;
+	/*	double iss_salient_radius_;
 		double iss_non_max_radius_;
 		double iss_gamma_21_ (0.8);
 		double iss_gamma_32_ (0.8);
@@ -157,7 +166,29 @@ int main(int argc, char** argv) {
 		iss_detector.setNumberOfThreads (iss_threads_);
 		iss_detector.setInputCloud (cloudRGB);
 		iss_detector.setRadiusSearch(harris_search_radius);
-		iss_detector.compute (*iss3d);
+		iss_detector.compute (*iss3d);*/
+
+
+/*		pcl::BriskKeypoint2D<pcl::PointXYZRGBA> brisk;
+		brisk.setThreshold (60);
+		brisk.setOctaves (4);
+		brisk.setInputCloud (cloudRGB);
+		pcl::PointCloud<pcl::PointWithScale> keypoints;
+		brisk.compute (keypoints);
+		pcl::PointIndicesConstPtr ind = brisk.getKeypointsIndices();
+		pcl::copyPointCloud(*cloudRGB, *ind, *iss3d);*/
+
+
+		pcl::PointCloud<int> sampled_indices;
+		pcl::UniformSampling<pcl::PointXYZRGBA> uniform_sampling;
+		uniform_sampling.setInputCloud (cloudRGB);
+		uniform_sampling.setRadiusSearch (0.01);
+		uniform_sampling.compute (sampled_indices);
+		pcl::copyPointCloud (*cloudRGB, sampled_indices.points, *iss3d);
+
+
+
+
 
 
 	}
