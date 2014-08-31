@@ -4,8 +4,8 @@
  * \author Joanna,,,
  */
 
-#ifndef SIFTKEYPOINTS_HPP_
-#define SIFTKEYPOINTS_HPP_
+#ifndef S2OBJECTMATCHER_HPP_
+#define S2OBJECTMATCHER_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -13,28 +13,33 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <Types/PointXYZSIFT.hpp>
+#include <Types/PointXYZSHOT.hpp>
+
 
 
 namespace Processors {
-namespace SIFTKeypoints {
+namespace S2ObjectMatcher {
 
 /*!
- * \class SIFTKeypoints
- * \brief SIFTKeypoints processor class.
+ * \class S2ObjectMatcher
+ * \brief S2ObjectMatcher processor class.
  *
- * SIFTKeypoints processor.
+ * S2ObjectMatcher processor.
  */
-class SIFTKeypoints: public Base::Component {
+class S2ObjectMatcher: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	SIFTKeypoints(const std::string & name = "SIFTKeypoints");
+	S2ObjectMatcher(const std::string & name = "S2ObjectMatcher");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~SIFTKeypoints();
+	virtual ~S2ObjectMatcher();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -70,12 +75,12 @@ protected:
 
 };
 
-} //: namespace SIFTKeypoints
+} //: namespace S2ObjectMatcher
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("SIFTKeypoints", Processors::SIFTKeypoints::SIFTKeypoints)
+REGISTER_COMPONENT("S2ObjectMatcher", Processors::S2ObjectMatcher::S2ObjectMatcher)
 
-#endif /* SIFTKEYPOINTS_HPP_ */
+#endif /* S2OBJECTMATCHER_HPP_ */

@@ -6,10 +6,6 @@ ADD_COMPONENT(SHOTConverter)
 
 ADD_COMPONENT(Harris3DKeypoints)
 
-ADD_COMPONENT(SHOTObjectGenerator)
-
-ADD_COMPONENT(SIFTKeypoints)
-
 ADD_COMPONENT(ISS3DKeypoints)
 
 ADD_COMPONENT(SusanKeypoints)
@@ -25,3 +21,13 @@ ADD_COMPONENT(S2ObjectViewer)
 ADD_COMPONENT(ClosedCloudMerge)
 
 ADD_COMPONENT(SingleS2OMJsonReader)
+
+ADD_COMPONENT(S2ObjectMatcher)
+
+ADD_COMPONENT(KepointsSusanDetector)
+
+ADD_COMPONENT(KepointsHarris3dDetector)
+
+ADD_COMPONENT(KepointsIssDetector)
+
+ADD_COMPONENT(UniformSapmling)

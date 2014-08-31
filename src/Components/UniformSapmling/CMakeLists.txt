@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(SIFTKeypoints SHARED ${files})
+ADD_LIBRARY(UniformSapmling SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SIFTKeypoints ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(UniformSapmling ${DisCODe_LIBRARIES} )
 
-INSTALL_COMPONENT(SIFTKeypoints)
+INSTALL_COMPONENT(UniformSapmling)
