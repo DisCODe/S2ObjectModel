@@ -6,7 +6,6 @@ ADD_COMPONENT(SHOTConverter)
 
 ADD_COMPONENT(Harris3DKeypoints)
 
-ADD_COMPONENT(ISS3DKeypoints)
 
 ADD_COMPONENT(SusanKeypoints)
 
@@ -30,4 +29,6 @@ ADD_COMPONENT(KepointsHarris3dDetector)
 
 ADD_COMPONENT(KepointsIssDetector)
 
-ADD_COMPONENT(UniformSapmling)
+ADD_COMPONENT(UniformSampling)
+
+ADD_COMPONENT(KeypointsViewer)

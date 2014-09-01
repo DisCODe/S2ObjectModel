@@ -33,8 +33,8 @@ void KepointsSusanDetector::prepareInterface() {
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 
 	h_compute_xyzrgb.setup(boost::bind(&KepointsSusanDetector::computeXYZRGB, this));
-	registerHandler("compute", &h_compute_xyzrgb);
-	addDependency("compute", &in_cloud_xyzrgb);
+	registerHandler("h_compute_xyzrgb", &h_compute_xyzrgb);
+	addDependency("h_compute_xyzrgb", &in_cloud_xyzrgb);
 
 }
 

@@ -1,0 +1,97 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>joanna</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>Generates S2OM and stores it in PCD file</brief>
+			<full>Loads a sequence of object views and joins them into SIFT and SHOT object model (S2OM)</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="5">
+				
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="mode.loop">0</param>					
+				</Component>
+				
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bum="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+			
+				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="6" bump="0">
+					<param name="MeanK">15</param>
+					<param name="StddevMulThresh">0.10</param>
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:KepointsSusanDetector" priority="7" bump="0">
+				</Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="Visualizer" type="S2ObjectModel:KeypointsViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="SequenceRGB.out_img">
+			<sink>ConverterRGB.in_color</sink>
+		</Source>
+		
+		<Source name="SequenceDepth.out_img">	
+			<sink>ConverterRGB.in_depth</sink>
+		</Source>
+		
+		<Source name="SequenceMask.out_img">
+			<sink>ConverterRGB.in_mask</sink>
+		</Source>
+		
+		<Source name="CameraInfo.out_camera_info">
+			<sink>ConverterRGB.in_camera_info</sink>
+		</Source>
+		
+		<Source name="ConverterRGB.out_cloud_xyzrgb">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
+			<sink>Keypoints.in_cloud_xyzrgb</sink>
+			<sink>Visualizer.in_cloud</sink>
+		</Source>
+		
+		<Source name="Keypoints.out_cloud_xyzrgb">
+			<sink>Visualizer.in_keypoints</sink>
+		</Source>
+	</DataStreams>
+</Task>
+
+
+
+

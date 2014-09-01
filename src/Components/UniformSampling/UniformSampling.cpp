@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "UniformSapmling.hpp"
+#include "UniformSampling.hpp"
 #include "Common/Logger.hpp"
 
 #include <boost/bind.hpp>
@@ -16,52 +16,52 @@
 #include <pcl/keypoints/uniform_sampling.h>
 
 namespace Processors {
-namespace UniformSapmling {
+namespace UniformSampling {
 
-UniformSapmling::UniformSapmling(const std::string & name) :
+UniformSampling::UniformSampling(const std::string & name) :
 		Base::Component(name), radius_search("radius_search", 0.01) {
 	registerProperty(radius_search);
 
 }
 
-UniformSapmling::~UniformSapmling() {
+UniformSampling::~UniformSampling() {
 }
 
-void UniformSapmling::prepareInterface() {
+void UniformSampling::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_cloud_xyz", &in_cloud_xyz);
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
 	registerStream("out_cloud_xyz", &out_cloud_xyz);
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 
-	h_compute_xyz.setup(boost::bind(&UniformSapmling::computeXYZ, this));
-	registerHandler("compute", &h_compute_xyz);
-	addDependency("compute", &in_cloud_xyz);
+	h_compute_xyz.setup(boost::bind(&UniformSampling::computeXYZ, this));
+	registerHandler("h_compute_xyz", &h_compute_xyz);
+	addDependency("h_compute_xyz", &in_cloud_xyz);
 
-	h_compute_xyzrgb.setup(boost::bind(&UniformSapmling::computeXYZRGB, this));
-	registerHandler("compute", &h_compute_xyzrgb);
-	addDependency("compute", &in_cloud_xyzrgb);
+	h_compute_xyzrgb.setup(boost::bind(&UniformSampling::computeXYZRGB, this));
+	registerHandler("h_compute_xyzrgb", &h_compute_xyzrgb);
+	addDependency("h_compute_xyzrgb", &in_cloud_xyzrgb);
 
 }
 
-bool UniformSapmling::onInit() {
+bool UniformSampling::onInit() {
 
 	return true;
 }
 
-bool UniformSapmling::onFinish() {
+bool UniformSampling::onFinish() {
 	return true;
 }
 
-bool UniformSapmling::onStop() {
+bool UniformSampling::onStop() {
 	return true;
 }
 
-bool UniformSapmling::onStart() {
+bool UniformSampling::onStart() {
 	return true;
 }
 
-void UniformSapmling::computeXYZ() {
+void UniformSampling::computeXYZ() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -90,7 +90,7 @@ void UniformSapmling::computeXYZ() {
 	}
 }
 
-void UniformSapmling::computeXYZRGB() {
+void UniformSampling::computeXYZRGB() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 

@@ -4,8 +4,8 @@
  * \author Joanna,,,
  */
 
-#ifndef ISS3DKEYPOINTS_HPP_
-#define ISS3DKEYPOINTS_HPP_
+#ifndef KEYPOINTSVIEWER_HPP_
+#define KEYPOINTSVIEWER_HPP_
 
 #include "Component_Aux.hpp"
 #include "Component.hpp"
@@ -13,33 +13,30 @@
 #include "Property.hpp"
 #include "EventHandler2.hpp"
 
-
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/pcl_base.h>
-#include <boost/function.hpp>
-
 namespace Processors {
-namespace ISS3DKeypoints {
+namespace KeypointsViewer {
 
 /*!
- * \class ISS3DKeypoints
- * \brief ISS3DKeypoints processor class.
+ * \class KeypointsViewer
+ * \brief KeypointsViewer processor class.
  *
- * ISS3DKeypoints processor.
+ * KeypointsViewer processor.
  */
-class ISS3DKeypoints: public Base::Component {
+class KeypointsViewer: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	ISS3DKeypoints(const std::string & name = "ISS3DKeypoints");
+	KeypointsViewer(const std::string & name = "KeypointsViewer");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~ISS3DKeypoints();
+	virtual ~KeypointsViewer();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -70,27 +67,27 @@ protected:
 	 */
 	bool onStop();
 
-	/// Input data stream containing point cloud from a given view.
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud;
+	void display();
+	void on_spin();
 
-	/// Output data stream containing object model point cloud.
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_keypoints;
+	Base::EventHandler2 h_display;
+	Base::EventHandler2 h_on_spin;
 
-	// Handlers
-    Base::EventHandler2 h_compute;
-
-	// Handlers
-    void compute();
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_keypoints;
+	pcl::visualization::PCLVisualizer * viewer;
 	
+	int left;
+	int right;
 
 };
 
-} //: namespace ISS3DKeypoints
+} //: namespace KeypointsViewer
 } //: namespace Processors
 
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("ISS3DKeypoints", Processors::ISS3DKeypoints::ISS3DKeypoints)
+REGISTER_COMPONENT("KeypointsViewer", Processors::KeypointsViewer::KeypointsViewer)
 
-#endif /* ISS3DKEYPOINTS_HPP_ */
+#endif /* KEYPOINTSVIEWER_HPP_ */

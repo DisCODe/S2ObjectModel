@@ -6,13 +6,11 @@ FILE(GLOB files *.cpp)
 
 # Find required packages
 
-find_package(PCL 1.6 REQUIRED)
 
 # Create an executable file from sources:
-ADD_LIBRARY(ISS3DKeypoints SHARED ${files})
+ADD_LIBRARY(UniformSampling SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(ISS3DKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(UniformSampling ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
-INSTALL_COMPONENT(ISS3DKeypoints)
-
+INSTALL_COMPONENT(UniformSampling)

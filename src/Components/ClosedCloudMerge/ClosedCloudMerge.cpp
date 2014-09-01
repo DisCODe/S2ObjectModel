@@ -456,12 +456,12 @@ void ClosedCloudMerge::addViewToModel() {
 
 	CLOG(LINFO) << "addViewToModel before uniform sampling: "<<cloud_merged->size();
 
-	pcl::PointCloud<int> sampled_indices;
+/*	pcl::PointCloud<int> sampled_indices;
 	pcl::UniformSampling<pcl::PointXYZRGB> uniform_sampling;
 	uniform_sampling.setInputCloud (cloud_merged);
 	uniform_sampling.setRadiusSearch (0.001);
 	uniform_sampling.compute (sampled_indices);
-	pcl::copyPointCloud (*cloud_merged, sampled_indices.points, *cloud_merged);
+	pcl::copyPointCloud (*cloud_merged, sampled_indices.points, *cloud_merged);*/
 
 	CLOG(LINFO) << "addViewToModel after uniform sampling: "<<cloud_merged->size();
 

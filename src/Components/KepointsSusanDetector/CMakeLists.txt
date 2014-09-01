@@ -11,6 +11,6 @@ FILE(GLOB files *.cpp)
 ADD_LIBRARY(KepointsSusanDetector SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(KepointsSusanDetector ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(KepointsSusanDetector ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
 INSTALL_COMPONENT(KepointsSusanDetector)

@@ -17,7 +17,7 @@
 #include <pcl/point_cloud.h>
 
 namespace Processors {
-namespace UniformSapmling {
+namespace UniformSampling {
 
 /*!
  * \class UniformSapmling
@@ -25,17 +25,17 @@ namespace UniformSapmling {
  *
  * UniformSapmling processor.
  */
-class UniformSapmling: public Base::Component {
+class UniformSampling: public Base::Component {
 public:
 	/*!
 	 * Constructor.
 	 */
-	UniformSapmling(const std::string & name = "UniformSapmling");
+	UniformSampling(const std::string & name = "UniformSampling");
 
 	/*!
 	 * Destructor
 	 */
-	virtual ~UniformSapmling();
+	virtual ~UniformSampling();
 
 	/*!
 	 * Prepare components interface (register streams and handlers).
@@ -92,6 +92,6 @@ protected:
 /*
  * Register processor component.
  */
-REGISTER_COMPONENT("UniformSapmling", Processors::UniformSapmling::UniformSapmling)
+REGISTER_COMPONENT("UniformSampling", Processors::UniformSampling::UniformSampling)
 
 #endif /* UNIFORMSAPMLING_HPP_ */

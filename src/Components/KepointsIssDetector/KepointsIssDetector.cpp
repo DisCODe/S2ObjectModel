@@ -41,12 +41,12 @@ void KepointsIssDetector::prepareInterface() {
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 
 	h_compute_xyz.setup(boost::bind(&KepointsIssDetector::computeXYZ, this));
-	registerHandler("compute", &h_compute_xyz);
-	addDependency("compute", &in_cloud_xyz);
+	registerHandler("h_compute_xyz", &h_compute_xyz);
+	addDependency("h_compute_xyz", &in_cloud_xyz);
 
 	h_compute_xyzrgb.setup(boost::bind(&KepointsIssDetector::computeXYZRGB, this));
-	registerHandler("compute", &h_compute_xyzrgb);
-	addDependency("compute", &in_cloud_xyzrgb);
+	registerHandler("h_compute_xyzrgb", &h_compute_xyzrgb);
+	addDependency("h_compute_xyzrgb", &in_cloud_xyzrgb);
 }
 
 bool KepointsIssDetector::onInit() {

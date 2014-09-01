@@ -11,6 +11,6 @@ FILE(GLOB files *.cpp)
 ADD_LIBRARY(KepointsHarris3dDetector SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(KepointsHarris3dDetector ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(KepointsHarris3dDetector ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
 INSTALL_COMPONENT(KepointsHarris3dDetector)

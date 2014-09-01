@@ -34,12 +34,12 @@ void KepointsHarris3dDetector::prepareInterface() {
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 
 	h_compute_xyz.setup(boost::bind(&KepointsHarris3dDetector::computeXYZ, this));
-	registerHandler("compute", &h_compute_xyz);
-	addDependency("compute", &in_cloud_xyz);
+	registerHandler("h_compute_xyz", &h_compute_xyz);
+	addDependency("h_compute_xyz", &in_cloud_xyz);
 
 	h_compute_xyzrgb.setup(boost::bind(&KepointsHarris3dDetector::computeXYZRGB, this));
-	registerHandler("compute", &h_compute_xyzrgb);
-	addDependency("compute", &in_cloud_xyzrgb);
+	registerHandler("h_compute_xyzrgb", &h_compute_xyzrgb);
+	addDependency("h_compute_xyzrgb", &in_cloud_xyzrgb);
 
 }
 
@@ -61,6 +61,7 @@ bool KepointsHarris3dDetector::onStart() {
 }
 
 void KepointsHarris3dDetector::computeXYZ() {
+	LOG(LWARNING) << "KepointsHarris3dDetector::computeXYZ";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -103,6 +104,8 @@ void KepointsHarris3dDetector::computeXYZ() {
 }
 
 void KepointsHarris3dDetector::computeXYZRGB() {
+	LOG(LWARNING) << "KepointsHarris3dDetector::computeXYZRGB";
+
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
