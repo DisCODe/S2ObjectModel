@@ -13,8 +13,6 @@ ADD_COMPONENT(S2OMJSONWriter)
 
 ADD_COMPONENT(S2OMJSONReader)
 
-ADD_COMPONENT(CorrespondencesViewer)
-
 ADD_COMPONENT(S2ObjectViewer)
 
 ADD_COMPONENT(ClosedCloudMerge)
@@ -34,3 +32,5 @@ ADD_COMPONENT(UniformSampling)
 ADD_COMPONENT(KeypointsViewer)
 
 ADD_COMPONENT(MLS)
+
+ADD_COMPONENT(CorrespondencesViewer)

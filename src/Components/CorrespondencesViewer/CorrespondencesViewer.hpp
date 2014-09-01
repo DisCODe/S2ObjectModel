@@ -17,9 +17,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <Types/PointXYZSHOT.hpp>
-
-
 namespace Processors {
 namespace CorrespondencesViewer {
 
@@ -76,13 +73,13 @@ protected:
 	Base::EventHandler2 h_display;
 	Base::EventHandler2 h_on_spin;
 
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
-	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_shots;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target;
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondences;
 
 	pcl::visualization::PCLVisualizer * viewer;
-	
-	int v1, v2;
-
 
 };
 
