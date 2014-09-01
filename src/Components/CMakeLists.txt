@@ -32,3 +32,5 @@ ADD_COMPONENT(KepointsIssDetector)
 ADD_COMPONENT(UniformSampling)
 
 ADD_COMPONENT(KeypointsViewer)
+
+ADD_COMPONENT(MLS)

@@ -18,7 +18,7 @@ namespace Processors {
 namespace KepointsIssDetector {
 
 KepointsIssDetector::KepointsIssDetector(const std::string & name) :
-		Base::Component(name), radius_search("radius_search", 0.0005), gamma_21("gamma_21", 0.8), gamma_32("gamma_31",
+		Base::Component(name), radius_search("radius_search", 0.0005), gamma_21("gamma_21", 0.8), gamma_32("gamma_32",
 				0.8), model_resolution("model_resolution", 0.001), min_neighbors("min_neighbors", 4), normal_radius(
 				"normal_radius", 0.001) {
 	registerProperty(radius_search);
