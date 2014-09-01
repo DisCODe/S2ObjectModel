@@ -33,32 +33,32 @@ S2ObjectViewer::S2ObjectViewer(const std::string & name) :
 		cloud_b("cloud.b", 100),
 		cloud_size("cloud.size", 1) {
 
-	shot_r.addConstraint("255");
 	shot_r.addConstraint("0");
+	shot_r.addConstraint("255");
 
-	shot_g.addConstraint("255");
 	shot_g.addConstraint("0");
+	shot_g.addConstraint("255");
 
-	shot_b.addConstraint("255");
 	shot_b.addConstraint("0");
+	shot_b.addConstraint("255");
 
-	sift_r.addConstraint("255");
 	sift_r.addConstraint("0");
+	sift_r.addConstraint("255");
 
-	sift_g.addConstraint("255");
 	sift_g.addConstraint("0");
+	sift_g.addConstraint("255");
 
-	sift_b.addConstraint("255");
 	sift_b.addConstraint("0");
+	sift_b.addConstraint("255");
 
-	cloud_r.addConstraint("255");
 	cloud_r.addConstraint("0");
+	cloud_r.addConstraint("255");
 
-	cloud_g.addConstraint("255");
 	cloud_g.addConstraint("0");
+	cloud_g.addConstraint("255");
 
-	cloud_b.addConstraint("255");
 	cloud_b.addConstraint("0");
+	cloud_b.addConstraint("255");
 
 	registerProperty(shot_r);
 	registerProperty(shot_g);
@@ -137,9 +137,9 @@ void S2ObjectViewer::display() {
 
 
 	viewer->removeAllPointClouds();
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> blue ( cloud_1, cloud_r * 2.55, cloud_g * 2.55, cloud_b * 2.55);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (	cloud_2, shot_r * 2.55, shot_g * 2.55, shot_b * 2.55);
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (	cloud_3, sift_r * 2.55, sift_g * 2.55, sift_b * 2.55);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> blue ( cloud_1, cloud_r, cloud_g, cloud_b);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (	cloud_2, shot_r, shot_g, shot_b);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (	cloud_3, sift_r, sift_g, sift_b);
 
 
 	viewer->addPointCloud<pcl::PointXYZ> (cloud_1, blue, "cloud");
