@@ -35,6 +35,7 @@ void SingleS2OMJsonReader::prepareInterface() {
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
 	registerStream("out_cloud_xyzshot", &out_cloud_xyzshot);
+	registerStream("out_name", &out_name);
 	// Register handlers
 	h_loadModel.setup(boost::bind(&SingleS2OMJsonReader::loadModel, this));
 	registerHandler("loadModel", &h_loadModel);
@@ -129,6 +130,7 @@ void SingleS2OMJsonReader::loadModel() {
 	out_cloud_xyzrgb.write(cloud_xyzrgb);
 	out_cloud_xyzsift.write(cloud_xyzsift);
 	out_cloud_xyzshot.write(cloud_xyzshot);
+	out_name.write(model_name);
 
 
 }

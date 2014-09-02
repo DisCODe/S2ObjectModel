@@ -76,6 +76,7 @@ protected:
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
 	Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_cloud_xyzshot;
+	Base::DataStreamOut<std::string> out_name;
 
 	// Handlers
 	Base::EventHandler2 h_loadModel;

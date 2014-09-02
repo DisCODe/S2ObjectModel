@@ -42,7 +42,11 @@
 					<param name="MeanK">15</param>
 					<param name="StddevMulThresh">0.10</param>
 				</Component>
+				
 
+				<Component name="Smoother" type="S2ObjectModel:MLS" priority="7" bump="0">
+				</Component>
+				
 				
 				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="8" bump="0">
 					<param name="radius_search">0.001</param>
@@ -78,8 +82,12 @@
 		</Source>
 			
 		<Source name="ConverterRGB.out_cloud_xyzrgb">
-			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+			<sink>Smoother.in_cloud_xyzrgb</sink>
 		</Source>		
+		
+		<Source name="Smoother.out_cloud_xyzrgb">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
 		
 		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
 			<sink>Keypoints.in_cloud_xyzrgb</sink>

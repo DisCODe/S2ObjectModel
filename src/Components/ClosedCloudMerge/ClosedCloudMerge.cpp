@@ -80,6 +80,18 @@ public:
 	}
 };
 
+void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
+		const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg, const pcl::CorrespondencesPtr& correspondences) {
+	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
+	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
+	correst.setPointRepresentation(point_representation);
+	correst.setInputSource(cloud_src);
+	correst.setInputTarget(cloud_trg);
+	// Find correspondences.
+	correst.determineReciprocalCorrespondences(*correspondences);
+
+}
+
 ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
 		Base::Component(name), prop_ICP_alignment("ICP.Points", true), prop_ICP_alignment_normal("ICP.Normals", true), prop_ICP_alignment_color(
 				"ICP.Color", false), ICP_transformation_epsilon("ICP.Tranformation_epsilon", 1e-6), ICP_max_correspondence_distance(
@@ -107,17 +119,6 @@ ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
 ClosedCloudMerge::~ClosedCloudMerge() {
 }
 
-void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
-		const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg, const pcl::CorrespondencesPtr& correspondences) {
-	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
-	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
-	correst.setPointRepresentation(point_representation);
-	correst.setInputSource(cloud_src);
-	correst.setInputTarget(cloud_trg);
-	// Find correspondences.
-	correst.determineReciprocalCorrespondences(*correspondences);
-
-}
 
 void ClosedCloudMerge::prepareInterface() {
 	// Register data streams.

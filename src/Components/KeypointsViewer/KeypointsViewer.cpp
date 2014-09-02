@@ -51,11 +51,13 @@ bool KeypointsViewer::onInit() {
 	viewer = new pcl::visualization::PCLVisualizer ("KeypointsViewer");
 
 	left = int(1);
-	left = int(2);
+	right = int(2);
 
 	viewer->createViewPort (0.0, 0.0, 0.5, 1.0, left);
 	viewer->createViewPort (0.5, 0.0, 1.0, 1.0, right);
 	viewer->initCameraParameters ();
+	viewer->setBackgroundColor(255, 255, 255, left);
+	viewer->setBackgroundColor(255, 255, 255, right);
 //	viewer->addCoordinateSystem (1.0, "test", 1);
 	return true;
 }
