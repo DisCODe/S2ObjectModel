@@ -82,8 +82,8 @@ protected:
 
 //	/// Output data stream containing object model point cloud.
 //	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZINormal>::Ptr> out_cloud_xyz_normals;
-//	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> out_cloud_xyzrgb_normals;
-	Base::DataStreamOut<pcl::PointCloud<pcl::Normal>::Ptr> out_normals;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> out_cloud_xyzrgb_normals;
+	Base::DataStreamOut<pcl::PointCloud<pcl::Normal>::Ptr> out_cloud_normals;
 };
 
 } //: namespace CuboidNormals

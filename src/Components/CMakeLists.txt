@@ -36,3 +36,4 @@ ADD_COMPONENT(MLS)
 ADD_COMPONENT(CorrespondencesViewer)
 
 ADD_COMPONENT(SingleS20MMatcher)
+ADD_COMPONENT(CuboidNormals)
