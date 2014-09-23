@@ -72,10 +72,12 @@ protected:
 
 	void matchSifts();
 	void matchShots();
+	void matchAll();
 	void refreshModel();
 
 	Base::EventHandler2 h_matchShots;
 	Base::EventHandler2 h_matchSifts;
+	Base::EventHandler2 h_matchAll;
 	Base::EventHandler2 h_refreshModel;
 
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_model_xyzrgb;
@@ -87,11 +89,14 @@ protected:
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_xyzsift;
 
 	// Output data streams
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_source_keypoints;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_target_keypoints;
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_source_keypoints_xyzshot;
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_target_keypoints_xyzshot;
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_target_keypoints_xyzsift;
+	Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_source_keypoints_xyzsift;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_source;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_target;
-	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondences;
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondences_sift;
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondences_shot;
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb;
 	pcl::PointCloud<PointXYZSHOT>::Ptr shots;

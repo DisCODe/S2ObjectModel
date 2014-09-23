@@ -1,0 +1,88 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>Michał Laszkowski</name>
+			<link></link>
+		</Author>
+	
+		<Description>
+			<brief>Displays point clouds constituting object model views loaded from a sequence of images.</brief>
+			<full>Displays point clouds constituting object model views loaded from a sequence of images. Each view is composed out of RGB, XYZ and mask images.</full>	
+		</Description>
+	</Reference>
+
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Processing">
+			<Executor name="Processing" period="0.5">
+				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
+				</Component>
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/ramsey_single/</param>
+					<param name="sequence.pattern">.*\_rgb\.png</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>						
+				</Component>
+				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/ramsey_single/</param>
+					<param name="sequence.pattern">.*\_xyz\.yml</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>						
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="4" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/ramsey_single/</param>
+                    <param name="sequence.pattern">.*\_mask\.png</param>
+                    <param name="mode.loop">1</param>
+                    <param name="mode.auto_trigger">0</param>
+				</Component>
+				<Component name="DepthConverter" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="6" bump="0">
+					<param name="MeanK">15</param>
+					<param name="StddevMulThresh">0.10</param>
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:UniformSampling" priority="7" bump="0">
+				</Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="Visualizer" type="S2ObjectModel:KeypointsViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>SequenceRGB.in_trigger</sink>
+			<sink>SequenceXYZ.in_trigger</sink>
+            <sink>SequenceMask.in_trigger</sink>
+		</Source>
+		<Source name="SequenceRGB.out_img">
+            <sink>DepthConverter.in_rgb_stereo</sink>
+		</Source>
+		<Source name="SequenceXYZ.out_img">
+            <sink>DepthConverter.in_depth_xyz</sink>
+		</Source>
+        <Source name="SequenceMask.out_img">
+            <sink>DepthConverter.in_mask</sink>
+        </Source>
+        <Source name="DepthConverter.out_cloud_xyzrgb">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
+			<sink>Keypoints.in_cloud_xyzrgb</sink>
+			<sink>Visualizer.in_cloud</sink>
+		</Source>
+		
+		<Source name="Keypoints.out_cloud_xyzrgb">
+			<sink>Visualizer.in_keypoints</sink>
+		</Source>
+	</DataStreams>
+</Task>
+

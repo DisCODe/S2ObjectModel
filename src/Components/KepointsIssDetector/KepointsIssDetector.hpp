@@ -69,15 +69,18 @@ protected:
 	/// Input data stream containing point cloud from a given view.
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_xyz;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> in_cloud_xyzrgb_normals;
 
 	/// Output data stream containing object model point cloud.
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_xyz;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr> out_cloud_xyzrgb_normals;
 	Base::DataStreamOut<std::vector<int> > out_indices;
 
 	// Handlers
 	Base::EventHandler2 h_compute_xyz;
 	Base::EventHandler2 h_compute_xyzrgb;
+	Base::EventHandler2 h_compute_xyzrgb_normals;
 
 	Base::Property<double> radius_search;
 	Base::Property<double> gamma_21;
@@ -88,6 +91,7 @@ protected:
 
 	void computeXYZ();
 	void computeXYZRGB();
+	void computeXYZRGBNormals();
 };
 
 } //: namespace KepointsIssDetector

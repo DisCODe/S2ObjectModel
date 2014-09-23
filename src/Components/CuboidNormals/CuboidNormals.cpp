@@ -144,11 +144,13 @@ void CuboidNormals::computeNormalsXYZRGB() {
 	  // flip normlas orientation
 	  LOG(LWARNING) << "CuboidNormals: flip normals!";
 
+
 	  for (int i = 0; i < cloud_normals->size(); ++i) {
 		  cloud_normals->points[i].normal_x = - cloud_normals->points[i].normal_x;
 		  cloud_normals->points[i].normal_y = - cloud_normals->points[i].normal_y;
 		  cloud_normals->points[i].normal_z = - cloud_normals->points[i].normal_z;
 	  }
+
 
 	  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_xyz_normals (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
 	  pcl::copyPointCloud(*copy, *cloud_xyz_normals);

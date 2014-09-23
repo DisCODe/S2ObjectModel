@@ -1,0 +1,85 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>joanna</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>Generates S2OM and stores it in PCD file</brief>
+			<full>Loads a sequence of object views and joins them into SIFT and SHOT object model (S2OM)</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="5">
+				
+				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
+				</Component>
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+					<param name="sequence.pattern">.*\_rgb\.png</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>						
+				</Component>
+				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+					<param name="sequence.pattern">.*\_xyz\.yml</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>						
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="4" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+                    <param name="sequence.pattern">.*\_mask\.png</param>
+                    <param name="mode.loop">1</param>
+                    <param name="mode.auto_trigger">0</param>
+				</Component>
+				
+				<Component name="DepthConverter" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+
+				<Component name="Keypoints" type="S2ObjectModel:KepointsHarris3dDetector" priority="7" bump="0">
+				</Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="Visualizer" type="S2ObjectModel:KeypointsViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>SequenceRGB.in_trigger</sink>
+			<sink>SequenceXYZ.in_trigger</sink>
+            <sink>SequenceMask.in_trigger</sink>
+		</Source>
+		<Source name="SequenceRGB.out_img">
+            <sink>DepthConverter.in_rgb_stereo</sink>
+		</Source>
+		<Source name="SequenceXYZ.out_img">
+            <sink>DepthConverter.in_depth_xyz</sink>
+		</Source>
+        <Source name="SequenceMask.out_img">
+            <sink>DepthConverter.in_mask</sink>
+        </Source>
+        <Source name="DepthConverter.out_cloud_xyzrgb">
+			<sink>Keypoints.in_cloud_xyzrgb</sink>
+			<sink>Visualizer.in_cloud</sink>
+		</Source>
+		
+		<Source name="Keypoints.out_cloud_xyzrgb">
+			<sink>Visualizer.in_keypoints</sink>
+		</Source>
+	</DataStreams>
+</Task>
+
+
+
+

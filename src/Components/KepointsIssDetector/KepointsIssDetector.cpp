@@ -37,8 +37,10 @@ void KepointsIssDetector::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_cloud_xyz", &in_cloud_xyz);
 	registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
+	registerStream("in_cloud_xyzrgb_normals", &in_cloud_xyzrgb_normals);
 	registerStream("out_cloud_xyz", &out_cloud_xyz);
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
+	registerStream("out_cloud_xyzrgb_normals", &out_cloud_xyzrgb_normals);
 
 	h_compute_xyz.setup(boost::bind(&KepointsIssDetector::computeXYZ, this));
 	registerHandler("h_compute_xyz", &h_compute_xyz);
@@ -47,6 +49,10 @@ void KepointsIssDetector::prepareInterface() {
 	h_compute_xyzrgb.setup(boost::bind(&KepointsIssDetector::computeXYZRGB, this));
 	registerHandler("h_compute_xyzrgb", &h_compute_xyzrgb);
 	addDependency("h_compute_xyzrgb", &in_cloud_xyzrgb);
+
+	h_compute_xyzrgb_normals.setup(boost::bind(&KepointsIssDetector::computeXYZRGBNormals, this));
+	registerHandler("h_compute_xyzrgb_normals", &h_compute_xyzrgb_normals);
+	addDependency("h_compute_xyzrgb_normals", &in_cloud_xyzrgb_normals);
 }
 
 bool KepointsIssDetector::onInit() {
@@ -146,6 +152,58 @@ void KepointsIssDetector::computeXYZRGB() {
 		CLOG(LNOTICE)<< "KepointsIssDetector: input xyzrgb cloud: " << cloud->size() << " points, keypoints : " << keypoints->size();
 
 		out_cloud_xyzrgb.write(keypoints);
+		out_indices.write(indices);
+	} else {
+		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyzrgb cloud";
+	}
+}
+
+void KepointsIssDetector::computeXYZRGBNormals() {
+	CLOG(LWARNING) << "KepointsIssDetector::computeXYZRGBNormals";
+	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud = in_cloud_xyzrgb_normals.read();
+	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+
+	// Remove NaNs.
+	std::vector<int> indicesNANs;
+	cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*cloud, *copy, indicesNANs);
+
+	if (copy->size() > 0) {
+
+		pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>());
+		pcl::copyPointCloud(*copy, *normals);
+
+		pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGBNormal>());
+
+		pcl::ISSKeypoint3D<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal, pcl::Normal> iss_detector;
+
+		pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr keypoints(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr keypoints_rgb(new pcl::PointCloud<pcl::PointXYZRGB>());
+
+		double iss_salient_radius_ = 6 * model_resolution;
+		double iss_non_max_radius_ = 4 * model_resolution;
+
+		iss_detector.setSearchMethod(tree);
+		iss_detector.setSalientRadius(iss_salient_radius_);
+		iss_detector.setNonMaxRadius(iss_non_max_radius_);
+		iss_detector.setThreshold21(gamma_21);
+		iss_detector.setThreshold32(gamma_32);
+	//	iss_detector.setNormalRadius(normal_radius);
+		//iss_detector.setBorderRadius(iss_border_radius_);
+		iss_detector.setMinNeighbors(min_neighbors);
+		iss_detector.setNumberOfThreads(5);
+		iss_detector.setInputCloud(copy);
+		iss_detector.setRadiusSearch(radius_search);
+		iss_detector.setNormals(normals);
+		iss_detector.compute(*keypoints);
+		std::vector<int> indices = *(iss_detector.getIndices().get());
+
+		pcl::copyPointCloud(*keypoints, *keypoints_rgb);
+
+		CLOG(LNOTICE)<< "KepointsIssDetector: input xyzrgb cloud: " << cloud->size() << " points, keypoints : " << keypoints->size();
+
+		out_cloud_xyzrgb_normals.write(keypoints);
+		out_cloud_xyzrgb.write(keypoints_rgb);
 		out_indices.write(indices);
 	} else {
 		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyzrgb cloud";
