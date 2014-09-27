@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(SingleS20MMatcher SHARED ${files})
+ADD_LIBRARY(SingleSOMJsonReader SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SingleS20MMatcher ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(SingleSOMJsonReader ${DisCODe_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 
-INSTALL_COMPONENT(SingleS20MMatcher)
+INSTALL_COMPONENT(SingleSOMJsonReader)

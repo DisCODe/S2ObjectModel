@@ -1,0 +1,133 @@
+/*!
+ * \file
+ * \brief 
+ * \author Joanna,,,
+ */
+
+#ifndef SINGLES2OMMATCHER_HPP_
+#define SINGLES2OMMATCHER_HPP_
+
+#include "Component_Aux.hpp"
+#include "Component.hpp"
+#include "DataStream.hpp"
+#include "Property.hpp"
+#include "EventHandler2.hpp"
+
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
+#include <Types/PointXYZSHOT.hpp>
+#include <Types/PointXYZSIFT.hpp>
+#include <Types/S2ObjectModel.hpp>
+#include <Types/HomogMatrix.hpp>
+#include <pcl/point_representation.h>
+#include <opencv2/core/core.hpp>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/registration/correspondence_estimation.h>
+
+
+namespace Processors {
+namespace SingleS2OMMatcher {
+
+/*!
+ * \class SingleS2OMMatcher
+ * \brief SingleS2OMMatcher processor class.
+ *
+ * SingleS2OMMatcher processor.
+ */
+class SingleS2OMMatcher: public Base::Component {
+public:
+	/*!
+	 * Constructor.
+	 */
+	SingleS2OMMatcher(const std::string & name = "SingleS2OMMatcher");
+
+	/*!
+	 * Destructor
+	 */
+	virtual ~SingleS2OMMatcher();
+
+	/*!
+	 * Prepare components interface (register streams and handlers).
+	 * At this point, all properties are already initialized and loaded to 
+	 * values set in config file.
+	 */
+	void prepareInterface();
+
+protected:
+
+	/*!
+	 * Connects source to given device.
+	 */
+	bool onInit();
+
+	/*!
+	 * Disconnect source from device, closes streams, etc.
+	 */
+	bool onFinish();
+
+	/*!
+	 * Start component
+	 */
+	bool onStart();
+
+	/*!
+	 * Stop component
+	 */
+	bool onStop();
+
+	Base::DataStreamIn<std::vector<AbstractObject*> > in_models;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
+
+	// source cloud before transformation
+
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_sift;
+	Base::DataStreamOut<Types::HomogMatrix> out_correspondeces_sift_trans;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_sift_source_keypoints;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_sift_target_keypoints;
+
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_shot;
+	Base::DataStreamOut<Types::HomogMatrix> out_correspondeces_shot_trans;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_shot_source_keypoints;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_shot_target_keypoints;
+
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_source_cloud;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_target_cloud;
+
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_common;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_source_keypoints;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_target_keypoints;
+
+	Base::EventHandler2 h_readModels;
+	Base::EventHandler2 h_match;
+
+	void readModels();
+	void match();
+
+
+	std::vector<S2ObjectModel*> models; // size = 1
+
+private:
+	void matchModel(S2ObjectModel model);
+	pcl::CorrespondencesPtr computeSHOTCorrespondences(pcl::PointCloud<PointXYZSHOT>::Ptr source, pcl::PointCloud<PointXYZSHOT>::Ptr target);
+	pcl::CorrespondencesPtr computeSIFTCorrespondences(pcl::PointCloud<PointXYZSIFT>::Ptr source, pcl::PointCloud<PointXYZSIFT>::Ptr target);
+
+
+	// TODO add transformation to compute error
+};
+
+} //: namespace SingleS2OMMatcher
+} //: namespace Processors
+
+/*
+ * Register processor component.
+ */
+REGISTER_COMPONENT("SingleS2OMMatcher", Processors::SingleS2OMMatcher::SingleS2OMMatcher)
+
+#endif /* SINGLES2OMMATCHER_HPP_ */

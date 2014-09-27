@@ -22,7 +22,10 @@
 				</Component>
 
 				<Component name="Keypoints" type="S2ObjectModel:KepointsHarris3dDetector" priority="7" bump="0">
-				</Component>
+						<param name="radius_search">0.1</param>
+						<param name="radius">0.02</param>
+					
+						</Component>
 			</Executor>
 
 			<Executor name="Visualization" period="1">

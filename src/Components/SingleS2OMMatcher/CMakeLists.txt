@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(SusanKeypoints SHARED ${files})
+ADD_LIBRARY(SingleS2OMMatcher SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SusanKeypoints ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
+TARGET_LINK_LIBRARIES(SingleS2OMMatcher ${DisCODe_LIBRARIES} )
 
-INSTALL_COMPONENT(SusanKeypoints)
+INSTALL_COMPONENT(SingleS2OMMatcher)

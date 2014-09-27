@@ -8,9 +8,9 @@ FILE(GLOB files *.cpp)
 
 
 # Create an executable file from sources:
-ADD_LIBRARY(S2ObjectMatcher SHARED ${files})
+ADD_LIBRARY(Normals SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(S2ObjectMatcher ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(Normals ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
-INSTALL_COMPONENT(S2ObjectMatcher)
+INSTALL_COMPONENT(Normals)

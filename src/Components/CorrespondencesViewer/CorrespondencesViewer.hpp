@@ -17,6 +17,11 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include <Types/PointXYZSHOT.hpp>
+#include <Types/PointXYZSIFT.hpp>
+#include <Types/HomogMatrix.hpp>
+
+
 namespace Processors {
 namespace CorrespondencesViewer {
 
@@ -67,19 +72,23 @@ protected:
 	 */
 	bool onStop();
 
+
 	void display();
 	void on_spin();
 
 	Base::EventHandler2 h_display;
 	Base::EventHandler2 h_on_spin;
 
+	pcl::visualization::PCLVisualizer * viewer;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces_shot;
+
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints;
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source;
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target;
-	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondences;
 
-	pcl::visualization::PCLVisualizer * viewer;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud;
+	
 
 };
 

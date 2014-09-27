@@ -34,6 +34,8 @@
 			<Executor name="Exec2" period="0.01">
 				<Component name="Window" type="PCL:CloudViewer" priority="1" bump="0">
 					<param name="coordinate_system">true</param>
+					<param name="normals.scale">0.2</param>
+					<param name="normals.level">50</param>
 				</Component>
 			</Executor>
 		</Subtask>
@@ -52,7 +54,7 @@
 			<sink>Normals.in_cloud_xyzrgb</sink>
 		</Source>
 		<Source name="Normals.out_cloud_xyzrgb_normals">
-			<sink>Window.in_cloud_normals</sink>
+			<sink>Window.in_cloud_xyzrgb_normals</sink>
 		</Source>
 	</DataStreams>
 </Task>

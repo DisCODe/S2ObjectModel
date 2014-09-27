@@ -4,7 +4,7 @@
 		<Subtask name="Main">
 			<Executor name="Processing"  period="1">
 				<Component name="Reader" type="S2ObjectModel:SingleS2OMJsonReader" priority="1" bump="0">
-					<param name="filenames">/home/tkornuta/Objects/2014.07_SSOM/food_box_3R.json</param>
+					<param name="filenames">/home/joanna/test/test/gigabyte.json</param>
 				</Component>		
 			</Executor>
 				

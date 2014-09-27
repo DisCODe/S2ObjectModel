@@ -78,21 +78,26 @@ bool S2OMJSONWriter::onStart() {
 }
 
 void S2OMJSONWriter::on_cloud_xyzrgb() {
+	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzrgb";
 	cloud_xyzrgb = in_cloud_xyzrgb.read();
 }
 void S2OMJSONWriter::on_cloud_xyzsift() {
+	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzsift";
 	cloud_xyzsift = in_cloud_xyzsift.read();
 }
 void S2OMJSONWriter::on_cloud_xyzshot() {
+	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzshot";
 	cloud_xyzshot = in_cloud_xyzshot.read();
 }
 
 void S2OMJSONWriter::Write() {
 	LOG(LTRACE) << "S2OMJSONWriter::Write";
 
+
 	cloud_xyzrgb = in_cloud_xyzrgb.read();
 	cloud_xyzsift = in_cloud_xyzsift.read();
 	cloud_xyzshot = in_cloud_xyzshot.read();
+
 
 	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzrgb size : " << cloud_xyzrgb->size() ;
 	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzsift size : " << cloud_xyzsift->size() ;

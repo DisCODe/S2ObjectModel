@@ -1,13 +1,13 @@
 /*!
  * \file
  * \brief
- * \author jkrasnod
+ * \author Joanna,,,
  */
 
 #include <memory>
 #include <string>
 
-#include "SingleS2OMJsonReader.hpp"
+#include "SingleSOMJsonReader.hpp"
 #include "Common/Logger.hpp"
 
 #include <boost/bind.hpp>
@@ -19,56 +19,54 @@ using boost::property_tree::read_json;
 using boost::property_tree::write_json;
 
 namespace Processors {
-namespace SingleS2OMJsonReader {
+namespace SingleSOMJsonReader {
 
-SingleS2OMJsonReader::SingleS2OMJsonReader(const std::string & name) :
-		Base::Component(name), filenames("filenames", string("./")) {
-	registerProperty(filenames);
+SingleSOMJsonReader::SingleSOMJsonReader(const std::string & name) :
+				Base::Component(name), filenames("filenames", string("./")) {
+			registerProperty(filenames);
 
 }
 
-SingleS2OMJsonReader::~SingleS2OMJsonReader() {
+SingleSOMJsonReader::~SingleSOMJsonReader() {
 }
 
-void SingleS2OMJsonReader::prepareInterface() {
+void SingleSOMJsonReader::prepareInterface() {
+	// Register data streams, events and event handlers HERE!
 	// Register data streams, events and event handlers HERE!
 	registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
 	registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
-	registerStream("out_cloud_xyzshot", &out_cloud_xyzshot);
 	registerStream("out_name", &out_name);
 	// Register handlers
-	h_loadModel.setup(boost::bind(&SingleS2OMJsonReader::loadModel, this));
+	h_loadModel.setup(boost::bind(&SingleSOMJsonReader::loadModel, this));
 	registerHandler("loadModel", &h_loadModel);
-	addDependency("loadModel", NULL);
-
+	//addDependency("loadModel", NULL);
 }
 
-bool SingleS2OMJsonReader::onInit() {
+bool SingleSOMJsonReader::onInit() {
 
 	return true;
 }
 
-bool SingleS2OMJsonReader::onFinish() {
+bool SingleSOMJsonReader::onFinish() {
 	return true;
 }
 
-bool SingleS2OMJsonReader::onStop() {
+bool SingleSOMJsonReader::onStop() {
 	return true;
 }
 
-bool SingleS2OMJsonReader::onStart() {
+bool SingleSOMJsonReader::onStart() {
 	return true;
 }
 
-void SingleS2OMJsonReader::loadModel() {
-	LOG(LWARNING) << "SingleS2OMJsonReader::loadModel()";
+void SingleSOMJsonReader::loadModel() {
+	LOG(LTRACE) << "SingleSOMJsonReader::loadModel()";
 
 	std::string s = filenames;
 
 	// Temporary variables - names.
 	std::string name_cloud_xyzrgb;
 	std::string name_cloud_xyzsift;
-	std::string name_cloud_xyzshot;
 
 	// Iterate through JSON files.
 
@@ -82,17 +80,15 @@ void SingleS2OMJsonReader::loadModel() {
 				"mean_viewpoint_features_number");
 		name_cloud_xyzrgb = ptree_file.get < std::string > ("cloud_xyzrgb");
 		name_cloud_xyzsift = ptree_file.get < std::string > ("cloud_xyzsift");
-		name_cloud_xyzshot = ptree_file.get < std::string > ("cloud_xyzshot");
 	} //: try
 	catch (std::exception const& e) {
-		LOG(LERROR) << "SingleS2OMJsonReader: file " << s
+		LOG(LERROR) << "SingleSOMJsonReader: file " << s
 				<< " not found or invalid\n";
 		return;
 	} //: catch
 
 	LOG(LDEBUG) << "name_cloud_xyzrgb:" << name_cloud_xyzrgb;
 	LOG(LDEBUG) << "name_cloud_xyzsift:" << name_cloud_xyzsift;
-	LOG(LDEBUG) << "name_cloud_xyzshot:" << name_cloud_xyzshot;
 
 	// Read XYZRGB cloud.
 	cloud_xyzrgb = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(
@@ -100,7 +96,7 @@ void SingleS2OMJsonReader::loadModel() {
 	// Try to load the file.
 	if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(name_cloud_xyzrgb, *cloud_xyzrgb)
 			== -1) {
-		LOG(LERROR) << "SingleS2OMJsonReader: file " << name_cloud_xyzrgb
+		LOG(LERROR) << "SingleSOMJsonReader: file " << name_cloud_xyzrgb
 				<< " not found\n";
 		return;
 	} //: if
@@ -111,29 +107,19 @@ void SingleS2OMJsonReader::loadModel() {
 	// Try to load the file.
 	if (pcl::io::loadPCDFile<PointXYZSIFT>(name_cloud_xyzsift, *cloud_xyzsift)
 			== -1) {
-		LOG(LERROR) << "SingleS2OMJsonReader: file " << name_cloud_xyzsift
+		LOG(LERROR) << "SingleSOMJsonReader: file " << name_cloud_xyzsift
 				<< " not found\n";
 		return;
 	} //: if
 
-	// Read SHOT cloud.
-	cloud_xyzshot = pcl::PointCloud<PointXYZSHOT>::Ptr(
-			new pcl::PointCloud<PointXYZSHOT>());
-	// Try to load the file.
-	if (pcl::io::loadPCDFile<PointXYZSHOT>(name_cloud_xyzshot, *cloud_xyzshot)
-			== -1) {
-		LOG(LERROR) << "SingleS2OMJsonReader: file " << name_cloud_xyzshot
-				<< " not found\n";
-		return;
-	} //: if
 
 	out_cloud_xyzrgb.write(cloud_xyzrgb);
 	out_cloud_xyzsift.write(cloud_xyzsift);
-	out_cloud_xyzshot.write(cloud_xyzshot);
 	out_name.write(model_name);
 
 
 }
 
-} //: namespace SingleS2OMJsonReader
+
+} //: namespace SingleSOMJsonReader
 } //: namespace Processors

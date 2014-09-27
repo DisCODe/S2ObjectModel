@@ -24,7 +24,7 @@
 					<param name="LeafSize.y">0.0005</param>
 					<param name="LeafSize.z">0.0005</param>
 				</Component>
-				<Component name="Normals" type="S2ObjectModel:CuboidNormals" priority="3" bump="2">
+				<Component name="Normals" type="S2ObjectModel:Normals" priority="3" bump="2">
 					<param name="radius">0.2</param>					
 				</Component>
 			</Executor>
@@ -42,18 +42,18 @@
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		
+	
 		
 		<Source name="Source.out_cloud_xyzrgb">
-			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+			<sink>Normals.in_cloud_xyzrgb</sink>
 			<sink>Window.in_cloud_xyzrgb</sink>
 		</Source>
-		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+	<!--	<Source name="VoxelGridRGB.out_cloud_xyzrgb">
 			<sink>Normals.in_cloud_xyzrgb</sink>
-		</Source>
+		</Source>-->
 		<Source name="Normals.out_cloud_xyzrgb_normals">
-			<sink>Window.in_cloud_normals</sink>
-		</Source>
+			<sink>Window.in_cloud_xyzrgb_normals</sink>
+		</Source> 
 	</DataStreams>
 </Task>
 

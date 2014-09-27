@@ -42,6 +42,7 @@ typedef NormalCloud::Ptr NormalCloudPtr;
 
 typedef pcl::PointCloud<PointXYZSHOT> XYZSHOTCloud;
 typedef XYZSHOTCloud::Ptr XYZSHOTCloudPtr;
+typedef pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr XYZRGBNormalCloudPtr;
 
 
 /*!
@@ -96,8 +97,10 @@ protected:
 
 // Input data streams
 
-		Base::DataStreamIn<PointCloudPtr> in_points;
+		Base::DataStreamIn<pcl::PointCloud<PointT>::Ptr> in_points;
+		Base::DataStreamIn<XYZRGBNormalCloudPtr> in_xyzrgb_normal_points;
 		Base::DataStreamIn<PointCloudPtr> in_keypoints;
+
 
 // Output data streams
 
@@ -107,6 +110,7 @@ protected:
 
 	// Handlers
 	Base::EventHandler2 h_process;
+	Base::EventHandler2 h_process_with_normals;
 
 	// properties
 	Base::Property<float> normal_radius;
@@ -114,6 +118,7 @@ protected:
 
 	// Handlers
 	void process();
+	void processWithNormals();
 
 
 	SHOTCloudPtr getSHOT(PointCloudPtr cloud, NormalCloudPtr normals, PointCloudPtr keypoints);
