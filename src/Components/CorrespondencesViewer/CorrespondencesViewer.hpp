@@ -81,7 +81,7 @@ protected:
 
 	pcl::visualization::PCLVisualizer * viewer;
 
-	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces_shot;
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces;
 
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints;

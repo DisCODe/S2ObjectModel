@@ -25,7 +25,7 @@ CorrespondencesViewer::~CorrespondencesViewer() {
 
 void CorrespondencesViewer::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
-	registerStream("in_correspondeces_shot", &in_correspondeces_shot);
+	registerStream("in_correspondeces", &in_correspondeces);
 	registerStream("in_source_keypoints", &in_source_keypoints);
 	registerStream("in_target_keypoints", &in_target_keypoints);
 	registerStream("in_source_cloud", &in_source_cloud);
@@ -34,7 +34,7 @@ void CorrespondencesViewer::prepareInterface() {
 	// Register handlers
 	h_display.setup(boost::bind(&CorrespondencesViewer::display, this));
 	registerHandler("h_display", &h_display);
-	addDependency("h_display", &in_correspondeces_shot);
+	addDependency("h_display", &in_correspondeces);
 	addDependency("h_display", &in_source_keypoints);
 	addDependency("h_display", &in_target_keypoints);
 	addDependency("h_display", &in_source_cloud);
@@ -70,7 +70,7 @@ void CorrespondencesViewer::display() {
 	LOG(LWARNING) << "CorrespondencesViewer::display";
 
 
-	pcl::CorrespondencesPtr corrs = in_correspondeces_shot.read();
+	pcl::CorrespondencesPtr corrs = in_correspondeces.read();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr source_keypoints_temp = in_source_keypoints.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr source_keypoints( new pcl::PointCloud<pcl::PointXYZ>(*source_keypoints_temp));
