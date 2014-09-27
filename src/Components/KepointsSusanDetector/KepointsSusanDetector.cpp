@@ -59,6 +59,8 @@ void KepointsSusanDetector::computeXYZRGB() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
+	LOG(LWARNING) << "KepointsSusanDetector::computeXYZRGB";
+
 	// Remove NaNs.
 	std::vector<int> indicesNANs;
 	cloud->is_dense = false;
@@ -80,6 +82,8 @@ void KepointsSusanDetector::computeXYZRGB() {
 		detector->setRadiusSearch(radius_search);
 		detector->compute(*keypoints);
 		std::vector<int> indices = *(detector->getIndices().get());
+
+		CLOG(LNOTICE)<< "KepointsSusanDetector: input xyzrgb cloud: " << cloud->size() << " points, keypoints : " << keypoints->size();
 
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
