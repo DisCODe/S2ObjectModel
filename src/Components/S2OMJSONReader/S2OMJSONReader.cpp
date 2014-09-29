@@ -37,8 +37,7 @@ void S2OMJSONReader::prepareInterface() {
 	// Register handlers
 	h_loadModels.setup(boost::bind(&S2OMJSONReader::loadModels, this));
 	registerHandler("loadModels", &h_loadModels);
-	addDependency("loadModels", NULL);
-
+//	addDependency("loadModels", NULL);
 }
 
 bool S2OMJSONReader::onInit() {
@@ -59,7 +58,7 @@ bool S2OMJSONReader::onStart() {
 }
 
 void S2OMJSONReader::loadModels() {
-	LOG(LTRACE) << "S2OMJSONReader::loadModels()";
+	CLOG(LWARNING) << "S2OMJSONReader::loadModels";
 
 	// List of the returned S2OMs.
 	std::vector<AbstractObject*> models;
@@ -92,9 +91,9 @@ void S2OMJSONReader::loadModels() {
 			continue;	
 		}//: catch
 
-		LOG(LDEBUG) << "name_cloud_xyzrgb:" << name_cloud_xyzrgb;
-		LOG(LDEBUG) << "name_cloud_xyzsift:" << name_cloud_xyzsift;
-		LOG(LDEBUG) << "name_cloud_xyzshot:" << name_cloud_xyzshot;
+		CLOG(LDEBUG) << "name_cloud_xyzrgb:" << name_cloud_xyzrgb;
+		CLOG(LDEBUG) << "name_cloud_xyzsift:" << name_cloud_xyzsift;
+		CLOG(LDEBUG) << "name_cloud_xyzshot:" << name_cloud_xyzshot;
 		
 
 		// Read XYZRGB cloud.
@@ -102,7 +101,7 @@ void S2OMJSONReader::loadModels() {
 		// Try to load the file.
 		if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (name_cloud_xyzrgb, *cloud_xyzrgb) == -1) 
 		{
-			LOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzrgb <<" not found\n";
+			CLOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzrgb <<" not found\n";
 			continue;
 		}//: if
 
@@ -111,7 +110,7 @@ void S2OMJSONReader::loadModels() {
 		// Try to load the file.
 		if (pcl::io::loadPCDFile<PointXYZSIFT> (name_cloud_xyzsift, *cloud_xyzsift) == -1) 
 		{
-			LOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzsift <<" not found\n";
+			CLOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzsift <<" not found\n";
 			continue;
 		}//: if
 		
@@ -120,7 +119,7 @@ void S2OMJSONReader::loadModels() {
 		// Try to load the file.
 		if (pcl::io::loadPCDFile<PointXYZSHOT> (name_cloud_xyzshot, *cloud_xyzshot) == -1) 
 		{
-			LOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzshot <<" not found\n";
+			CLOG(LERROR) << "S2OMJSONReader: file "<< name_cloud_xyzshot <<" not found\n";
 			continue;
 		}//: if
 
@@ -132,6 +131,7 @@ void S2OMJSONReader::loadModels() {
 	}//: for
 
 	// Push models to output datastream.
+	CLOG(LWARNING) << "S2OMJSONReader::out_models.write";
 	out_models.write(models);
 }
 

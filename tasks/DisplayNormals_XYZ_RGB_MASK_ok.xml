@@ -1,22 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Task>
 	<!-- reference task information -->
 	<Reference>
 		<Author>
-			<name>joanna</name>
-			<link></link>
+			<name>jkrasnod</name>
 		</Author>
 		
 		<Description>
-			<brief>Generates S2OM and stores it in PCD file</brief>
-			<full>Loads a sequence of object views and joins them into SIFT and SHOT object model (S2OM)</full>	
+			<brief>Simple PCL viewer</brief>
+			<full>Simple PCL viewer, using PCD as source of depth data.</full>	
 		</Description>
 	</Reference>
 	
 	<!-- task definition -->
 	<Subtasks>
-		<Subtask name="Main">
-			<Executor name="Processing"  period="5">
-				
+		<Subtask name="Processing">
+			<Executor name="Exec1"  period="0.1">
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
 				</Component>
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
@@ -48,29 +47,22 @@
 				<Component name="Normals" type="S2ObjectModel:Normals" priority="3" bump="2">
 					<param name="radius">0.02</param>					
 				</Component>
-				
-				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="7" bump="0">
-					<param name="radius_search">0.001</param>
-					<param name="model_resolution">0.001</param>
-					<param name="gamma_21">0.7</param>
-					<param name="gamma_32">0.7</param>
-					<param name="min_neighbors">10</param>
-					<param name="normal_radius">0.05</param>
-
+			</Executor>
+		</Subtask>
+		
+		<Subtask name="Visualisation">
+			<Executor name="Exec2" period="0.01">
+				<Component name="Window" type="PCL:CloudViewer" priority="1" bump="0">
+					<param name="coordinate_system">true</param>
 				</Component>
 			</Executor>
-
-			<Executor name="Visualization" period="1">
-				<Component name="Visualizer" type="S2ObjectModel:KeypointsViewer" priority="1" bump="0">
-				</Component>
-			</Executor>
-		</Subtask>	
+		</Subtask>
 	
 	</Subtasks>
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		
+	
 		<Source name="NextImageTrigger.out_trigger">
 			<sink>SequenceRGB.in_trigger</sink>
 			<sink>SequenceXYZ.in_trigger</sink>
@@ -82,27 +74,18 @@
 		<Source name="SequenceXYZ.out_img">
             <sink>DepthConverter.in_depth_xyz</sink>
 		</Source>
-       <!-- <Source name="SequenceMask.out_img">
+   <!--     <Source name="SequenceMask.out_img">
             <sink>DepthConverter.in_mask</sink>
-        </Source> -->
-       
-
+        </Source>  -->
         <Source name="DepthConverter.out_cloud_xyzrgb">
 			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
-		</Source>
-
+        </Source>  
         <Source name="VoxelGridRGB.out_cloud_xyzrgb">
 			<sink>Normals.in_cloud_xyzrgb</sink>
-			<sink>Visualizer.in_cloud</sink>
 		</Source>
-		
 		<Source name="Normals.out_cloud_xyzrgb_normals">
-			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
-		</Source>
-
-		<Source name="Keypoints.out_cloud_xyzrgb">
-			<sink>Visualizer.in_keypoints</sink>
-		</Source>
+			<sink>Window.in_cloud_xyzrgb_normals</sink>
+		</Source> 
 	</DataStreams>
 </Task>
 

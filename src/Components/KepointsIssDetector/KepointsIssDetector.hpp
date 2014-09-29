@@ -82,7 +82,6 @@ protected:
 	Base::EventHandler2 h_compute_xyzrgb;
 	Base::EventHandler2 h_compute_xyzrgb_normals;
 
-	Base::Property<double> radius_search;
 	Base::Property<double> gamma_21;
 	Base::Property<double> gamma_32;
 	Base::Property<int> min_neighbors;

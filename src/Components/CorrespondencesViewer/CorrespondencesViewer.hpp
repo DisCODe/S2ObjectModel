@@ -89,6 +89,10 @@ protected:
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud;
 	
+	Base::Property<bool> display_source_cloud;
+	Base::Property<bool> display_target_cloud;
+	Base::Property<bool> display_target_keypoints;
+	Base::Property<bool> display_source_keypoints;
 
 };
 

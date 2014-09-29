@@ -111,13 +111,12 @@ SHOTCloudPtr SHOTConverter::getSHOT(PointCloudPtr cloud, NormalCloudPtr normals,
 
 void SHOTConverter::process() {
 
+	CLOG(LWARNING)<< "SHOTConverter::process";
+
 	std::clock_t t1, t2, t3;
 
 	PointCloudPtr cloud = in_points.read();
-//	PointCloudPtr cloud(new PointCloud(*temp));
-
 	PointCloudPtr keypoints = in_keypoints.read();
-//	PointCloudPtr keypoints(new PointCloud(*temp2));
 
 	std::vector<int> indices;
 	cloud->is_dense = false;

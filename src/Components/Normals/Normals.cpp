@@ -132,7 +132,7 @@ void Normals::computeNormalsXYZRGB() {
 	  normalEstimation.setRadiusSearch (radius);
 //	  normalEstimation.setViewPoint(centroid[0], centroid[1], centroid[2]);
 
-	  LOG(LDEBUG) << "Normals: compute normals!";
+	  LOG(LWARNING) << "Normals: compute normals!";
 	  normalEstimation.compute (*cloud_normals);
 
 
@@ -141,9 +141,10 @@ void Normals::computeNormalsXYZRGB() {
 	  pcl::copyPointCloud(*copy, *cloud_xyz_normals);
 	  pcl::copyPointCloud(*cloud_normals, *cloud_xyz_normals);
 
+	  LOG(LWARNING) << "Normals: out_cloud_xyzrgb_normals.write " << cloud_normals->size();
 	  out_cloud_xyzrgb_normals.write(cloud_xyz_normals);
 
-	  LOG(LWARNING) << "Normals: sending normals! " << cloud_normals->size();
+	  LOG(LWARNING) << "Normals: out_cloud_normals.write " << cloud_normals->size();
 	  out_cloud_normals.write(cloud_normals);
 }
 

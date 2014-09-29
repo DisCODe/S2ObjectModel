@@ -11,6 +11,6 @@ FILE(GLOB files *.cpp)
 ADD_LIBRARY(SingleS2OMMatcher SHARED ${files})
 
 # Link external libraries
-TARGET_LINK_LIBRARIES(SingleS2OMMatcher ${DisCODe_LIBRARIES} )
+TARGET_LINK_LIBRARIES(SingleS2OMMatcher ${DisCODe_LIBRARIES} ${PCL_LIBRARIES})
 
 INSTALL_COMPONENT(SingleS2OMMatcher)

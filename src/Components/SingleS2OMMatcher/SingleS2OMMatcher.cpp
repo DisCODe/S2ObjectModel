@@ -42,6 +42,7 @@
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/transforms.h>
 
 namespace Processors {
 namespace SingleS2OMMatcher {
@@ -85,8 +86,13 @@ public:
 };
 
 SingleS2OMMatcher::SingleS2OMMatcher(const std::string & name) :
-		Base::Component(name) {
+		Base::Component(name),  RANSAC_MaximumIterations("ransac.max_iterations", 100),
+		RANSAC_InlierThreshold("ransac.inlier_threshold",0.5),
+		SHOT_maxDistance("shot.max_disance", 2) {
 
+	registerProperty(RANSAC_MaximumIterations);
+	registerProperty(RANSAC_InlierThreshold);
+	registerProperty(SHOT_maxDistance);
 }
 
 SingleS2OMMatcher::~SingleS2OMMatcher() {
@@ -160,64 +166,82 @@ void SingleS2OMMatcher::readModels() {
 		else
 		CLOG(LWARNING) << "Cannot read model"<< abstractObjects[i]->name;
 	}
+	CLOG(LWARNING)<< "SingleS2OMMatcher::models.size " << models.size();
 
 }
 
 void SingleS2OMMatcher::match() {
-	CLOG(LWARNING)<< "SingleS2OMMatcher::match";
-	for (int i = 0; models.size(); ++i) {
-		matchModel(*models[i]);
+	CLOG(LWARNING)<< "SingleS2OMMatcher::match, models :" << models.size();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
+	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
+	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot = in_cloud_xyzshot.read();
+	for (int i = 0; i < models.size(); ++i) {
+		matchModel(*models[i], cloud_xyzrgb, cloud_xyzsift, cloud_xyzshot);
 	}
 	return;
 }
 
-void SingleS2OMMatcher::matchModel(S2ObjectModel model) {
+void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb,
+		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift, pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot) {
 	CLOG(LWARNING)<< "SingleS2OMMatcher::matchModel " << model.name;
-
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
-	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
-	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot = in_cloud_xyzshot.read();
 
 	Types::HomogMatrix shotTransform;
 	Types::HomogMatrix siftTransform;
-	pcl::CorrespondencesPtr bestShotCorrs(new pcl::Correspondences());
+	pcl::Correspondences temp;
+
 	pcl::CorrespondencesPtr bestSiftCorrs(new pcl::Correspondences());
 
-
 	// compute and reject shot correspondences
-	pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(cloud_xyzshot, model.cloud_xyzshot);
+	//pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(cloud_xyzshot, model.cloud_xyzshot);
+	pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(model.cloud_xyzshot, cloud_xyzshot);
+	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
+
 	pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSHOT> shotRANSAC;
-	shotRANSAC.setInputSource(cloud_xyzshot);
-	shotRANSAC.setInputTarget(model.cloud_xyzshot);
-	shotRANSAC.setInlierThreshold(0.01); // TODO as property
-	shotRANSAC.setMaximumIterations(10);// TODO as property
+	shotRANSAC.setInputSource(model.cloud_xyzshot);
+	shotRANSAC.setInputTarget(cloud_xyzshot);
+	shotRANSAC.setInlierThreshold(RANSAC_InlierThreshold);
+	shotRANSAC.setMaximumIterations(RANSAC_MaximumIterations);
 	shotRANSAC.setInputCorrespondences(shotCorrs);
-	shotRANSAC.getCorrespondences(*bestShotCorrs);
+	shotRANSAC.getCorrespondences(temp);
 	shotTransform.setElements(shotRANSAC.getBestTransformation());
 
+	pcl::CorrespondencesPtr bestShotCorrs(new pcl::Correspondences(temp));
+	CLOG(LWARNING)<< "SingleS2OMMatcher::bestShotCorrs " << bestShotCorrs->size();
+
 	// compute and reject sift correspondences
-	pcl::CorrespondencesPtr siftCorrs = computeSIFTCorrespondences(cloud_xyzsift, model.cloud_xyzsift);
+	pcl::CorrespondencesPtr siftCorrs = computeSIFTCorrespondences(model.cloud_xyzsift, cloud_xyzsift);
+
+	CLOG(LWARNING)<< "SingleS2OMMatcher::siftCorrs " << siftCorrs->size();
 	pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZSIFT> siftRANSAC;
-	siftRANSAC.setInputSource(cloud_xyzsift);
-	siftRANSAC.setInputTarget(model.cloud_xyzsift);
-	siftRANSAC.setInlierThreshold(0.01);// TODO as property
-	siftRANSAC.setMaximumIterations(10);// TODO as property
+	siftRANSAC.setInputSource(model.cloud_xyzsift);
+	siftRANSAC.setInputTarget(cloud_xyzsift);
+	siftRANSAC.setInlierThreshold(RANSAC_InlierThreshold);
+	siftRANSAC.setMaximumIterations(RANSAC_MaximumIterations);
 	siftRANSAC.setInputCorrespondences(siftCorrs);
 	siftRANSAC.getCorrespondences(*bestSiftCorrs);
 	siftTransform.setElements(siftRANSAC.getBestTransformation());
 
+
+	bestSiftCorrs = siftCorrs;
+	CLOG(LWARNING)<< "SingleS2OMMatcher::bestSiftCorrs " << bestSiftCorrs->size();
+
 	// prepare xyz clouds
 	pcl::PointCloud<pcl::PointXYZ>::Ptr shot_source_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*cloud_xyzshot, *shot_source_keypoints);
+	pcl::copyPointCloud(*model.cloud_xyzshot, *shot_source_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr shot_target_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*model.cloud_xyzshot, *shot_target_keypoints);
+	pcl::copyPointCloud(*cloud_xyzshot, *shot_target_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr sift_source_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*cloud_xyzsift, *sift_source_keypoints);
+	pcl::copyPointCloud(*model.cloud_xyzsift, *sift_source_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr sift_target_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*model.cloud_xyzsift, *sift_target_keypoints);
+	pcl::copyPointCloud(*cloud_xyzsift, *sift_target_keypoints);
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_rgb_cloud_transformed(new pcl::PointCloud<pcl::PointXYZRGB>());
+	pcl::copyPointCloud(*model.cloud_xyzrgb, *source_rgb_cloud_transformed);
+
+	CLOG(LWARNING)<< "SingleS2OMMatcher::prepare common...";
 
 	// prepare common shot + sift source and target clouds
 	pcl::PointCloud<pcl::PointXYZ>::Ptr common_source_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
@@ -235,9 +259,19 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model) {
 		commonCorrs->push_back(pcl::Correspondence(bestShotCorrs->at(i)));
 	}
 	for (int i = 0; i < bestSiftCorrs->size(); ++i) {
-		pcl::Correspondence old = bestShotCorrs->at(i);
+		pcl::Correspondence old = bestSiftCorrs->at(i);
 		commonCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance));
 	}
+
+	CLOG(LWARNING) << "check shot corrs";
+	checkCorrespondences(*bestShotCorrs, *shot_source_keypoints, *shot_target_keypoints);
+	CLOG(LWARNING) << "check sift corrs";
+	checkCorrespondences(*bestSiftCorrs, *sift_source_keypoints, *sift_target_keypoints);
+	CLOG(LWARNING) << "check common corrs";
+	checkCorrespondences(*commonCorrs, *common_source_keypoints, *common_target_keypoints);
+
+	pcl::transformPointCloud (*shot_source_keypoints, *shot_source_keypoints, shotTransform.getElements());
+	pcl::transformPointCloud (*source_rgb_cloud_transformed, *source_rgb_cloud_transformed, shotTransform.getElements());
 
 	out_correspondeces_sift.write(bestSiftCorrs);
 	out_correspondeces_sift_trans.write(siftTransform);
@@ -249,12 +283,26 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model) {
 	out_correspondeces_shot_source_keypoints.write(shot_source_keypoints);
 	out_correspondeces_shot_target_keypoints.write(shot_target_keypoints);
 
-	out_correspondeces_source_cloud.write(cloud_xyzrgb);
-	out_correspondeces_target_cloud.write(model.cloud_xyzrgb);
+	out_correspondeces_source_cloud.write(source_rgb_cloud_transformed);
+	out_correspondeces_target_cloud.write(cloud_xyzrgb);
 
 	out_correspondeces_common.write(commonCorrs);
 	out_correspondeces_common_source_keypoints.write(common_source_keypoints);
 	out_correspondeces_common_target_keypoints.write(common_target_keypoints);
+}
+
+void SingleS2OMMatcher::checkCorrespondences(pcl::Correspondences corrs, pcl::PointCloud<pcl::PointXYZ> source, pcl::PointCloud<pcl::PointXYZ> target) {
+	int source_size = source.size();
+	int target_size = target.size();
+	for (int i = 0; i < corrs.size(); ++i) {
+		pcl::Correspondence corr = corrs[i];
+		if (corr.index_query >= source_size) {
+			CLOG(LERROR) << "source size : " << source_size << ", index: " << corr.index_query;
+		}
+		if (corr.index_match >= target_size) {
+			CLOG(LERROR) << "target size : " << target_size << ", index: " << corr.index_match;
+		}
+	}
 }
 
 pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::PointCloud<PointXYZSHOT>::Ptr source,
@@ -277,8 +325,8 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
 			continue;
 		}
 		int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-		if (found_neighs == 1) {
-			pcl::Correspondence correspondence(neigh_indices[0], static_cast<int>(j), neigh_sqr_dists[0]);
+		if (found_neighs == 1 && neigh_sqr_dists[0] < SHOT_maxDistance  ) { // && neigh_sqr_dists[0] < 1.0f) { // TODO as property
+			pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
 			correspondences->push_back(correspondence);
 		}
 	}
@@ -307,7 +355,7 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
 		}
 		int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
 		if (found_neighs == 1) {
-			pcl::Correspondence correspondence(neigh_indices[0], static_cast<int>(j), neigh_sqr_dists[0]);
+			pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
 			correspondences->push_back(correspondence);
 		}
 	}

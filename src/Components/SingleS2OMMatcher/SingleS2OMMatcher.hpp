@@ -107,14 +107,21 @@ protected:
 	Base::EventHandler2 h_readModels;
 	Base::EventHandler2 h_match;
 
+	Base::Property<int> RANSAC_MaximumIterations;
+	Base::Property<double> RANSAC_InlierThreshold;
+	Base::Property<double> SHOT_maxDistance;
+
 	void readModels();
 	void match();
+	void checkCorrespondences(pcl::Correspondences corrs, pcl::PointCloud<pcl::PointXYZ> source, pcl::PointCloud<pcl::PointXYZ> target);
 
 
 	std::vector<S2ObjectModel*> models; // size = 1
 
 private:
-	void matchModel(S2ObjectModel model);
+	void matchModel(S2ObjectModel model, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb,
+			pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift,
+			pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot);
 	pcl::CorrespondencesPtr computeSHOTCorrespondences(pcl::PointCloud<PointXYZSHOT>::Ptr source, pcl::PointCloud<PointXYZSHOT>::Ptr target);
 	pcl::CorrespondencesPtr computeSIFTCorrespondences(pcl::PointCloud<PointXYZSIFT>::Ptr source, pcl::PointCloud<PointXYZSIFT>::Ptr target);
 

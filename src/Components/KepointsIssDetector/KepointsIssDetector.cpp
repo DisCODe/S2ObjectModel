@@ -18,16 +18,14 @@ namespace Processors {
 namespace KepointsIssDetector {
 
 KepointsIssDetector::KepointsIssDetector(const std::string & name) :
-		Base::Component(name), radius_search("radius_search", 0.0005), gamma_21("gamma_21", 0.8), gamma_32("gamma_32",
+		Base::Component(name),  gamma_21("gamma_21", 0.8), gamma_32("gamma_32",
 				0.8), model_resolution("model_resolution", 0.001), min_neighbors("min_neighbors", 4), normal_radius(
-				"normal_radius", 0.001) {
-	registerProperty(radius_search);
+				"normal_radius", 0.001){
 	registerProperty(gamma_21);
 	registerProperty(gamma_32);
 	registerProperty(model_resolution);
 	registerProperty(min_neighbors);
 	registerProperty(normal_radius);
-
 }
 
 KepointsIssDetector::~KepointsIssDetector() {
@@ -102,7 +100,6 @@ void KepointsIssDetector::computeXYZ() {
 		iss_detector.setMinNeighbors(min_neighbors);
 		iss_detector.setNumberOfThreads(5);
 		iss_detector.setInputCloud(copy);
-		iss_detector.setRadiusSearch(radius_search);
 		iss_detector.compute(*keypoints);
 		std::vector<int> indices = *(iss_detector.getIndices().get());
 
@@ -146,12 +143,11 @@ void KepointsIssDetector::computeXYZRGB() {
 		iss_detector.setMinNeighbors(min_neighbors);
 		iss_detector.setNumberOfThreads(5);
 		iss_detector.setInputCloud(copy);
-		iss_detector.setRadiusSearch(radius_search);
 		iss_detector.compute(*keypoints);
 		std::vector<int> indices = *(iss_detector.getIndices().get());
 
-		CLOG(LNOTICE)<< "KepointsIssDetector: input xyzrgb cloud: " << cloud->size() << " points, keypoints : " << keypoints->size();
-
+		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints->size();
+		CLOG(LWARNING) << "KepointsIssDetector::out_indices.write" << indices.size();
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
 	} else {
@@ -195,7 +191,6 @@ void KepointsIssDetector::computeXYZRGBNormals() {
 		iss_detector.setMinNeighbors(min_neighbors);
 		iss_detector.setNumberOfThreads(5);
 		iss_detector.setInputCloud(copy);
-		iss_detector.setRadiusSearch(radius_search);
 		iss_detector.setNormals(normals);
 		iss_detector.compute(*keypoints);
 		std::vector<int> indices = *(iss_detector.getIndices().get());
@@ -203,8 +198,10 @@ void KepointsIssDetector::computeXYZRGBNormals() {
 		pcl::copyPointCloud(*keypoints, *keypoints_rgb);
 		pcl::copyPointCloud(*keypoints, *keypoints_xyz);
 
-		CLOG(LNOTICE)<< "KepointsIssDetector: input xyzrgb cloud: " << cloud->size() << " points, keypoints : " << keypoints->size();
-
+		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb_normals.write" << keypoints->size();
+		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints_rgb->size();
+		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyz.write" << keypoints_xyz->size();
+		CLOG(LWARNING) << "KepointsIssDetector::out_indices.write" << indices.size();
 		out_cloud_xyzrgb_normals.write(keypoints);
 		out_cloud_xyzrgb.write(keypoints_rgb);
 		out_cloud_xyz.write(keypoints_xyz);

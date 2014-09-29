@@ -15,10 +15,10 @@
 	<!-- task definition -->
 	<Subtasks>
 		<Subtask name="Processing">
-			<Executor name="Exec1"  period="1">
+			<Executor name="Exec1"  period="0.1">
 				
 				<Component name="Reader" type="S2ObjectModel:S2OMJSONReader" priority="1" bump="0">
-					<param name="filenames">/home/joanna/test/test/gigabyte.json</param>
+					<param name="filenames">/home/joanna/test/test/remsey.json</param>
 				</Component>	
 				
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="2" bump="0">
@@ -28,18 +28,21 @@
 					<param name="sequence.pattern">.*\_rgb\.png</param>
 					<param name="mode.loop">1</param>
 					<param name="mode.auto_trigger">0</param>						
+					<param name="read_on_init">0</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="4" bump="0">
 					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
 					<param name="mode.loop">1</param>
-					<param name="mode.auto_trigger">0</param>						
+					<param name="mode.auto_trigger">0</param>		
+					<param name="read_on_init">0</param>				
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="5" bump="0">
 					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
                     <param name="sequence.pattern">.*\_mask\.png</param>
                     <param name="mode.loop">1</param>
                     <param name="mode.auto_trigger">0</param>
+                    <param name="read_on_init">0</param>
 				</Component>
                 
 				<Component name="SIFT" type="CvBasic:CvSIFT" priority="6" bump="0">
@@ -50,18 +53,30 @@
 				
 				<Component name="FeatureCloudConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="8" bump="0">
 				</Component>
-
-				<Component name="Normals" type="S2ObjectModel:Normals" priority="9" bump="0">
-					<param name="radius">0.005</param>					
+				
+				
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="9" bump="0">
+					<param name="LeafSize.x">0.002</param>
+					<param name="LeafSize.y">0.002</param>
+					<param name="LeafSize.z">0.002</param>
 				</Component>
 				
-				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="10" bump="0">
-					<param name="radius_search">0.001</param>
-					<param name="model_resolution">0.001</param>
-					<param name="gamma_21">0.7</param>
-					<param name="gamma_32">0.7</param>
-					<param name="min_neighbors">20</param>
-					<param name="normal_radius">0.05</param>
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
+					<param name="LeafSize.x">0.002</param>
+					<param name="LeafSize.y">0.002</param>
+					<param name="LeafSize.z">0.002</param>
+				</Component>
+								
+
+				<Component name="Normals" type="S2ObjectModel:Normals" priority="11" bump="0">
+					<param name="radius">0.02</param>					
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="12" bump="0">
+					<param name="model_resolution">0.002</param>
+					<param name="gamma_21">0.65</param>
+					<param name="gamma_32">0.65</param>
+					<param name="min_neighbors">15</param>
 				</Component>
 				
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="11" bump="0">
@@ -73,13 +88,13 @@
 			</Executor>
 		</Subtask>
 		
-		<Subtask name="Visualisation">
+	 	<Subtask name="Visualisation">
 			<Executor name="Exec2" period="0.01">
 				<Component name="CorrespondencesViewer" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
 					<param name="coordinate_system">true</param>
 				</Component>
 			</Executor>
-		</Subtask>
+		</Subtask>  
 	
 	</Subtasks>
 	
@@ -114,13 +129,17 @@
 			<sink>FeatureCloudConverter.in_features</sink>	
 		</Source>	
 		<Source name="Converter.out_cloud_xyzrgb">
-			<sink>Normals.in_cloud_xyzrgb</sink>
-			<sink>SHOTConverter.in_points</sink>		
+			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+			<sink>Normals.in_cloud_xyzrgb</sink>	
 			<sink>Match.in_cloud_xyzrgb</sink>
 		</Source>
 		
 		<Source name="Normals.out_cloud_xyzrgb_normals">
 			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
+			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
 		</Source>
 
 		<Source name="Keypoints.out_cloud_xyzrgb">
@@ -153,7 +172,7 @@
 
 		<Source name="Match.out_correspondeces_shot">
 			<sink>CorrespondencesViewer.in_correspondeces</sink>
-		</Source>
+		</Source>  
 	
 	</DataStreams>
 </Task>
