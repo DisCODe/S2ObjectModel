@@ -104,6 +104,10 @@ protected:
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_source_keypoints;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_target_keypoints;
 
+	// TEMP
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_shot_transfomed_source_cloud;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_sift_transfomed_source_cloud;
+
 	Base::EventHandler2 h_readModels;
 	Base::EventHandler2 h_match;
 

@@ -119,6 +119,9 @@ void SingleS2OMMatcher::prepareInterface() {
 	registerStream("out_correspondeces_source_cloud", &out_correspondeces_source_cloud);
 	registerStream("out_correspondeces_target_cloud", &out_correspondeces_target_cloud);
 
+	registerStream("out_correspondeces_shot_transfomed_source_cloud", &out_correspondeces_shot_transfomed_source_cloud);
+	registerStream("out_correspondeces_sift_transfomed_source_cloud", &out_correspondeces_sift_transfomed_source_cloud);
+
 	registerStream("out_correspondeces_common", &out_correspondeces_common);
 	registerStream("out_correspondeces_common_source_keypoints", &out_correspondeces_common_source_keypoints);
 	registerStream("out_correspondeces_common_target_keypoints", &out_correspondeces_common_target_keypoints);
@@ -238,8 +241,11 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	pcl::PointCloud<pcl::PointXYZ>::Ptr sift_target_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::copyPointCloud(*cloud_xyzsift, *sift_target_keypoints);
 
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_rgb_cloud_transformed(new pcl::PointCloud<pcl::PointXYZRGB>());
-	pcl::copyPointCloud(*model.cloud_xyzrgb, *source_rgb_cloud_transformed);
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_rgb_cloud_transformed_shot(new pcl::PointCloud<pcl::PointXYZRGB>());
+	pcl::copyPointCloud(*model.cloud_xyzrgb, *source_rgb_cloud_transformed_shot);
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_rgb_cloud_transformed_sift(new pcl::PointCloud<pcl::PointXYZRGB>());
+	pcl::copyPointCloud(*model.cloud_xyzrgb, *source_rgb_cloud_transformed_sift);
 
 	CLOG(LWARNING)<< "SingleS2OMMatcher::prepare common...";
 
@@ -270,8 +276,16 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	CLOG(LWARNING) << "check common corrs";
 	checkCorrespondences(*commonCorrs, *common_source_keypoints, *common_target_keypoints);
 
-	pcl::transformPointCloud (*shot_source_keypoints, *shot_source_keypoints, shotTransform.getElements());
-	pcl::transformPointCloud (*source_rgb_cloud_transformed, *source_rgb_cloud_transformed, shotTransform.getElements());
+	// TODO move transform
+	pcl::transformPointCloud (*shot_source_keypoints, *shot_source_keypoints,
+			shotTransform.getElements());
+	pcl::transformPointCloud (*source_rgb_cloud_transformed_shot, *source_rgb_cloud_transformed_shot,
+			shotTransform.getElements());
+
+	pcl::transformPointCloud (*sift_source_keypoints, *sift_source_keypoints,
+			siftTransform.getElements());
+	pcl::transformPointCloud (*source_rgb_cloud_transformed_sift, *source_rgb_cloud_transformed_sift,
+			siftTransform.getElements());
 
 	out_correspondeces_sift.write(bestSiftCorrs);
 	out_correspondeces_sift_trans.write(siftTransform);
@@ -283,8 +297,12 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	out_correspondeces_shot_source_keypoints.write(shot_source_keypoints);
 	out_correspondeces_shot_target_keypoints.write(shot_target_keypoints);
 
-	out_correspondeces_source_cloud.write(source_rgb_cloud_transformed);
+	out_correspondeces_source_cloud.write(model.cloud_xyzrgb);
 	out_correspondeces_target_cloud.write(cloud_xyzrgb);
+
+
+	out_correspondeces_shot_transfomed_source_cloud.write(source_rgb_cloud_transformed_shot);
+	out_correspondeces_sift_transfomed_source_cloud.write(source_rgb_cloud_transformed_sift);
 
 	out_correspondeces_common.write(commonCorrs);
 	out_correspondeces_common_source_keypoints.write(common_source_keypoints);

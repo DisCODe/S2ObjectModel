@@ -49,6 +49,22 @@ void CorrespondencesViewer::prepareInterface() {
 	addDependency("h_display", &in_source_cloud);
 	addDependency("h_display", &in_target_cloud);
 
+	// Register data streams, events and event handlers HERE!
+	registerStream("in_correspondeces2", &in_correspondeces2);
+	registerStream("in_source_keypoints2", &in_source_keypoints2);
+	registerStream("in_target_keypoints2", &in_target_keypoints2);
+	registerStream("in_source_cloud2", &in_source_cloud2);
+	registerStream("in_target_cloud2", &in_target_cloud2);
+
+	// Register handlers
+	h_display2.setup(boost::bind(&CorrespondencesViewer::display2, this));
+	registerHandler("h_display2", &h_display2);
+	addDependency("h_display2", &in_correspondeces2);
+	addDependency("h_display2", &in_source_keypoints2);
+	addDependency("h_display2", &in_target_keypoints2);
+	addDependency("h_display2", &in_source_cloud2);
+	addDependency("h_display2", &in_target_cloud2);
+
 	h_on_spin.setup(boost::bind(&CorrespondencesViewer::on_spin, this));
 	registerHandler("on_spin", &h_on_spin);
 	addDependency("on_spin", NULL);
@@ -56,10 +72,18 @@ void CorrespondencesViewer::prepareInterface() {
 }
 
 bool CorrespondencesViewer::onInit() {
-	viewer = new pcl::visualization::PCLVisualizer ("S2ObjectModel: CorrespondencesViewer");
+/*	viewer = new pcl::visualization::PCLVisualizer ("S2ObjectModel: CorrespondencesViewer");
 	viewer->setBackgroundColor (255, 255, 255);
-	viewer->initCameraParameters ();
+	viewer->initCameraParameters ();*/
 	//viewer->addCoordinateSystem (1.0, 1);
+	left = int(1);
+	right = int(2);
+	viewer = new pcl::visualization::PCLVisualizer ("S2ObjectModel: CorrespondencesViewer");
+	viewer->createViewPort (0.0, 0.0, 0.5, 1.0, left);
+	viewer->createViewPort (0.5, 0.0, 1.0, 1.0, right);
+	viewer->initCameraParameters ();
+	viewer->setBackgroundColor(255, 255, 255, left);
+	viewer->setBackgroundColor(255, 255, 255, right);
 	return true;
 }
 
@@ -115,26 +139,26 @@ void CorrespondencesViewer::display() {
 	}
 
 
-	viewer->removeAllPointClouds();
-	viewer->removeAllShapes();
+	viewer->removeAllPointClouds(left);
+	viewer->removeAllShapes(left);
 
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> sourceRgb(source_cloud);
-	if (display_source_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (source_cloud, sourceRgb, "source_cloud");
+	if (display_source_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (source_cloud, sourceRgb, "source_cloud", left);
 
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> targetRgb(target_cloud);
-	if (display_target_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (target_cloud, targetRgb, "target_cloud");
+	if (display_target_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (target_cloud, targetRgb, "target_cloud", left);
 
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (target_keypoints, 0, 255, 0);
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (source_keypoints, 255, 0, 0);
 
 
-	if (display_target_keypoints) viewer->addPointCloud<pcl::PointXYZ> (target_keypoints, green, "target_keypoints");
-	if (display_source_keypoints) viewer->addPointCloud<pcl::PointXYZ> (source_keypoints, red, "source_keypoints");
+	if (display_target_keypoints) viewer->addPointCloud<pcl::PointXYZ> (target_keypoints, green, "target_keypoints", left);
+	if (display_source_keypoints) viewer->addPointCloud<pcl::PointXYZ> (source_keypoints, red, "source_keypoints", left);
 
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "target_keypoints");
-	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "source_keypoints");
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "target_keypoints", left);
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "source_keypoints", left);
 
-	viewer->addCorrespondences<pcl::PointXYZ>(source_keypoints, target_keypoints, *corrs);
+	viewer->addCorrespondences<pcl::PointXYZ>(source_keypoints, target_keypoints, *corrs, "corrs", left);
 
 /*	pcl::CorrespondencesPtr corrs_temp = in_correspondeces.read();
 	pcl::CorrespondencesPtr corrs(new pcl::Correspondences(*corrs_temp));
@@ -207,6 +231,69 @@ void CorrespondencesViewer::display() {
 	LOG(LWARNING) << "CorrespondencesViewer::addCorrespondences";
 	viewer->addCorrespondences<pcl::PointXYZ>(source_keypoints, target_keypoints, *corrs);
 	LOG(LWARNING) << "CorrespondencesViewer::ok!";*/
+}
+
+void CorrespondencesViewer::display2() {
+	LOG(LWARNING) << "CorrespondencesViewer::display2";
+
+	pcl::CorrespondencesPtr corrs = in_correspondeces2.read();
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr source_keypoints_temp = in_source_keypoints2.read();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr source_keypoints( new pcl::PointCloud<pcl::PointXYZ>(*source_keypoints_temp));
+	pcl::PointCloud<pcl::PointXYZ>::Ptr target_keypoints_temp = in_target_keypoints2.read();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr target_keypoints( new pcl::PointCloud<pcl::PointXYZ>(*target_keypoints_temp));
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_cloud_temp = in_source_cloud2.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_cloud( new pcl::PointCloud<pcl::PointXYZRGB>(*source_cloud_temp));
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud_temp = in_target_cloud2.read();
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud( new pcl::PointCloud<pcl::PointXYZRGB>(*target_cloud_temp));
+
+
+	std::vector<int> indices;
+	source_keypoints_temp->is_dense = false;
+	pcl::removeNaNFromPointCloud(*source_keypoints_temp, *source_keypoints, indices);
+
+	indices.clear();
+	target_keypoints_temp->is_dense = false;
+	pcl::removeNaNFromPointCloud(*target_keypoints_temp, *target_keypoints, indices);
+
+	indices.clear();
+	source_cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*source_cloud_temp, *source_cloud, indices);
+
+	indices.clear();
+	target_cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*target_cloud_temp, *target_cloud, indices);
+
+	if (source_keypoints_temp->size() != source_keypoints->size()) {
+		CLOG(LERROR) << "problem[source]!: " << source_keypoints_temp->size() << " != " << source_keypoints->size();
+	}
+	if (target_keypoints_temp->size() != target_keypoints->size()) {
+		CLOG(LERROR) << "problem[target]!: " << target_keypoints_temp->size() << " != " << target_keypoints->size();
+	}
+
+
+	viewer->removeAllPointClouds(right);
+	viewer->removeAllShapes(right);
+
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> sourceRgb(source_cloud);
+	if (display_source_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (source_cloud, sourceRgb, "source_cloud2", right);
+
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> targetRgb(target_cloud);
+	if (display_target_cloud) viewer->addPointCloud<pcl::PointXYZRGB> (target_cloud, targetRgb, "target_cloud2", right);
+
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green (target_keypoints, 0, 255, 0);
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red (source_keypoints, 255, 0, 0);
+
+
+	if (display_target_keypoints) viewer->addPointCloud<pcl::PointXYZ> (target_keypoints, green, "target_keypoints2", right);
+	if (display_source_keypoints) viewer->addPointCloud<pcl::PointXYZ> (source_keypoints, red, "source_keypoints2", right);
+
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "target_keypoints2", right);
+	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "source_keypoints2", right);
+
+	viewer->addCorrespondences<pcl::PointXYZ>(source_keypoints, target_keypoints, *corrs, "corrs2", right);
+
 }
 
 void CorrespondencesViewer::on_spin() {

@@ -74,9 +74,11 @@ protected:
 
 
 	void display();
+	void display2();
 	void on_spin();
 
 	Base::EventHandler2 h_display;
+	Base::EventHandler2 h_display2;
 	Base::EventHandler2 h_on_spin;
 
 	pcl::visualization::PCLVisualizer * viewer;
@@ -88,12 +90,22 @@ protected:
 
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud;
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces2;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints2;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints2;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud2;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud2;
 	
 	Base::Property<bool> display_source_cloud;
 	Base::Property<bool> display_target_cloud;
 	Base::Property<bool> display_target_keypoints;
 	Base::Property<bool> display_source_keypoints;
 
+	int left;
+	int right;
 };
 
 } //: namespace CorrespondencesViewer
