@@ -31,8 +31,7 @@ ADD_COMPONENT(SingleS2OMJsonReader)
 ADD_COMPONENT(SingleSOMJsonReader)
 
 ADD_COMPONENT(UniformSampling)
-ADD_COMPONENT(SingleS2OMMatcher)
 
-ADD_COMPONENT(TransformApplier)
+ADD_COMPONENT(SingleS2OMMatcher)
 
 ADD_COMPONENT(S2OMSequence)
