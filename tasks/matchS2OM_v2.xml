@@ -26,21 +26,21 @@
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="3" bump="0">
 					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
 					<param name="sequence.pattern">.*\_rgb\.png</param>
-					<param name="mode.loop">1</param>
+					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">0</param>						
 					<param name="read_on_init">0</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="4" bump="0">
 					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
-					<param name="mode.loop">1</param>
+					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">0</param>		
 					<param name="read_on_init">0</param>				
 				</Component>
 				<Component name="SequenceMask" type="CvBasic:Sequence" priority="5" bump="0">
 					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
                     <param name="sequence.pattern">.*\_mask\.png</param>
-                    <param name="mode.loop">1</param>
+                    <param name="mode.loop">0</param>
                     <param name="mode.auto_trigger">0</param>
                     <param name="read_on_init">0</param>
 				</Component>
@@ -142,7 +142,7 @@
 			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
 		</Source>
 
-		<Source name="Keypoints.out_cloud_xyzrgb">
+		<Source name="Keypoints.out_cloud_xyz">
 			<sink>SHOTConverter.in_keypoints</sink>
 		</Source>
 		

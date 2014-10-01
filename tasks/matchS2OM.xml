@@ -142,7 +142,7 @@
 			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
 		</Source>
 
-		<Source name="Keypoints.out_cloud_xyzrgb">
+		<Source name="Keypoints.out_cloud_xyz">
 			<sink>SHOTConverter.in_keypoints</sink>
 		</Source>
 		

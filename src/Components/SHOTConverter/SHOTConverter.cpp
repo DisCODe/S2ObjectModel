@@ -198,7 +198,10 @@ void SHOTConverter::processWithNormals() {
 	NormalCloudPtr normals(new NormalCloud());
 	pcl::copyPointCloud(*cloudNormals, *normals);
 
-	PointCloudPtr keypoints = in_keypoints.read();
+	PointCloudPtr keypoints_temp = in_keypoints.read();
+	PointCloudPtr keypoints(new PointCloud());
+	pcl::copyPointCloud(*keypoints_temp, *keypoints);
+
 
 	CLOG(LWARNING)<< "SHOTConverter::removing NANs";
 

@@ -34,3 +34,5 @@ ADD_COMPONENT(UniformSampling)
 ADD_COMPONENT(SingleS2OMMatcher)
 
 ADD_COMPONENT(TransformApplier)
+
+ADD_COMPONENT(S2OMSequence)
