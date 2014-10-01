@@ -87,11 +87,17 @@ bool S2OMSequence::onInit() {
 	return true;
 }
 
+bool S2OMSequence::onFinish() {
+	return true;
+}
+
 void S2OMSequence::readModel(std::string filename) {
 	std::string name_cloud_xyzrgb;
 	std::string name_cloud_xyzsift;
 	std::string name_cloud_xyzshot;
 	std::string model_name;
+	std::string type;
+	int mean_viewpoint_features_number;
 
 	std::string s = filename;
 
@@ -99,17 +105,20 @@ void S2OMSequence::readModel(std::string filename) {
 
 	ptree ptree_file;
 	try {
-		model_name = ptree_file.get<std::string>("name");
+
 		// Open JSON file and load it to ptree.
 		read_json(s, ptree_file);
 		// Read JSON properties.
+		model_name = ptree_file.get<std::string>("name");
 		name_cloud_xyzrgb = ptree_file.get<std::string>("cloud_xyzrgb");
 		name_cloud_xyzsift = ptree_file.get<std::string>("cloud_xyzsift");
 		name_cloud_xyzshot = ptree_file.get<std::string>("cloud_xyzshot");
+	//	type = ptree_file.get<std::string>("type");
+	//	mean_viewpoint_features_number = ptree_file.get<int>("mean_viewpoint_features_number");
 	} //: try
 	catch (std::exception const& e) {
-		LOG(LERROR)<< "SingleS2OMJsonReader: file " << s
-		<< " not found or invalid\n";
+		LOG(LERROR)<< "S2OMSequence: file " << s
+		<< " not found or invalid\n" << e.what();
 		return;
 	} //: catch
 
@@ -122,7 +131,7 @@ void S2OMSequence::readModel(std::string filename) {
 			new pcl::PointCloud<pcl::PointXYZRGB>());
 	// Try to load the file.
 	if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(name_cloud_xyzrgb, *cloud_xyzrgb) == -1) {
-		LOG(LERROR)<< "SingleS2OMJsonReader: file " << name_cloud_xyzrgb
+		LOG(LERROR)<< "S2OMSequence: file " << name_cloud_xyzrgb
 		<< " not found\n";
 		return;
 	} //: if
@@ -132,7 +141,7 @@ void S2OMSequence::readModel(std::string filename) {
 			new pcl::PointCloud<PointXYZSIFT>());
 	// Try to load the file.
 	if (pcl::io::loadPCDFile<PointXYZSIFT>(name_cloud_xyzsift, *cloud_xyzsift) == -1) {
-		LOG(LERROR)<< "SingleS2OMJsonReader: file " << name_cloud_xyzsift
+		LOG(LERROR)<< "S2OMSequence: file " << name_cloud_xyzsift
 		<< " not found\n";
 		return;
 	} //: if
@@ -142,7 +151,7 @@ void S2OMSequence::readModel(std::string filename) {
 			new pcl::PointCloud<PointXYZSHOT>());
 	// Try to load the file.
 	if (pcl::io::loadPCDFile<PointXYZSHOT>(name_cloud_xyzshot, *cloud_xyzshot) == -1) {
-		LOG(LERROR)<< "SingleS2OMJsonReader: file " << name_cloud_xyzshot
+		LOG(LERROR)<< "S2OMSequence: file " << name_cloud_xyzshot
 		<< " not found\n";
 		return;
 	} //: if
@@ -194,7 +203,7 @@ void S2OMSequence::onLoadImage() {
 
 		}
 
-		CLOG(LWARNING) << "Sequence: reading image " << files[frame] << " " << frame << "/" << files.size();
+		CLOG(LWARNING) << "Sequence: reading image " << files[frame] << " " << frame + 1 << "/" << files.size();
 		readModel(files[frame]);
 	}
 }

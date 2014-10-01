@@ -1,0 +1,49 @@
+<Task>
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="1">
+				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
+				</Component>
+				<Component name="Reader" type="S2ObjectModel:S2OMSequence" priority="2" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/sceny/</param>
+					<param name="mode.loop">0</param>
+					<param name="mode.auto_trigger">0</param>		
+					<param name="read_on_init">0</param>		
+				</Component>		
+			</Executor>
+				
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>Reader.in_trigger</sink>
+		</Source>
+		
+		<Source name="Reader.out_cloud_xyzsift">
+			<sink>WindowPCL.in_sifts</sink>	
+		</Source>
+		
+		<Source name="Reader.out_cloud_xyzrgb">
+			<sink>WindowPCL.in_cloud</sink>
+		</Source>
+
+
+		<Source name="Reader.out_cloud_xyzshot">
+			<sink>WindowPCL.in_shots</sink>
+		</Source>
+		
+	</DataStreams>
+</Task>
+
+
+
+
