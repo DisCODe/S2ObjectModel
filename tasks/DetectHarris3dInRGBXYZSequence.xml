@@ -31,32 +31,11 @@
 					<param name="mode.loop">1</param>
 					<param name="mode.auto_trigger">0</param>						
 				</Component>
-				<Component name="SequenceMask" type="CvBasic:Sequence" priority="4" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
-                    <param name="sequence.pattern">.*\_mask\.png</param>
-                    <param name="mode.loop">1</param>
-                    <param name="mode.auto_trigger">0</param>
-				</Component>
-				
+			
 				<Component name="DepthConverter" type="PCL:DepthConverter" priority="5" bump="0">
 				</Component>
-				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="2" bump="0">
-					<param name="LeafSize.x">0.002</param>
-					<param name="LeafSize.y">0.002</param>
-					<param name="LeafSize.z">0.002</param>
-				</Component>
-				<Component name="Normals" type="S2ObjectModel:Normals" priority="3" bump="2">
-					<param name="radius">0.02</param>					
-				</Component>
-				
-				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="7" bump="0">
-					<param name="radius_search">0.001</param>
-					<param name="model_resolution">0.001</param>
-					<param name="gamma_21">0.7</param>
-					<param name="gamma_32">0.7</param>
-					<param name="min_neighbors">10</param>
-					<param name="normal_radius">0.05</param>
 
+				<Component name="Keypoints" type="S2ObjectModel:KepointsHarris3dDetector" priority="7" bump="0">
 				</Component>
 			</Executor>
 
@@ -70,11 +49,9 @@
 	
 	<!-- pipes connecting datastreams -->
 	<DataStreams>
-		
 		<Source name="NextImageTrigger.out_trigger">
 			<sink>SequenceRGB.in_trigger</sink>
 			<sink>SequenceXYZ.in_trigger</sink>
-            <sink>SequenceMask.in_trigger</sink>
 		</Source>
 		<Source name="SequenceRGB.out_img">
             <sink>DepthConverter.in_rgb_stereo</sink>
@@ -82,24 +59,11 @@
 		<Source name="SequenceXYZ.out_img">
             <sink>DepthConverter.in_depth_xyz</sink>
 		</Source>
-       <!-- <Source name="SequenceMask.out_img">
-            <sink>DepthConverter.in_mask</sink>
-        </Source> -->
-       
-
         <Source name="DepthConverter.out_cloud_xyzrgb">
-			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
-		</Source>
-
-        <Source name="VoxelGridRGB.out_cloud_xyzrgb">
-			<sink>Normals.in_cloud_xyzrgb</sink>
+			<sink>Keypoints.in_cloud_xyzrgb</sink>
 			<sink>Visualizer.in_cloud</sink>
 		</Source>
 		
-		<Source name="Normals.out_cloud_xyzrgb_normals">
-			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
-		</Source>
-
 		<Source name="Keypoints.out_cloud_xyzrgb">
 			<sink>Visualizer.in_keypoints</sink>
 		</Source>
