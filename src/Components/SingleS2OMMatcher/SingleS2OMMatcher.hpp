@@ -114,6 +114,9 @@ protected:
 	Base::Property<double> RANSAC_InlierThreshold;
 	Base::Property<double> SHOT_maxDistance;
 
+    Base::Property<bool> shots_useReciprocalCorrespondeces;
+    Base::Property<bool> sifts_useReciprocalCorrespondeces;
+
 	void readModels();
 	void match();
 	void checkCorrespondences(pcl::Correspondences corrs, pcl::PointCloud<pcl::PointXYZ> source, pcl::PointCloud<pcl::PointXYZ> target);

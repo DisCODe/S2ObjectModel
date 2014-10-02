@@ -96,11 +96,15 @@ public:
 SingleS2OMMatcher::SingleS2OMMatcher(const std::string & name) :
 		Base::Component(name),  RANSAC_MaximumIterations("ransac.max_iterations", 100),
 		RANSAC_InlierThreshold("ransac.inlier_threshold",0.5),
+        shots_useReciprocalCorrespondeces("shot,useReciprocalCorrespondeces", 1),
+        sifts_useReciprocalCorrespondeces("sift,useReciprocalCorrespondeces", 1),
 		SHOT_maxDistance("shot.max_disance", 2) {
 
 	registerProperty(RANSAC_MaximumIterations);
 	registerProperty(RANSAC_InlierThreshold);
 	registerProperty(SHOT_maxDistance);
+    registerProperty(shots_useReciprocalCorrespondeces);
+    registerProperty(sifts_useReciprocalCorrespondeces);
 }
 
 SingleS2OMMatcher::~SingleS2OMMatcher() {
@@ -353,38 +357,34 @@ void SingleS2OMMatcher::checkCorrespondences(pcl::Correspondences corrs, pcl::Po
 pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::PointCloud<PointXYZSHOT>::Ptr source,
 		pcl::PointCloud<PointXYZSHOT>::Ptr target) {
 
-	/*
-	 *
-	 * 	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
-	SIFTFeatureRepresentation::Ptr point_representation(new SIFTFeatureRepresentation());
-	correst.setPointRepresentation(point_representation);
-	correst.setInputSource(source) ;
-	correst.setInputTarget(target) ;
-	// Find correspondences.
-	correst.determineReciprocalCorrespondences(*correspondences) ; */
+    pcl::CorrespondencesPtr correspondences(new pcl::Correspondences());
+    SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
 
-	pcl::CorrespondencesPtr correspondences(new pcl::Correspondences());
+    if (shots_useReciprocalCorrespondeces) {
+            pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
+            correst.setPointRepresentation(point_representation);
+            correst.setInputSource(source);
+            correst.setInputTarget(target);
+            correst.determineReciprocalCorrespondences(*correspondences);
+    } else {
+        pcl::KdTreeFLANN<PointXYZSHOT> match_search;
+        match_search.setPointRepresentation(point_representation);
+        match_search.setInputCloud(target);
 
-	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
-
-	pcl::KdTreeFLANN<PointXYZSHOT> match_search;
-	match_search.setPointRepresentation(point_representation);
-	match_search.setInputCloud(target);
-
-	//  For each scene keypoint descriptor, find nearest neighbor into the model keypoints descriptor cloud and add it to the correspondences vector.
-	for (size_t j = 0; j < source->size(); ++j) {
-		std::vector<int> neigh_indices(1);
-		std::vector<float> neigh_sqr_dists(1);
-		if (!pcl_isfinite (source->at (j).descriptor[0])) //skipping NaNs
-		{
-			continue;
-		}
-		int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-		if (found_neighs == 1 && neigh_sqr_dists[0] < SHOT_maxDistance  ) { // && neigh_sqr_dists[0] < 1.0f) { // TODO as property
-			pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
-			correspondences->push_back(correspondence);
-		}
-	}
+        for (size_t j = 0; j < source->size(); ++j) {
+            std::vector<int> neigh_indices(1);
+            std::vector<float> neigh_sqr_dists(1);
+            if (!pcl_isfinite (source->at (j).descriptor[0]));
+            {
+                continue;
+            }
+            int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
+            if (found_neighs == 1 && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
+                pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
+                correspondences->push_back(correspondence);
+            }
+        }
+    }
 
 	return correspondences;
 
@@ -396,27 +396,33 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
 
 	SIFTOnlyFeatureRepresentation::Ptr point_representation(new SIFTOnlyFeatureRepresentation());
 
-	pcl::KdTreeFLANN<PointXYZSIFT> match_search;
-	match_search.setPointRepresentation(point_representation);
-	match_search.setInputCloud(target);
+    if (sifts_useReciprocalCorrespondeces) {
+            pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
+            correst.setPointRepresentation(point_representation);
+            correst.setInputSource(source);
+            correst.setInputTarget(target);
+            correst.determineReciprocalCorrespondences(*correspondences);
+    } else {
+        pcl::KdTreeFLANN<PointXYZSIFT> match_search;
+        match_search.setPointRepresentation(point_representation);
+        match_search.setInputCloud(target);
 
-	//  For each scene keypoint descriptor, find nearest neighbor into the model keypoints descriptor cloud and add it to the correspondences vector.
-	for (size_t j = 0; j < source->size(); ++j) {
-		std::vector<int> neigh_indices(1);
-		std::vector<float> neigh_sqr_dists(1);
+        for (size_t j = 0; j < source->size(); ++j) {
+            std::vector<int> neigh_indices(1);
+            std::vector<float> neigh_sqr_dists(1);
+            if (!pcl_isfinite (source->at (j).descriptor[0]));
+            {
+                continue;
+            }
+            int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
+            if (found_neighs == 1) {// && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
+                pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
+                correspondences->push_back(correspondence);
+            }
+        }
+    }
 
-		if (!pcl_isfinite (source->at (j).descriptor[0])) //skipping NaNs
-		{
-			continue;
-		}
-		int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-		if (found_neighs == 1) {
-			pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
-			correspondences->push_back(correspondence);
-		}
-	}
-
-	return correspondences;
+    return correspondences;
 }
 
 void removeInCenter(pcl::PointCloud<PointXYZSIFT>::Ptr cloud, pcl::PointCloud<PointXYZSIFT>::Ptr cloud_filtered) {
