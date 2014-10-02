@@ -37,3 +37,5 @@ ADD_COMPONENT(SingleS2OMMatcher)
 ADD_COMPONENT(S2OMSequence)
 
 ADD_COMPONENT(ReprojectionError)
+
+ADD_COMPONENT(ErrorAggregation)
