@@ -77,6 +77,8 @@ protected:
 
 	Base::DataStreamOut<double> out_error;
 
+	std::string n;
+
 };
 
 } //: namespace ReprojectionError

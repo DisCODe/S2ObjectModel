@@ -18,6 +18,7 @@ namespace ReprojectionError {
 
 ReprojectionError::ReprojectionError(const std::string & name) :
 		Base::Component(name)  {
+	n = name;
 
 }
 
@@ -55,10 +56,13 @@ bool ReprojectionError::onStart() {
 }
 
 void ReprojectionError::compute() {
+	CLOG(LWARNING) << "ReprojectionError::compute(" << n << ")";
 	pcl::CorrespondencesPtr correspondences = in_correspondences.read();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr expected = in_xyz_cloud_expected.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr obtained = in_xyz_cloud_obtained.read();
+
+	CLOG(LWARNING) << "ReprojectionError::in_correspondences.size()" << correspondences->size();
 
 	double sum = 0.0;
 
@@ -72,6 +76,8 @@ void ReprojectionError::compute() {
 				std::pow(expectedPoint.z - obtainedPoint.z, 2.0));
 
 	}
+
+	CLOG(LWARNING) << "ReprojectionError::out_error.write (" << n << "): " << sum;
 
 	out_error.write(sum);
 }
