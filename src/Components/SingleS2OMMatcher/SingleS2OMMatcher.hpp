@@ -85,28 +85,27 @@ protected:
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot;
 	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
 
-	// source cloud before transformation
-
 	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_sift;
-	Base::DataStreamOut<Types::HomogMatrix> out_correspondeces_sift_trans;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_sift_source_keypoints;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_sift_target_keypoints;
+	Base::DataStreamOut<Types::HomogMatrix> out_matrix_sift;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_source_keypoints_sift;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_target_keypoints_sift;
 
 	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_shot;
-	Base::DataStreamOut<Types::HomogMatrix> out_correspondeces_shot_trans;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_shot_source_keypoints;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_shot_target_keypoints;
+	Base::DataStreamOut<Types::HomogMatrix> out_matrix_shot;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_source_keypoints_shot;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_target_keypoints_shot;
 
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_source_cloud;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_target_cloud;
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_common_ransac;
+	Base::DataStreamOut<Types::HomogMatrix> out_matrix_common_ransac;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_source_keypoints_common_ransac;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_target_keypoints_common_ransac;
 
-	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_common;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_source_keypoints;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_correspondeces_common_target_keypoints;
+	Base::DataStreamOut<pcl::CorrespondencesPtr> out_correspondeces_shot_sift;
 
-	// TEMP
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_shot_transfomed_source_cloud;
-	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_correspondeces_sift_transfomed_source_cloud;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_source_cloud;
+	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_target_cloud;
+
+
 
 	Base::EventHandler2 h_readModels;
 	Base::EventHandler2 h_match;

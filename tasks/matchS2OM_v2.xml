@@ -155,49 +155,45 @@
 		</Source>
 
 		
-<!-- display shot correspondences	-->
-		<!--	TEMP!!!	-->
-		<Source name="Match.out_correspondeces_shot_transfomed_source_cloud">
+		<Source name="Match.out_source_cloud">
 			<sink>CorrespondencesViewer.in_source_cloud</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_target_cloud">
+		<Source name="Match.out_target_cloud">
 			<sink>CorrespondencesViewer.in_target_cloud</sink>
 		</Source>
 		
-		<Source name="Match.out_correspondeces_shot_source_keypoints">
+		<Source name="Match.out_source_keypoints_shot">
 			<sink>CorrespondencesViewer.in_source_keypoints</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_shot_target_keypoints">
+		<Source name="Match.out_target_keypoints_shot">
 			<sink>CorrespondencesViewer.in_target_keypoints</sink>
 		</Source>
 
 		<Source name="Match.out_correspondeces_shot">
 			<sink>CorrespondencesViewer.in_correspondeces</sink>
-		</Source>  
+		</Source>   
 		
-		<!-- display sift correspondences	TEMP!-->  
-<!--	TEMP!!!	-->
-		<Source name="Match.out_correspondeces_sift_transfomed_source_cloud">
+		<Source name="Match.out_source_cloud">
 			<sink>CorrespondencesViewer.in_source_cloud2</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_target_cloud">
+		<Source name="Match.out_target_cloud">
 			<sink>CorrespondencesViewer.in_target_cloud2</sink>
 		</Source>
 		
-		<Source name="Match.out_correspondeces_sift_source_keypoints">
+		<Source name="Match.out_source_keypoints_sift">
 			<sink>CorrespondencesViewer.in_source_keypoints2</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_sift_target_keypoints">
+		<Source name="Match.out_target_keypoints_sift">
 			<sink>CorrespondencesViewer.in_target_keypoints2</sink>
 		</Source>
 
 		<Source name="Match.out_correspondeces_sift">
 			<sink>CorrespondencesViewer.in_correspondeces2</sink>
-		</Source>
+		</Source>  
 	
 	</DataStreams>
 </Task>

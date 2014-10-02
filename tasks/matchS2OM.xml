@@ -91,7 +91,6 @@
 	 	<Subtask name="Visualisation">
 			<Executor name="Exec2" period="0.01">
 				<Component name="CorrespondencesViewer" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
-					<param name="coordinate_system">true</param>
 				</Component>
 			</Executor>
 		</Subtask>  
@@ -154,19 +153,19 @@
 			<sink>Match.in_cloud_xyzsift</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_source_cloud">
+		<Source name="Match.out_source_cloud">
 			<sink>CorrespondencesViewer.in_source_cloud</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_target_cloud">
+		<Source name="Match.out_target_cloud">
 			<sink>CorrespondencesViewer.in_target_cloud</sink>
 		</Source>
 		
-		<Source name="Match.out_correspondeces_shot_source_keypoints">
+		<Source name="Match.out_source_keypoints_shot">
 			<sink>CorrespondencesViewer.in_source_keypoints</sink>
 		</Source>
 
-		<Source name="Match.out_correspondeces_shot_target_keypoints">
+		<Source name="Match.out_target_keypoints_shot">
 			<sink>CorrespondencesViewer.in_target_keypoints</sink>
 		</Source>
 
