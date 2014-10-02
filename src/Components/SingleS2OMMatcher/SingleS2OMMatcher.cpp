@@ -96,8 +96,8 @@ public:
 SingleS2OMMatcher::SingleS2OMMatcher(const std::string & name) :
 		Base::Component(name),  RANSAC_MaximumIterations("ransac.max_iterations", 100),
 		RANSAC_InlierThreshold("ransac.inlier_threshold",0.5),
-        shots_useReciprocalCorrespondeces("shot,useReciprocalCorrespondeces", 1),
-        sifts_useReciprocalCorrespondeces("sift,useReciprocalCorrespondeces", 1),
+        shots_useReciprocalCorrespondeces("shot.useReciprocalCorrespondeces", 1),
+        sifts_useReciprocalCorrespondeces("sift.useReciprocalCorrespondeces", 1),
 		SHOT_maxDistance("shot.max_disance", 2) {
 
 	registerProperty(RANSAC_MaximumIterations);
@@ -361,11 +361,11 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
     SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
 
     if (shots_useReciprocalCorrespondeces) {
-            pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
+       /*     pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
             correst.setPointRepresentation(point_representation);
             correst.setInputSource(source);
             correst.setInputTarget(target);
-            correst.determineReciprocalCorrespondences(*correspondences);
+            correst.determineReciprocalCorrespondences(*correspondences); */
     } else {
         pcl::KdTreeFLANN<PointXYZSHOT> match_search;
         match_search.setPointRepresentation(point_representation);
@@ -397,11 +397,11 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
 	SIFTOnlyFeatureRepresentation::Ptr point_representation(new SIFTOnlyFeatureRepresentation());
 
     if (sifts_useReciprocalCorrespondeces) {
-            pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
+    /*        pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
             correst.setPointRepresentation(point_representation);
             correst.setInputSource(source);
             correst.setInputTarget(target);
-            correst.determineReciprocalCorrespondences(*correspondences);
+            correst.determineReciprocalCorrespondences(*correspondences); */
     } else {
         pcl::KdTreeFLANN<PointXYZSIFT> match_search;
         match_search.setPointRepresentation(point_representation);
