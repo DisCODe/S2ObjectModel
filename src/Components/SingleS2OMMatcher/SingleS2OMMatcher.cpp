@@ -19,6 +19,7 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/search/impl/kdtree.hpp>
 #include <boost/bind.hpp>
+#include <pcl/registration/correspondence_rejection_one_to_one.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -360,30 +361,33 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
     pcl::CorrespondencesPtr correspondences(new pcl::Correspondences());
     SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
 
+    pcl::KdTreeFLANN<PointXYZSHOT> match_search;
+    match_search.setPointRepresentation(point_representation);
+    match_search.setInputCloud(target);
+
+    for (size_t j = 0; j < source->size(); ++j) {
+        std::vector<int> neigh_indices(1);
+        std::vector<float> neigh_sqr_dists(1);
+        if (!pcl_isfinite (source->at (j).descriptor[0]));
+        {
+            continue;
+        }
+        int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
+        if (found_neighs == 1 && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
+            pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
+            correspondences->push_back(correspondence);
+        }
+    }
+
     if (shots_useReciprocalCorrespondeces) {
-       /*     pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
+        pcl::registration::CorrespondenceRejectorOneToOne rejec;
+        rejec.getRemainingCorrespondences(*correspondences, *correspondences);
+
+    /*        pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
             correst.setPointRepresentation(point_representation);
             correst.setInputSource(source);
             correst.setInputTarget(target);
             correst.determineReciprocalCorrespondences(*correspondences); */
-    } else {
-        pcl::KdTreeFLANN<PointXYZSHOT> match_search;
-        match_search.setPointRepresentation(point_representation);
-        match_search.setInputCloud(target);
-
-        for (size_t j = 0; j < source->size(); ++j) {
-            std::vector<int> neigh_indices(1);
-            std::vector<float> neigh_sqr_dists(1);
-            if (!pcl_isfinite (source->at (j).descriptor[0]));
-            {
-                continue;
-            }
-            int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-            if (found_neighs == 1 && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
-                pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
-                correspondences->push_back(correspondence);
-            }
-        }
     }
 
 	return correspondences;
@@ -396,30 +400,32 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
 
 	SIFTOnlyFeatureRepresentation::Ptr point_representation(new SIFTOnlyFeatureRepresentation());
 
-    if (sifts_useReciprocalCorrespondeces) {
-    /*        pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
+    pcl::KdTreeFLANN<PointXYZSIFT> match_search;
+    match_search.setPointRepresentation(point_representation);
+    match_search.setInputCloud(target);
+
+    for (size_t j = 0; j < source->size(); ++j) {
+        std::vector<int> neigh_indices(1);
+        std::vector<float> neigh_sqr_dists(1);
+        if (!pcl_isfinite (source->at (j).descriptor[0]));
+        {
+            continue;
+        }
+        int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
+        if (found_neighs == 1) {// && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
+            pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
+            correspondences->push_back(correspondence);
+        }
+    }
+
+    if (sifts_useReciprocalCorrespondeces) {     
+        pcl::registration::CorrespondenceRejectorOneToOne rejec;
+        rejec.getRemainingCorrespondences(*correspondences, *correspondences);
+  /*          pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
             correst.setPointRepresentation(point_representation);
             correst.setInputSource(source);
             correst.setInputTarget(target);
             correst.determineReciprocalCorrespondences(*correspondences); */
-    } else {
-        pcl::KdTreeFLANN<PointXYZSIFT> match_search;
-        match_search.setPointRepresentation(point_representation);
-        match_search.setInputCloud(target);
-
-        for (size_t j = 0; j < source->size(); ++j) {
-            std::vector<int> neigh_indices(1);
-            std::vector<float> neigh_sqr_dists(1);
-            if (!pcl_isfinite (source->at (j).descriptor[0]));
-            {
-                continue;
-            }
-            int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-            if (found_neighs == 1) {// && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
-                pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
-                correspondences->push_back(correspondence);
-            }
-        }
     }
 
     return correspondences;
