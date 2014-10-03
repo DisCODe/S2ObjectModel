@@ -113,6 +113,7 @@ protected:
 	Base::Property<int> RANSAC_MaximumIterations;
 	Base::Property<double> RANSAC_InlierThreshold;
 	Base::Property<double> SHOT_maxDistance;
+	Base::Property<long> SIFT_maxDistance;
 
     Base::Property<bool> shots_useReciprocalCorrespondeces;
     Base::Property<bool> sifts_useReciprocalCorrespondeces;

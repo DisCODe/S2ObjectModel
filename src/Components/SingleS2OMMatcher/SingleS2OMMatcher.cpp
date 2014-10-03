@@ -97,13 +97,15 @@ public:
 SingleS2OMMatcher::SingleS2OMMatcher(const std::string & name) :
 		Base::Component(name),  RANSAC_MaximumIterations("ransac.max_iterations", 100),
 		RANSAC_InlierThreshold("ransac.inlier_threshold",0.5),
-        shots_useReciprocalCorrespondeces("shot.useReciprocalCorrespondeces", 1),
-        sifts_useReciprocalCorrespondeces("sift.useReciprocalCorrespondeces", 1),
-		SHOT_maxDistance("shot.max_disance", 2) {
+        shots_useReciprocalCorrespondeces("shot.oneToOne", 1),
+        sifts_useReciprocalCorrespondeces("sift.oneToOne", 1),
+		SHOT_maxDistance("shot.max_disance", 2),
+		SIFT_maxDistance("sift.max_disance", 100000) {
 
 	registerProperty(RANSAC_MaximumIterations);
 	registerProperty(RANSAC_InlierThreshold);
 	registerProperty(SHOT_maxDistance);
+	registerProperty(SIFT_maxDistance);
     registerProperty(shots_useReciprocalCorrespondeces);
     registerProperty(sifts_useReciprocalCorrespondeces);
 }
@@ -368,7 +370,7 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
     for (size_t j = 0; j < source->size(); ++j) {
         std::vector<int> neigh_indices(1);
         std::vector<float> neigh_sqr_dists(1);
-        if (!pcl_isfinite (source->at (j).descriptor[0]));
+        if (!pcl_isfinite (source->at (j).descriptor[0]))
         {
             continue;
         }
@@ -379,15 +381,11 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
         }
     }
 
+    CLOG(LWARNING) << "SingleS2OMMatcher::computeSHOTCorrespondences before CorrespondenceRejectorOneToOne: " << correspondences->size();
+
     if (shots_useReciprocalCorrespondeces) {
         pcl::registration::CorrespondenceRejectorOneToOne rejec;
         rejec.getRemainingCorrespondences(*correspondences, *correspondences);
-
-    /*        pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
-            correst.setPointRepresentation(point_representation);
-            correst.setInputSource(source);
-            correst.setInputTarget(target);
-            correst.determineReciprocalCorrespondences(*correspondences); */
     }
 
 	return correspondences;
@@ -407,25 +405,23 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
     for (size_t j = 0; j < source->size(); ++j) {
         std::vector<int> neigh_indices(1);
         std::vector<float> neigh_sqr_dists(1);
-        if (!pcl_isfinite (source->at (j).descriptor[0]));
+        if (!pcl_isfinite (source->at (j).descriptor[0]))
         {
             continue;
         }
         int found_neighs = match_search.nearestKSearch(source->at(j), 1, neigh_indices, neigh_sqr_dists);
-        if (found_neighs == 1) {// && neigh_sqr_dists[0] < SHOT_maxDistance  ) {
+        if (found_neighs == 1 && neigh_sqr_dists[0] < SIFT_maxDistance) {
             pcl::Correspondence correspondence(static_cast<int>(j), neigh_indices[0], neigh_sqr_dists[0]);
             correspondences->push_back(correspondence);
+            CLOG(LWARNING) << "distance between sifts : " << neigh_sqr_dists[0];
         }
     }
+
+    CLOG(LWARNING) << "SingleS2OMMatcher::computeSIFTCorrespondences before CorrespondenceRejectorOneToOne: " << correspondences->size();
 
     if (sifts_useReciprocalCorrespondeces) {     
         pcl::registration::CorrespondenceRejectorOneToOne rejec;
         rejec.getRemainingCorrespondences(*correspondences, *correspondences);
-  /*          pcl::registration::CorrespondenceEstimation<PointXYZSIFT, PointXYZSIFT> correst;
-            correst.setPointRepresentation(point_representation);
-            correst.setInputSource(source);
-            correst.setInputTarget(target);
-            correst.determineReciprocalCorrespondences(*correspondences); */
     }
 
     return correspondences;
