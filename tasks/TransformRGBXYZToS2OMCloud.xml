@@ -20,14 +20,14 @@
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
 				</Component>
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
 					<param name="sequence.pattern">.*\_rgb\.png</param>
 					<param name="mode.loop">1</param>
 					<param name="mode.auto_trigger">1</param>						
 					<param name="read_on_init">1</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
 					<param name="mode.loop">1</param>
 					<param name="mode.auto_trigger">1</param>		
@@ -41,33 +41,40 @@
 				
 				<Component name="FeatureCloudConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="6" bump="0">
 				</Component>
+				
+				<Component name="PassThrough" type="PCL:PassThrough" priority="7" bump="0">
+					<param name="x.a">-20.0</param>
+					<param name="x.b">20.0</param>
+					<param name="y.a">-20.0</param>
+					<param name="y.b">20.0</param>
+					<param name="z.a">0.0</param>
+					<param name="z.b">3.0</param>
+				</Component>
 
-				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="7" bump="0">
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="8" bump="0">
 					<param name="LeafSize.x">0.002</param>
 					<param name="LeafSize.y">0.002</param>
 					<param name="LeafSize.z">0.002</param>
 				</Component>
 				
-				<Component name="Normals" type="S2ObjectModel:Normals" priority="8" bump="0">
-					<param name="radius">0.03</param>					
+				<Component name="Normals" type="S2ObjectModel:Normals" priority="9" bump="0">
+					<param name="radius">0.02</param>					
 				</Component>
 				
-				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="9" bump="0">
+				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="10" bump="0">
 					<param name="model_resolution">0.002</param>
 					<param name="gamma_21">0.65</param>
 					<param name="gamma_32">0.65</param>
-					<param name="min_neighbors">15</param>
+					<param name="min_neighbors">10</param>
 				</Component>
 				
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="10" bump="0">
-					<param name="shot_radius">0.06</param>
+					<param name="shot_radius">0.075</param>
 				</Component>
 				
-				shot_radius
-				
 				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="11" bump="0">
-					<param name="dir">/media/Dokumenty/data/sceny/gigabyte</param>
-					<param name="S2OMname">scene</param>
+					<param name="dir">/media/Dokumenty/data/sceny/remsey</param>
+					<param name="S2OMname">gigabyte</param>
 					<param name="addNumber">1</param>
 					<param name="addTimestamp">0</param>
 				</Component>
@@ -78,7 +85,6 @@
 	 	<Subtask name="Visualisation">
 			<Executor name="Exec2" period="0.01">
 				<Component name="S2ObjectViewer" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
-					<param name="coordinate_system">true</param>
 				</Component>
 			</Executor>
 		</Subtask>  
@@ -107,6 +113,10 @@
 		</Source>	
 		
 		<Source name="Converter.out_cloud_xyzrgb">
+		<sink>PassThrough.in_cloud_xyzrgb</sink>
+		</Source>
+
+		<Source name="PassThrough.out_cloud_xyzrgb">
 			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
 		</Source>
 		
