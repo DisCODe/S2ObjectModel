@@ -20,16 +20,16 @@
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
 				</Component>
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
 					<param name="sequence.pattern">.*\_rgb\.png</param>
-					<param name="mode.loop">1</param>
+					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>						
 					<param name="read_on_init">1</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
-					<param name="mode.loop">1</param>
+					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>		
 					<param name="read_on_init">1</param>				
 				</Component>              
@@ -43,10 +43,10 @@
 				</Component>
 				
 				<Component name="PassThrough" type="PCL:PassThrough" priority="7" bump="0">
-					<param name="x.a">-20.0</param>
-					<param name="x.b">20.0</param>
-					<param name="y.a">-20.0</param>
-					<param name="y.b">20.0</param>
+					<param name="x.a">-30.0</param>
+					<param name="x.b">30.0</param>
+					<param name="y.a">-30.0</param>
+					<param name="y.b">30.0</param>
 					<param name="z.a">0.0</param>
 					<param name="z.b">3.0</param>
 				</Component>
@@ -65,16 +65,16 @@
 					<param name="model_resolution">0.002</param>
 					<param name="gamma_21">0.65</param>
 					<param name="gamma_32">0.65</param>
-					<param name="min_neighbors">10</param>
+					<param name="min_neighbors">15</param>
 				</Component>
 				
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="10" bump="0">
-					<param name="shot_radius">0.075</param>
+					<param name="shot_radius">0.05</param>
 				</Component>
 				
 				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="11" bump="0">
-					<param name="dir">/media/Dokumenty/data/sceny/remsey</param>
-					<param name="S2OMname">gigabyte</param>
+					<param name="dir">/media/Dokumenty/data/sceny/loyd</param>
+					<param name="S2OMname">loyd</param>
 					<param name="addNumber">1</param>
 					<param name="addTimestamp">0</param>
 				</Component>
@@ -85,7 +85,11 @@
 	 	<Subtask name="Visualisation">
 			<Executor name="Exec2" period="0.01">
 				<Component name="S2ObjectViewer" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
-				</Component>
+					<param name="sifts.size">2</param>
+					<param name="shots.size">6</param>
+					
+					
+					</Component>
 			</Executor>
 		</Subtask>  
 	
