@@ -20,14 +20,14 @@
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
 				</Component>
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
 					<param name="sequence.pattern">.*\_rgb\.png</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>						
 					<param name="read_on_init">1</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/remsey/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>		
@@ -73,8 +73,8 @@
 				</Component>
 				
 				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="11" bump="0">
-					<param name="dir">/media/Dokumenty/data/sceny/loyd</param>
-					<param name="S2OMname">loyd</param>
+					<param name="dir">/home/joanna/data/sceny/v1/remsey</param>
+					<param name="S2OMname">remsey</param>
 					<param name="addNumber">1</param>
 					<param name="addTimestamp">0</param>
 				</Component>

@@ -198,6 +198,7 @@ void S2OMSequence::onLoadImage() {
 			} else {
 				frame = files.size() - 1;
 				CLOG(LINFO) << name() << ": end of sequence";
+				return;
 				// TODO: endOfSequence->raise();
 			}
 

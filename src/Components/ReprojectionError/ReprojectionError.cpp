@@ -17,9 +17,8 @@ namespace Processors {
 namespace ReprojectionError {
 
 ReprojectionError::ReprojectionError(const std::string & name) :
-		Base::Component(name)  {
-	n = name;
-
+		Base::Component(name), group_id("group_id", 1) {
+	registerProperty(group_id);
 }
 
 ReprojectionError::~ReprojectionError() {
@@ -31,6 +30,8 @@ void ReprojectionError::prepareInterface() {
 	registerStream("in_xyz_cloud_expected", &in_xyz_cloud_expected);
 	registerStream("in_xyz_cloud_obtained", &in_xyz_cloud_obtained);
 	registerStream("out_error", &out_error);
+	registerStream("out_base", &out_base);
+	registerStream("out_group", &out_group);
 
     registerHandler("compute", boost::bind(&ReprojectionError::compute, this));
     addDependency("compute", &in_correspondences);
@@ -56,7 +57,7 @@ bool ReprojectionError::onStart() {
 }
 
 void ReprojectionError::compute() {
-	CLOG(LWARNING) << "ReprojectionError::compute(" << n << ")";
+	CLOG(LWARNING) << "ReprojectionError::compute(" << group_id << ")";
 	pcl::CorrespondencesPtr correspondences = in_correspondences.read();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr expected = in_xyz_cloud_expected.read();
@@ -77,9 +78,11 @@ void ReprojectionError::compute() {
 
 	}
 
-	CLOG(LWARNING) << "ReprojectionError::out_error.write (" << n << "): " << sum;
+	CLOG(LWARNING) << "ReprojectionError::out_error.write (" << group_id << "): " << sum << "/" << correspondences->size();
 
 	out_error.write(sum);
+	out_base.write(correspondences->size());
+	out_group.write(group_id);
 }
 
 

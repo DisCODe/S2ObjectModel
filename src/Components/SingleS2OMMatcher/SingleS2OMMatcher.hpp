@@ -117,6 +117,8 @@ protected:
 
     Base::Property<bool> shots_useReciprocalCorrespondeces;
     Base::Property<bool> sifts_useReciprocalCorrespondeces;
+    Base::Property<int> shots_useReciprocalCorrespondecesNextBest;
+    Base::Property<int> sifts_useReciprocalCorrespondecesNextBest;
 
 	void readModels();
 	void match();

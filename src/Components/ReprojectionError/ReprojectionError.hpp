@@ -76,9 +76,10 @@ protected:
 	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_xyz_cloud_obtained;
 
 	Base::DataStreamOut<double> out_error;
+	Base::DataStreamOut<long> out_base;
+	Base::DataStreamOut<int> out_group;
 
-	std::string n;
-
+	Base::Property<int> group_id;
 };
 
 } //: namespace ReprojectionError
