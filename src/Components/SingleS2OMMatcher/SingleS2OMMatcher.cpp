@@ -244,10 +244,12 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(model.cloud_xyzshot, cloud_xyzshot);
 	pcl::CorrespondencesPtr siftCorrs = computeSIFTCorrespondences(model.cloud_xyzsift, cloud_xyzsift);
 
-	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
-	CLOG(LWARNING)<< "SingleS2OMMatcher::siftCorrs " << shotCorrs->size();
-
 	pcl::CorrespondencesPtr commonCorrs(new pcl::Correspondences());
+
+	CLOG(LWARNING) << "Common source keypoints: " << shot_source_keypoints->size() << " + " <<
+			sift_source_keypoints->size() << " = " << common_source_keypoints->size();
+	CLOG(LWARNING) << "Common target keypoints: " << shot_target_keypoints->size() << " + " <<
+			sift_target_keypoints->size() << " = " << common_target_keypoints->size();
 
 	for (int i = 0; i < shotCorrs->size(); ++i) {
 		commonCorrs->push_back(pcl::Correspondence(shotCorrs->at(i)));
@@ -278,13 +280,13 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 		shotSiftCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance));
 	}
 
-	/*	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
+	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestShotCorrs " << bestShotCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::siftCorrs " << siftCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestSiftCorrs " << bestSiftCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::commonCorrs " << commonCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestCommonCorrs " << bestCommonCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::shotSiftCorrs " << shotSiftCorrs->size();*/
+	 CLOG(LWARNING)<< "SingleS2OMMatcher::shotSiftCorrs " << shotSiftCorrs->size();
 
 	CLOG(LWARNING) << "check shot corrs";
 	checkCorrespondences(*bestShotCorrs, *shot_source_keypoints, *shot_target_keypoints);
@@ -296,19 +298,19 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	checkCorrespondences(*shotSiftCorrs, *common_source_keypoints, *common_target_keypoints);
 
 	out_correspondeces_sift.write(bestSiftCorrs);
-	CLOG(LWARNING) << "out_matrix_sift.write " << siftTransform.getElements();
+	CLOG(LWARNING) << "out_matrix_sift.write\n" << siftTransform.getElements();
 	out_matrix_sift.write(siftTransform);
 	out_source_keypoints_sift.write(sift_source_keypoints);
 	out_target_keypoints_sift.write(sift_target_keypoints);
 
 	out_correspondeces_shot.write(bestShotCorrs);
-	CLOG(LWARNING) << "out_matrix_shot.write " << shotTransform.getElements();
+	CLOG(LWARNING) << "out_matrix_shot.write\n" << shotTransform.getElements();
 	out_matrix_shot.write(shotTransform);
 	out_source_keypoints_shot.write(shot_source_keypoints);
 	out_target_keypoints_shot.write(shot_target_keypoints);
 
 	out_correspondeces_common_ransac.write(bestCommonCorrs);
-	CLOG(LWARNING) << "out_matrix_common_ransac.write " << commonTransform.getElements();
+	CLOG(LWARNING) << "out_matrix_common_ransac.write\n" << commonTransform.getElements();
 	out_matrix_common_ransac.write(commonTransform);
 	out_source_keypoints_common_ransac.write(common_source_keypoints);
 	out_target_keypoints_common_ransac.write(common_target_keypoints);
@@ -376,8 +378,6 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSHOTCorrespondences(pcl::Point
 
 	}
 
-	CLOG(LWARNING)<< "SingleS2OMMatcher::computeSHOTCorrespondences before CorrespondenceRejectorOneToOne: " << correspondences->size();
-
 	if (shots_useReciprocalCorrespondeces) {
 		pcl::registration::CorrespondenceRejectorOneToOne rejec;
 		rejec.getRemainingCorrespondences(*correspondences, *correspondences);
@@ -428,8 +428,6 @@ pcl::CorrespondencesPtr SingleS2OMMatcher::computeSIFTCorrespondences(pcl::Point
 		}
 
 	}
-
-	CLOG(LWARNING)<< "SingleS2OMMatcher::computeSIFTCorrespondences before CorrespondenceRejectorOneToOne: " << correspondences->size();
 
 	if (sifts_useReciprocalCorrespondeces) {
 		pcl::registration::CorrespondenceRejectorOneToOne rejec;

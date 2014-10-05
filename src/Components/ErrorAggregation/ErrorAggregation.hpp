@@ -88,6 +88,11 @@ protected:
 	Base::DataStreamIn<double> in_error_4;
 	Base::DataStreamIn<long> in_base_4;
 
+	Base::Property<std::string> group1_name;
+	Base::Property<std::string> group2_name;
+	Base::Property<std::string> group3_name;
+	Base::Property<std::string> group4_name;
+
 
 private:
 

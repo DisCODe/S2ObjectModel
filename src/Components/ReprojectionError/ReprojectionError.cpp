@@ -64,17 +64,25 @@ void ReprojectionError::compute() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr obtained = in_xyz_cloud_obtained.read();
 
 	CLOG(LWARNING) << "ReprojectionError::in_correspondences.size()" << correspondences->size();
+	CLOG(LWARNING) << "ReprojectionError:: expected size :" << expected->size() <<", obtained: "<< obtained->size();
 
 	double sum = 0.0;
 
-	for (int i; i < correspondences->size(); ++i) {
+	for (int i = 0; i < correspondences->size(); ++i) {
 		pcl::Correspondence corr = correspondences->at(i);
+		if (corr.index_match >= expected->size()) {
+			CLOG(LERROR) << "Index match out of bound (expected point)";
+		}
+		if (corr.index_query >= obtained->size()) {
+			CLOG(LERROR) << "Index query out of bound (expected point)";
+		}
 		pcl::PointXYZ expectedPoint = expected->at(corr.index_match);
 		pcl::PointXYZ obtainedPoint = obtained->at(corr.index_query);
 		sum += std::sqrt(
-				std::pow(expectedPoint.x - obtainedPoint.x, 2.0) +
-				std::pow(expectedPoint.y - obtainedPoint.y, 2.0) +
-				std::pow(expectedPoint.z - obtainedPoint.z, 2.0));
+				std::pow((double)expectedPoint.x - (double)obtainedPoint.x, 2.0) +
+				std::pow((double)expectedPoint.y - (double)obtainedPoint.y, 2.0) +
+				std::pow((double)expectedPoint.z - (double)obtainedPoint.z, 2.0)
+		);
 
 	}
 

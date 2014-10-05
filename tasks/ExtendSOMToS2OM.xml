@@ -22,7 +22,7 @@
 				</Component>		
 
 				<Component name="Normals" type="S2ObjectModel:CuboidNormals" priority="2" bump="2">
-					<param name="radius">0.03</param>					
+					<param name="radius">0.02</param>					
 				</Component>
 				
 				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="3" bump="0">
@@ -33,12 +33,12 @@
 				</Component>
 				
 				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="4" bump="0">
-					<param name="shot_radius">0.06</param>
+					<param name="shot_radius">0.075</param>
 				</Component>
 				
 				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="5" bump="10">
 					<param name="S2OMname">loyd</param>
-					<param name="dir">/home/joanna/test/test</param>
+					<param name="dir">/home/joanna/data/modele/v2</param>
 			    </Component>
 			</Executor>
 

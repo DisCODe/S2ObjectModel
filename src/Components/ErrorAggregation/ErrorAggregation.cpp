@@ -16,7 +16,15 @@ namespace Processors {
 namespace ErrorAggregation {
 
 ErrorAggregation::ErrorAggregation(const std::string & name) :
-		Base::Component(name)  {
+		Base::Component(name), group1_name("names.group1", std::string("group1")),
+		group2_name("names.group2", std::string("group2")),
+		group3_name("names.group3", std::string("group3")),
+		group4_name("names.group4", std::string("group4")) {
+
+	registerProperty(group1_name);
+	registerProperty(group2_name);
+	registerProperty(group3_name);
+	registerProperty(group4_name);
 
 }
 
@@ -120,9 +128,11 @@ void ErrorAggregation::addToGroup4() {
 
 void ErrorAggregation::displayResults() {
 	CLOG(LWARNING) << "ErrorAggregation::displayResults";
-	CLOG(LWARNING) << "Results:\ngroup1 " << group1 << "\ngroup2 " << group2
-			<< "\ngroup3 " << group3
-			<< "\ngroup4 " << group4;
+	CLOG(LWARNING) << "Results:"
+			<< "\n1." << group1_name << "\n" << group1
+			<< "\n2." << group2_name << "\n" << group2
+			<< "\n3." << group3_name << "\n" << group3
+			<< "\n4." << group4_name << "\n" << group4;
 }
 
 
