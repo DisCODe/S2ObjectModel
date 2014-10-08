@@ -89,7 +89,7 @@ protected:
 
 	
 	// Handlers
-	void Write();
+	void write();
 	void on_cloud_xyzrgb();
 	void on_cloud_xyzsift();
 	void on_cloud_xyzshot();

@@ -83,7 +83,6 @@ void ReprojectionError::compute() {
 				std::pow((double)expectedPoint.y - (double)obtainedPoint.y, 2.0) +
 				std::pow((double)expectedPoint.z - (double)obtainedPoint.z, 2.0)
 		);
-
 	}
 
 	CLOG(LWARNING) << "ReprojectionError::out_error.write (" << group_id << "): " << sum << "/" << correspondences->size();

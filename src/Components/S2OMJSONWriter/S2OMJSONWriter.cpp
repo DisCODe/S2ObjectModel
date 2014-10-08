@@ -46,7 +46,7 @@ void S2OMJSONWriter::prepareInterface() {
 	registerStream("in_cloud_xyzshot", &in_cloud_xyzshot);
 	registerStream("in_mean_viewpoint_features_number", &in_mean_viewpoint_features_number);
 	// Register handlers
-	h_Write.setup(boost::bind(&S2OMJSONWriter::Write, this));
+	h_Write.setup(boost::bind(&S2OMJSONWriter::write, this));
 	registerHandler("Write", &h_Write);
 	addDependency("Write", &in_cloud_xyzrgb);
 	addDependency("Write", &in_cloud_xyzsift);
@@ -96,7 +96,7 @@ void S2OMJSONWriter::on_cloud_xyzshot() {
 	cloud_xyzshot = in_cloud_xyzshot.read();
 }
 
-void S2OMJSONWriter::Write() {
+void S2OMJSONWriter::write() {
 	LOG(LTRACE) << "S2OMJSONWriter::Write, file number: " << ++counter;
 
 

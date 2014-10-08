@@ -18,62 +18,62 @@
 			<Executor name="Exec1"  period="0.1">
 				
 				<Component name="Reader" type="S2ObjectModel:S2OMJSONReader" priority="1" bump="0">
-					<param name="filenames">/home/joanna/data/modele/v2/gigabyte.json</param>
+					<param name="filenames">/home/jkrasnod/data/modele/v1/gigabyte.json</param>
 				</Component>	
-				
+				                         
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="2" bump="0">
 				</Component>
 				<Component name="Sequence" type="S2ObjectModel:S2OMSequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/joanna/data/sceny/v2/gigabyte/</param>
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/v1/gigabyte/</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">0</param>						
 					<param name="read_on_init">0</param>						
 				</Component>
 				              
 				<Component name="Match" type="S2ObjectModel:SingleS2OMMatcher" priority="4" bump="0">
-					<param name="shot.max_disance">0.8</param>
+					<param name="shot.max_disance">1.5</param>
 					<param name="sift.max_disance">70000</param>
-					<param name="shot.oneToOne">0</param>
+					<param name="shot.oneToOne">1</param>
 					<param name="sift.oneToOne">1</param>
-					<param name="ransac.inlier_threshold">0.1</param>
+					<param name="ransac.inlier_threshold">0.05</param>
 					<param name="ransac.max_iterations">150</param>
 					<param name="shot.nextBest">0</param>
 					<param name="sift.nextBest">0</param>
 					
 				</Component>
 				
-				<Component name="AvgTransform" type="CvBasic:CalcObjectLocation" priority="5" bump="0">
+				<Component name="AvgMatrix" type="CvBasic:CalcObjectLocation" priority="5" bump="0">
 				</Component>
 				
-				<Component name="TransformSifts" type="PCL:CloudTransformer" priority="6" bump="0">
+				<Component name="TransformSift" type="PCL:CloudTransformer" priority="6" bump="0">
 				</Component>
 				
-				<Component name="TransformShots" type="PCL:CloudTransformer" priority="7" bump="0">
+				<Component name="TransformShot" type="PCL:CloudTransformer" priority="7" bump="0">
 				</Component>
 				
-				<Component name="TransformCommonRansac" type="PCL:CloudTransformer" priority="8" bump="0">
+				<Component name="TransformRansac" type="PCL:CloudTransformer" priority="8" bump="0">
 				</Component>
 				
-				<Component name="TransformCommonAvg" type="PCL:CloudTransformer" priority="9" bump="0">
+				<Component name="TransformAvg" type="PCL:CloudTransformer" priority="9" bump="0">
 				</Component>
 				
-				<Component name="ErrorSifts" type="S2ObjectModel:ReprojectionError" priority="10" bump="0">						
+				<Component name="ErrorSift" type="S2ObjectModel:ReprojectionError" priority="10" bump="0">						
 					<param name="group_id">1</param>
 				</Component>
 				
-				<Component name="ErrorShots" type="S2ObjectModel:ReprojectionError" priority="11" bump="0">										
+				<Component name="ErrorShot" type="S2ObjectModel:ReprojectionError" priority="11" bump="0">										
 					<param name="group_id">2</param>
 				</Component>
 				
-				<Component name="ErrorCommonRansac" type="S2ObjectModel:ReprojectionError" priority="12" bump="0">						
+				<Component name="ErrorRansac" type="S2ObjectModel:ReprojectionError" priority="12" bump="0">						
 					<param name="group_id">3</param>
 				</Component>
 				
-				<Component name="ErrorCommonAvg" type="S2ObjectModel:ReprojectionError" priority="13" bump="0">						
+				<Component name="ErrorAvg" type="S2ObjectModel:ReprojectionError" priority="13" bump="0">						
 					<param name="group_id">4</param>
 				</Component>
 				
-				<Component name="ErrorAggregation" type="S2ObjectModel:ErrorAggregation" priority="14" bump="0">
+				<Component name="Errors" type="S2ObjectModel:ErrorAggregation" priority="14" bump="0">
 					<param name="names.group1">sifty</param>					
 					<param name="names.group2">shoty</param>					
 					<param name="names.group3">sifty+shoty (wspolny RANSAC)</param>					
@@ -121,146 +121,146 @@
 <!-- SIFTy -->
 
 		<Source name="Match.out_matrix_sift">	
-			<sink>TransformSifts.in_hm</sink>		
+			<sink>TransformSift.in_hm</sink>		
 		</Source>
 		
 		<Source name="Match.out_source_keypoints_sift">
-			<sink>TransformSifts.in_cloud_xyz</sink>				
+			<sink>TransformSift.in_cloud_xyz</sink>				
 		</Source>
 		
-		<Source name="TransformSifts.out_cloud_xyz">
-			<sink>ErrorSifts.in_xyz_cloud_obtained</sink>				
+		<Source name="TransformSift.out_cloud_xyz">
+			<sink>ErrorSift.in_xyz_cloud_obtained</sink>				
 		</Source>
 			
 		<Source name="Match.out_target_keypoints_sift">
-			<sink>ErrorSifts.in_xyz_cloud_expected</sink>	
+			<sink>ErrorSift.in_xyz_cloud_expected</sink>	
 		</Source>
 		
 		<Source name="Match.out_correspondeces_sift">
-			<sink>ErrorSifts.in_correspondences</sink>
+			<sink>ErrorSift.in_correspondences</sink>
 		</Source>
 		
-		<Source name="ErrorSifts.out_error">
-			<sink>ErrorAggregation.in_error_1</sink>
+		<Source name="ErrorSift.out_error">
+			<sink>Errors.in_error_1</sink>
 		</Source>	
 		
-		<Source name="ErrorSifts.out_base">
-			<sink>ErrorAggregation.in_base_1</sink>
+		<Source name="ErrorSift.out_base">
+			<sink>Errors.in_base_1</sink>
 		</Source>
 		
 		
 <!-- SHOTy -->	
 	
 		<Source name="Match.out_matrix_shot">
-			<sink>TransformShots.in_hm</sink>
+			<sink>TransformShot.in_hm</sink>
 		</Source>	
 				
 		<Source name="Match.out_source_keypoints_shot">
-			<sink>TransformShots.in_cloud_xyz</sink>
+			<sink>TransformShot.in_cloud_xyz</sink>
 		</Source>
 	
-		<Source name="TransformShots.out_cloud_xyz">
-			<sink>ErrorShots.in_xyz_cloud_obtained</sink>				
+		<Source name="TransformShot.out_cloud_xyz">
+			<sink>ErrorShot.in_xyz_cloud_obtained</sink>				
 		</Source>	
 		
 		<Source name="Match.out_target_keypoints_shot">
-			<sink>ErrorShots.in_xyz_cloud_expected</sink>	
+			<sink>ErrorShot.in_xyz_cloud_expected</sink>	
 		</Source>
 		
 		<Source name="Match.out_correspondeces_shot">
-			<sink>ErrorShots.in_correspondences</sink>
+			<sink>ErrorShot.in_correspondences</sink>
 		</Source>
 
-		<Source name="ErrorShots.out_error">
-			<sink>ErrorAggregation.in_error_2</sink>
+		<Source name="ErrorShot.out_error">
+			<sink>Errors.in_error_2</sink>
 		</Source>
 		
-		<Source name="ErrorShots.out_base">
-			<sink>ErrorAggregation.in_base_2</sink>
+		<Source name="ErrorShot.out_base">
+			<sink>Errors.in_base_2</sink>
 		</Source>							
 					
 		
 <!-- SHOTy + SIFTy, wspolny RANSAC -->	
 	
 		<Source name="Match.out_matrix_common_ransac">
-			<sink>TransformCommonRansac.in_hm</sink>
+			<sink>TransformRansac.in_hm</sink>
 		</Source>
 		
 		<Source name="Match.out_source_keypoints_common_ransac">
-			<sink>TransformCommonRansac.in_cloud_xyz</sink>
+			<sink>TransformRansac.in_cloud_xyz</sink>
 		</Source>
 			
-		<Source name="TransformCommonRansac.out_cloud_xyz">
-			<sink>ErrorCommonRansac.in_xyz_cloud_obtained</sink>				
+		<Source name="TransformRansac.out_cloud_xyz">
+			<sink>ErrorRansac.in_xyz_cloud_obtained</sink>				
 		</Source>	
 		
 		<Source name="Match.out_target_keypoints_common_ransac">
-			<sink>ErrorCommonRansac.in_xyz_cloud_expected</sink>
+			<sink>ErrorRansac.in_xyz_cloud_expected</sink>
 		</Source>	
 			
 		<Source name="Match.out_correspondeces_common_ransac">
-			<sink>ErrorCommonRansac.in_correspondences</sink>
+			<sink>ErrorRansac.in_correspondences</sink>
 		</Source>
 		
-		<Source name="ErrorCommonRansac.out_error">
-			<sink>ErrorAggregation.in_error_3</sink>
+		<Source name="ErrorRansac.out_error">
+			<sink>Errors.in_error_3</sink>
 		</Source>
 								
-		<Source name="ErrorCommonRansac.out_base">
-			<sink>ErrorAggregation.in_base_3</sink>
+		<Source name="ErrorRansac.out_base">
+			<sink>Errors.in_base_3</sink>
 		</Source>					
 
 		<!-- SHOTy + SIFTy -->
 		
 
 		<Source name="Match.out_matrix_sift">	
-			<sink>AvgTransform.in_homogMatrix</sink>		
+			<sink>AvgMatrix.in_homogMatrix</sink>		
 		</Source>		
 		
 		<Source name="Match.out_matrix_shot">
-			<sink>AvgTransform.in_homogMatrix</sink>	
+			<sink>AvgMatrix.in_homogMatrix</sink>	
 		</Source>	
 				
-		<Source name="AvgTransform.out_homogMatrix">
-			<sink>TransformCommonAvg.in_hm</sink>
+		<Source name="AvgMatrix.out_homogMatrix">
+			<sink>TransformAvg.in_hm</sink>
 		</Source>
 		
 		<Source name="Match.out_source_keypoints_common_ransac">
-			<sink>TransformCommonAvg.in_cloud_xyz</sink>
+			<sink>TransformAvg.in_cloud_xyz</sink>
 		</Source>
 
 		<Source name="Match.out_target_keypoints_common_ransac">
-			<sink>ErrorCommonAvg.in_xyz_cloud_expected</sink>
+			<sink>ErrorAvg.in_xyz_cloud_expected</sink>
 		</Source>
 		
-		<Source name="TransformCommonAvg.out_cloud_xyz">
-			<sink>ErrorCommonAvg.in_xyz_cloud_obtained</sink>				
+		<Source name="TransformAvg.out_cloud_xyz">
+			<sink>ErrorAvg.in_xyz_cloud_obtained</sink>				
 		</Source>	
 			
 		<Source name="Match.out_correspondeces_shot_sift">
-			<sink>ErrorCommonAvg.in_correspondences</sink>
+			<sink>ErrorAvg.in_correspondences</sink>
 		</Source>
 		
-		<Source name="ErrorCommonAvg.out_error">
-			<sink>ErrorAggregation.in_error_4</sink>
+		<Source name="ErrorAvg.out_error">
+			<sink>Errors.in_error_4</sink>
 		</Source>		
 
-		<Source name="ErrorCommonAvg.out_base">
-			<sink>ErrorAggregation.in_base_4</sink>
+		<Source name="ErrorAvg.out_base">
+			<sink>Errors.in_base_4</sink>
 		</Source>	
 	
 <!-- chmury RGB -->	
 				
 		<Source name="Match.out_source_cloud">
-			<sink>TransformSifts.in_cloud_xyzrgb</sink>
-			<sink>TransformShots.in_cloud_xyzrgb</sink>
-			<sink>TransformCommonRansac.in_cloud_xyzrgb</sink>
-			<sink>TransformCommonAvg.in_cloud_xyzrgb</sink>
+			<sink>TransformSift.in_cloud_xyzrgb</sink>
+			<sink>TransformShot.in_cloud_xyzrgb</sink>
+			<sink>TransformRansac.in_cloud_xyzrgb</sink>
+			<sink>TransformAvg.in_cloud_xyzrgb</sink>
 		</Source>	
 			
 <!--	1st viewer : left: shots, right: sifts		-->
 		
-		<Source name="TransformShots.out_cloud_xyzrgb">
+		<Source name="TransformShot.out_cloud_xyzrgb">
 			<sink>CorrespondencesViewer.in_source_cloud</sink>
 		</Source>
 
@@ -268,7 +268,7 @@
 			<sink>CorrespondencesViewer.in_target_cloud</sink>
 		</Source>
 		
-		<Source name="TransformShots.out_cloud_xyz">
+		<Source name="TransformShot.out_cloud_xyz">
 			<sink>CorrespondencesViewer.in_source_keypoints</sink>
 		</Source>
 
@@ -281,7 +281,7 @@
 		</Source>  
 		
 		 
-		<Source name="TransformSifts.out_cloud_xyzrgb">
+		<Source name="TransformSift.out_cloud_xyzrgb">
 			<sink>CorrespondencesViewer.in_source_cloud2</sink>
 		</Source>
 
@@ -289,7 +289,7 @@
 			<sink>CorrespondencesViewer.in_target_cloud2</sink>
 		</Source>
 		
-		<Source name="TransformSifts.out_cloud_xyz">
+		<Source name="TransformSift.out_cloud_xyz">
 			<sink>CorrespondencesViewer.in_source_keypoints2</sink>
 		</Source>
 
@@ -304,7 +304,7 @@
 				
 <!--	2st viewer : left: shot-sifts common ransac, right: shot-sifts-avg		-->
 		
-		<Source name="TransformCommonRansac.out_cloud_xyzrgb">
+		<Source name="TransformRansac.out_cloud_xyzrgb">
 			<sink>CorrespondencesViewer.in_source_cloud3</sink>
 		</Source>
 
@@ -312,7 +312,7 @@
 			<sink>CorrespondencesViewer.in_target_cloud3</sink>
 		</Source>
 		
-		<Source name="TransformCommonRansac.out_cloud_xyz">
+		<Source name="TransformRansac.out_cloud_xyz">
 			<sink>CorrespondencesViewer.in_source_keypoints3</sink>
 		</Source>
 
@@ -325,7 +325,7 @@
 		</Source>  
 		
 		
-		<Source name="TransformCommonAvg.out_cloud_xyzrgb">
+		<Source name="TransformAvg.out_cloud_xyzrgb">
 			<sink>CorrespondencesViewer.in_source_cloud4</sink>
 		</Source>
 
@@ -333,7 +333,7 @@
 			<sink>CorrespondencesViewer.in_target_cloud4</sink>
 		</Source>
 		
-		<Source name="TransformCommonAvg.out_cloud_xyz">
+		<Source name="TransformAvg.out_cloud_xyz">
 			<sink>CorrespondencesViewer.in_source_keypoints4</sink>
 		</Source>
 

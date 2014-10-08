@@ -109,7 +109,7 @@ private:
 		}
 
 		 friend std::ostream & operator<< (std::ostream &out, const Result &s) {
-			 return out << "error : " << s.error << ", base : " << s.base << "\n";
+			 return out << "error : " << s.error << ", base : " << s.base << ", avg: " << s.error/(double)s.base <<"\n";
 		}
 
 		 long getBase() {

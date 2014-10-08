@@ -123,6 +123,7 @@ protected:
 	Base::Property<bool> display_target_keypoints;
 	Base::Property<bool> display_source_keypoints;
 	Base::Property<bool> all_viewpoints;
+	Base::Property<int> correspondences_size;
 
 	int left;
 	int right;

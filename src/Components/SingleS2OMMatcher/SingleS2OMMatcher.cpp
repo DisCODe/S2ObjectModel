@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <iterator>
 
 #include "SingleS2OMMatcher.hpp"
 #include "Common/Logger.hpp"
@@ -198,7 +199,6 @@ void SingleS2OMMatcher::match() {
 
 	pcl::PointCloud<PointXYZSIFT>::Ptr sift_fixed (new pcl::PointCloud<PointXYZSIFT>());
 	removeInCenter(cloud_xyzsift, sift_fixed);
-	CLOG(LWARNING) << "SingleS2OMMatcher::match - fix sifts; before : " << cloud_xyzsift->size() << ", after : " << sift_fixed->size();
 
 	for (int i = 0; i < models.size(); ++i) {
 		matchModel(*models[i], cloud_xyzrgb, sift_fixed, cloud_xyzshot);
@@ -256,18 +256,26 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	}
 	for (int i = 0; i < siftCorrs->size(); ++i) {
 		pcl::Correspondence old = siftCorrs->at(i);
-		commonCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance));
+		commonCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance/(float)70000));
 	}
 
 	// RANSAC
 
 	shotTransform = getBestCorrespondences(shot_source_keypoints, shot_target_keypoints,shotCorrs, bestShotCorrs,
 			RANSAC_InlierThreshold, RANSAC_MaximumIterations);
+	if (shotTransform.getElements() == Eigen::Matrix4f::Identity()) {
+		bestShotCorrs->clear();
+	}
 	siftTransform = getBestCorrespondences(sift_source_keypoints, sift_target_keypoints,siftCorrs, bestSiftCorrs,
 			RANSAC_InlierThreshold, RANSAC_MaximumIterations);
+	if (siftTransform.getElements() == Eigen::Matrix4f::Identity()) {
+		bestSiftCorrs->clear();
+	}
 	commonTransform = getBestCorrespondences(common_source_keypoints, common_target_keypoints, commonCorrs, bestCommonCorrs,
 			RANSAC_InlierThreshold, RANSAC_MaximumIterations);
-
+	if (commonTransform.getElements() == Eigen::Matrix4f::Identity()) {
+		bestCommonCorrs->clear();
+	}
 	// prepare shotSiftCorrespondeces
 
 	pcl::CorrespondencesPtr shotSiftCorrs(new pcl::Correspondences());
@@ -279,6 +287,34 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 		pcl::Correspondence old = bestSiftCorrs->at(i);
 		shotSiftCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance));
 	}
+
+
+/*
+	// remove duplicated points
+
+	pcl::KdTreeFLANN<pcl::PointXYZ> match_search;
+	match_search.setInputCloud(shot_source_keypoints);
+
+	for (int current_index = shot_source_keypoints->size(); current_index < common_source_keypoints; ++current_index) {
+		std::vector<int> neigh_indices(1);
+		std::vector<float> neigh_sqr_dists(1);
+		int found_neighs = match_search.nearestKSearch(common_source_keypoints->at(current_index), 1, neigh_indices, neigh_sqr_dists);
+		if (found_neighs == 1 && neigh_sqr_dists[0] == 0) {
+			int first_index = neigh_indices[0];
+			CLOG(LERROR) << "Found duplicated points, index: " << first_index << " and " << current_index;
+			for (int i = 0; i < shotSiftCorrs->size(); ++i) {
+				pcl::Correspondence corr = shotSiftCorrs->at(i);
+				if (corr.index_query == current_index) {
+					corr.index_query = first_index;
+					CLOG(LWARNING) << "fixing " << i << " shotSiftCorrs Correspondence";
+				}
+			}
+
+		}
+	}
+
+*/
+
 
 	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
 	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestShotCorrs " << bestShotCorrs->size();

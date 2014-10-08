@@ -20,10 +20,14 @@
 				<Component name="Source" type="PCL:PCDReader" priority="1" bump="0">
 					<param name="filename">/media/Dokumenty/data/cuboid/models/remsey_xyzrgb.pcd</param>					
 				</Component>
-
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="2" bump="0">
+					<param name="LeafSize.x">0.001</param>
+					<param name="LeafSize.y">0.001</param>
+					<param name="LeafSize.z">0.001</param>
+				</Component>
 				<Component name="Keypoints" type="S2ObjectModel:KepointsHarris3dDetector" priority="7" bump="0">
-						<param name="radius_search">0.1</param>
-						<param name="radius">0.02</param>
+						<param name="radius_search">0.02</param>
+						<param name="radius">0.2</param>
 					
 						</Component>
 			</Executor>
@@ -40,6 +44,9 @@
 	<DataStreams>
 		
 		<Source name="Source.out_cloud_xyzrgb">
+			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+        </Source>  
+        <Source name="VoxelGridRGB.out_cloud_xyzrgb">
 			<sink>Keypoints.in_cloud_xyzrgb</sink>
 			<sink>Visualizer.in_cloud</sink>
 		</Source>
