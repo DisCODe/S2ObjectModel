@@ -188,7 +188,7 @@ void CorrespondencesViewer::display2() {
 
 void CorrespondencesViewer::display3() {
 	LOG(LWARNING)<< "CorrespondencesViewer::display3";
-	if (!all_viewpoints) return;
+
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces3.read();
 
@@ -202,6 +202,7 @@ void CorrespondencesViewer::display3() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud_temp = in_target_cloud3.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud( new pcl::PointCloud<pcl::PointXYZRGB>(*target_cloud_temp));
 
+    if (!all_viewpoints) return;
 	displayOnPort(left_down, source_keypoints, target_keypoints, corrs, source_cloud, target_cloud);
 
 	viewer->addText("wspolny RANSAC", 5, 5, "left_down_text", left_down);
@@ -209,7 +210,7 @@ void CorrespondencesViewer::display3() {
 
 void CorrespondencesViewer::display4() {
 	LOG(LWARNING)<< "CorrespondencesViewer::display4";
-	if (!all_viewpoints) return;
+
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces4.read();
 
@@ -223,6 +224,7 @@ void CorrespondencesViewer::display4() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud_temp = in_target_cloud4.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud( new pcl::PointCloud<pcl::PointXYZRGB>(*target_cloud_temp));
 
+    if (!all_viewpoints) return;
 	displayOnPort(right_down, source_keypoints, target_keypoints, corrs, source_cloud, target_cloud);
 	viewer->addText("AVG", 5, 5, "right_down_text", right_down);
 }
