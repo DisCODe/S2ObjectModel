@@ -200,6 +200,11 @@ void SingleS2OMMatcher::match() {
 	pcl::PointCloud<PointXYZSIFT>::Ptr sift_fixed (new pcl::PointCloud<PointXYZSIFT>());
 	removeInCenter(cloud_xyzsift, sift_fixed);
 
+    if (sift_fixed->size() == 0 || cloud_xyzshot->size() ==0) {
+        CLOG(LWARNING) << "empty cloud, skip";
+        return;
+    }
+
 	for (int i = 0; i < models.size(); ++i) {
 		matchModel(*models[i], cloud_xyzrgb, sift_fixed, cloud_xyzshot);
 	}
