@@ -57,14 +57,14 @@ bool ReprojectionError::onStart() {
 }
 
 void ReprojectionError::compute() {
-	CLOG(LWARNING) << "ReprojectionError::compute(" << group_id << ")";
+	CLOG(LTRACE) << "ReprojectionError::compute(" << group_id << ")";
 	pcl::CorrespondencesPtr correspondences = in_correspondences.read();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr expected = in_xyz_cloud_expected.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr obtained = in_xyz_cloud_obtained.read();
 
-	CLOG(LWARNING) << "ReprojectionError::in_correspondences.size()" << correspondences->size();
-	CLOG(LWARNING) << "ReprojectionError:: expected size :" << expected->size() <<", obtained: "<< obtained->size();
+	CLOG(LTRACE) << "ReprojectionError::in_correspondences.size()" << correspondences->size();
+	CLOG(LTRACE) << "ReprojectionError:: expected size :" << expected->size() <<", obtained: "<< obtained->size();
 
 	double sum = 0.0;
 
@@ -85,7 +85,7 @@ void ReprojectionError::compute() {
 		);
 	}
 
-	CLOG(LWARNING) << "ReprojectionError::out_error.write (" << group_id << "): " << sum << "/" << correspondences->size();
+	CLOG(LTRACE) << "ReprojectionError::out_error.write (" << group_id << "): " << sum << "/" << correspondences->size();
 
 	out_error.write(sum);
 	out_base.write(correspondences->size());

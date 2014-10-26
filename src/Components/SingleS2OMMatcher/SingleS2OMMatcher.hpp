@@ -105,6 +105,17 @@ protected:
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_source_cloud;
 	Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_target_cloud;
 
+	//
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb1;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot1;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift1;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb2;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot2;
+	Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift2;
+
+
+
 
 
 	Base::EventHandler2 h_readModels;
@@ -121,7 +132,10 @@ protected:
     Base::Property<int> sifts_useReciprocalCorrespondecesNextBest;
 
 	void readModels();
+	void matchPair();
 	void match();
+
+
 	void checkCorrespondences(pcl::Correspondences corrs, pcl::PointCloud<pcl::PointXYZ> source, pcl::PointCloud<pcl::PointXYZ> target);
 
 
@@ -133,6 +147,13 @@ private:
 			pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot);
 	pcl::CorrespondencesPtr computeSHOTCorrespondences(pcl::PointCloud<PointXYZSHOT>::Ptr source, pcl::PointCloud<PointXYZSHOT>::Ptr target);
 	pcl::CorrespondencesPtr computeSIFTCorrespondences(pcl::PointCloud<PointXYZSIFT>::Ptr source, pcl::PointCloud<PointXYZSIFT>::Ptr target);
+
+	void match2(pcl::PointCloud<pcl::PointXYZRGB>::Ptr model_xyzrgb,
+	pcl::PointCloud<PointXYZSIFT>::Ptr model_xyzsift,
+	pcl::PointCloud<PointXYZSHOT>::Ptr model_xyzshot,
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_xyzrgb,
+	pcl::PointCloud<PointXYZSIFT>::Ptr scene_xyzsift,
+	pcl::PointCloud<PointXYZSHOT>::Ptr scene_xyzshot);
 
 
 	// TODO add transformation to compute error

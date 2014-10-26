@@ -71,6 +71,7 @@ bool ErrorAggregation::onInit() {
 }
 
 bool ErrorAggregation::onFinish() {
+	displayResults();
 	return true;
 }
 
@@ -83,56 +84,61 @@ bool ErrorAggregation::onStart() {
 }
 
 void ErrorAggregation::addToGroup1() {
-	CLOG(LWARNING) << "ErrorAggregation::addToGroup1";
+	CLOG(LTRACE) << "ErrorAggregation::addToGroup1";
 
 	double error = in_error_1.read();
 	long base = in_base_1.read();
 
-	CLOG(LWARNING) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
+	CLOG(LTRACE) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
 
 	group1.add(base, error);
 }
 
 void ErrorAggregation::addToGroup2() {
-	CLOG(LWARNING) << "ErrorAggregation::addToGroup2";
+	CLOG(LTRACE) << "ErrorAggregation::addToGroup2";
 
 	double error = in_error_2.read();
 	long base = in_base_2.read();
 
-	CLOG(LWARNING) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
+	CLOG(LTRACE) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
 
 	group2.add(base, error);
 }
 
 void ErrorAggregation::addToGroup3() {
-	CLOG(LWARNING) << "ErrorAggregation::addToGroup3";
+	CLOG(LTRACE) << "ErrorAggregation::addToGroup3";
 
 	double error = in_error_3.read();
 	long base = in_base_3.read();
 
-	CLOG(LWARNING) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
+	CLOG(LTRACE) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
 
 	group3.add(base, error);
 }
 
 void ErrorAggregation::addToGroup4() {
-	CLOG(LWARNING) << "ErrorAggregation::addToGroup4";
+	CLOG(LTRACE) << "ErrorAggregation::addToGroup4";
 
 	double error = in_error_4.read();
 	long base = in_base_4.read();
 
-	CLOG(LWARNING) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
+	CLOG(LTRACE) << "ErrorAggregation::(error, base) =(" << error << ", " << base << ")";
 
 	group4.add(base, error);
 }
 
 void ErrorAggregation::displayResults() {
-	CLOG(LWARNING) << "ErrorAggregation::displayResults";
-	CLOG(LWARNING) << "Results:"
+	CLOG(LTRACE) << "ErrorAggregation::displayResults";
+	CLOG(LERROR) << "Results:"
 			<< "\n1." << group1_name << "\n" << group1
 			<< "\n2." << group2_name << "\n" << group2
 			<< "\n3." << group3_name << "\n" << group3
 			<< "\n4." << group4_name << "\n" << group4;
+	CLOG(LERROR) << "Avg results:"
+			<< "\n1." << group1_name << "\n" << fixed << std::setprecision(15) <<  group1.getAvgError()
+			<< "\n2." << group2_name << "\n" << fixed << std::setprecision(15) <<  group2.getAvgError()
+			<< "\n3." << group3_name << "\n" << fixed << std::setprecision(15) <<  group3.getAvgError()
+			<< "\n4." << group4_name << "\n" << fixed << std::setprecision(15) <<  group4.getAvgError();
 }
 
 

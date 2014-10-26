@@ -14,6 +14,7 @@
 #include "EventHandler2.hpp"
 
 #include <vector>
+#include <iomanip>
 
 
 
@@ -109,7 +110,7 @@ private:
 		}
 
 		 friend std::ostream & operator<< (std::ostream &out, const Result &s) {
-			 return out << "error : " << s.error << ", base : " << s.base << ", avg: " << s.error/(double)s.base <<"\n";
+			 return out << fixed << std::setprecision(15) << s.error << "\t" << std::setprecision(0) << s.base << "\n";
 		}
 
 		 long getBase() {

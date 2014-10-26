@@ -144,6 +144,15 @@ void SingleS2OMMatcher::prepareInterface() {
 	registerStream("out_source_cloud", &out_source_cloud);
 	registerStream("out_target_cloud", &out_target_cloud);
 
+	//
+	registerStream("in_cloud_xyzrgb1", &in_cloud_xyzrgb1);
+	registerStream("in_cloud_xyzshot1", &in_cloud_xyzshot1);
+	registerStream("in_cloud_xyzsift1", &in_cloud_xyzsift1);
+
+	registerStream("in_cloud_xyzrgb2", &in_cloud_xyzrgb2);
+	registerStream("in_cloud_xyzshot2", &in_cloud_xyzshot2);
+	registerStream("in_cloud_xyzsift2", &in_cloud_xyzsift2);
+
 	// Register handlers
 	h_readModels.setup(boost::bind(&SingleS2OMMatcher::readModels, this));
 	registerHandler("readModels", &h_readModels);
@@ -153,6 +162,15 @@ void SingleS2OMMatcher::prepareInterface() {
 	addDependency("match", &in_cloud_xyzsift);
 	addDependency("match", &in_cloud_xyzrgb);
 	addDependency("match", &in_cloud_xyzshot);
+
+	registerHandler("matchPair", boost::bind(&SingleS2OMMatcher::matchPair, this));
+	addDependency("matchPair", &in_cloud_xyzsift1);
+	addDependency("matchPair", &in_cloud_xyzrgb1);
+	addDependency("matchPair", &in_cloud_xyzshot1);
+	addDependency("matchPair", &in_cloud_xyzsift2);
+	addDependency("matchPair", &in_cloud_xyzrgb2);
+	addDependency("matchPair", &in_cloud_xyzshot2);
+
 }
 
 bool SingleS2OMMatcher::onInit() {
@@ -173,7 +191,7 @@ bool SingleS2OMMatcher::onStart() {
 }
 
 void SingleS2OMMatcher::readModels() {
-	CLOG(LWARNING)<< "SingleS2OMMatcher::readModels";
+	CLOG(LTRACE)<< "SingleS2OMMatcher::readModels";
 	for( int i = 0; i<models.size(); i++) {
 		delete models[i];
 	}
@@ -185,14 +203,27 @@ void SingleS2OMMatcher::readModels() {
 		if(model!=NULL)
 		models.push_back(model);
 		else
-		CLOG(LWARNING) << "Cannot read model"<< abstractObjects[i]->name;
+		CLOG(LTRACE) << "Cannot read model"<< abstractObjects[i]->name;
 	}
 	CLOG(LWARNING)<< "SingleS2OMMatcher::models.size " << models.size();
 
 }
 
+void SingleS2OMMatcher::matchPair() {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr model_xyzrgb = in_cloud_xyzrgb1.read();
+	pcl::PointCloud<PointXYZSIFT>::Ptr model_xyzsift = in_cloud_xyzsift1.read();
+	pcl::PointCloud<PointXYZSHOT>::Ptr model_xyzshot = in_cloud_xyzshot1.read();
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_xyzrgb = in_cloud_xyzrgb2.read();
+	pcl::PointCloud<PointXYZSIFT>::Ptr scene_xyzsift = in_cloud_xyzsift2.read();
+	pcl::PointCloud<PointXYZSHOT>::Ptr scene_xyzshot = in_cloud_xyzshot2.read();
+
+	match2(model_xyzrgb, model_xyzsift, model_xyzshot, scene_xyzrgb, scene_xyzsift, scene_xyzshot);
+
+}
+
 void SingleS2OMMatcher::match() {
-	CLOG(LWARNING)<< "SingleS2OMMatcher::match, models :" << models.size();
+	CLOG(LTRACE)<< "SingleS2OMMatcher::match, models :" << models.size();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb = in_cloud_xyzrgb.read();
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift = in_cloud_xyzsift.read();
 	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot = in_cloud_xyzshot.read();
@@ -201,7 +232,7 @@ void SingleS2OMMatcher::match() {
 	removeInCenter(cloud_xyzsift, sift_fixed);
 
     if (sift_fixed->size() == 0 || cloud_xyzshot->size() ==0) {
-        CLOG(LWARNING) << "empty cloud, skip";
+        CLOG(LTRACE) << "empty cloud, skip";
         return;
     }
 
@@ -212,18 +243,28 @@ void SingleS2OMMatcher::match() {
 }
 
 void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb,
+		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift,
+		pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot) {
+	CLOG(LTRACE)<< "SingleS2OMMatcher::matchModel " << model.name;
+	match2(model.cloud_xyzrgb, model.cloud_xyzsift, model.cloud_xyzshot, cloud_xyzrgb, cloud_xyzsift, cloud_xyzshot);
+
+}
+
+
+void SingleS2OMMatcher::match2(pcl::PointCloud<pcl::PointXYZRGB>::Ptr model_xyzrgb,
+		pcl::PointCloud<PointXYZSIFT>::Ptr model_xyzsift,
+		pcl::PointCloud<PointXYZSHOT>::Ptr model_xyzshot, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb,
 		pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift, pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot) {
-	CLOG(LWARNING)<< "SingleS2OMMatcher::matchModel " << model.name;
 
 	// prepare xyz clouds
 	pcl::PointCloud<pcl::PointXYZ>::Ptr shot_source_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*model.cloud_xyzshot, *shot_source_keypoints);
+	pcl::copyPointCloud(*model_xyzshot, *shot_source_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr shot_target_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::copyPointCloud(*cloud_xyzshot, *shot_target_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr sift_source_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::copyPointCloud(*model.cloud_xyzsift, *sift_source_keypoints);
+	pcl::copyPointCloud(*model_xyzsift, *sift_source_keypoints);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr sift_target_keypoints(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::copyPointCloud(*cloud_xyzsift, *sift_target_keypoints);
@@ -246,14 +287,14 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 	pcl::CorrespondencesPtr bestShotCorrs(new pcl::Correspondences());
 	pcl::CorrespondencesPtr bestCommonCorrs(new pcl::Correspondences());
 
-	pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(model.cloud_xyzshot, cloud_xyzshot);
-	pcl::CorrespondencesPtr siftCorrs = computeSIFTCorrespondences(model.cloud_xyzsift, cloud_xyzsift);
+	pcl::CorrespondencesPtr shotCorrs = computeSHOTCorrespondences(model_xyzshot, cloud_xyzshot);
+	pcl::CorrespondencesPtr siftCorrs = computeSIFTCorrespondences(model_xyzsift, cloud_xyzsift);
 
 	pcl::CorrespondencesPtr commonCorrs(new pcl::Correspondences());
 
-	CLOG(LWARNING) << "Common source keypoints: " << shot_source_keypoints->size() << " + " <<
+	CLOG(LTRACE) << "Common source keypoints: " << shot_source_keypoints->size() << " + " <<
 			sift_source_keypoints->size() << " = " << common_source_keypoints->size();
-	CLOG(LWARNING) << "Common target keypoints: " << shot_target_keypoints->size() << " + " <<
+	CLOG(LTRACE) << "Common target keypoints: " << shot_target_keypoints->size() << " + " <<
 			sift_target_keypoints->size() << " = " << common_target_keypoints->size();
 
 	for (int i = 0; i < shotCorrs->size(); ++i) {
@@ -293,72 +334,44 @@ void SingleS2OMMatcher::matchModel(S2ObjectModel model, pcl::PointCloud<pcl::Poi
 		shotSiftCorrs->push_back(pcl::Correspondence(old.index_query + shot_source_keypoints->size(), old.index_match + shot_target_keypoints->size(), old.distance));
 	}
 
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::bestShotCorrs " << bestShotCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::siftCorrs " << siftCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::bestSiftCorrs " << bestSiftCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::commonCorrs " << commonCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::bestCommonCorrs " << bestCommonCorrs->size();
+	 CLOG(LTRACE)<< "SingleS2OMMatcher::shotSiftCorrs " << shotSiftCorrs->size();
 
-/*
-	// remove duplicated points
-
-	pcl::KdTreeFLANN<pcl::PointXYZ> match_search;
-	match_search.setInputCloud(shot_source_keypoints);
-
-	for (int current_index = shot_source_keypoints->size(); current_index < common_source_keypoints; ++current_index) {
-		std::vector<int> neigh_indices(1);
-		std::vector<float> neigh_sqr_dists(1);
-		int found_neighs = match_search.nearestKSearch(common_source_keypoints->at(current_index), 1, neigh_indices, neigh_sqr_dists);
-		if (found_neighs == 1 && neigh_sqr_dists[0] == 0) {
-			int first_index = neigh_indices[0];
-			CLOG(LERROR) << "Found duplicated points, index: " << first_index << " and " << current_index;
-			for (int i = 0; i < shotSiftCorrs->size(); ++i) {
-				pcl::Correspondence corr = shotSiftCorrs->at(i);
-				if (corr.index_query == current_index) {
-					corr.index_query = first_index;
-					CLOG(LWARNING) << "fixing " << i << " shotSiftCorrs Correspondence";
-				}
-			}
-
-		}
-	}
-
-*/
-
-
-	CLOG(LWARNING)<< "SingleS2OMMatcher::shotCorrs " << shotCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestShotCorrs " << bestShotCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::siftCorrs " << siftCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestSiftCorrs " << bestSiftCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::commonCorrs " << commonCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::bestCommonCorrs " << bestCommonCorrs->size();
-	 CLOG(LWARNING)<< "SingleS2OMMatcher::shotSiftCorrs " << shotSiftCorrs->size();
-
-	CLOG(LWARNING) << "check shot corrs";
+	CLOG(LTRACE) << "check shot corrs";
 	checkCorrespondences(*bestShotCorrs, *shot_source_keypoints, *shot_target_keypoints);
-	CLOG(LWARNING) << "check sift corrs";
+	CLOG(LTRACE) << "check sift corrs";
 	checkCorrespondences(*bestSiftCorrs, *sift_source_keypoints, *sift_target_keypoints);
-	CLOG(LWARNING) << "check common corrs";
+	CLOG(LTRACE) << "check common corrs";
 	checkCorrespondences(*bestCommonCorrs, *common_source_keypoints, *common_target_keypoints);
-	CLOG(LWARNING) << "check shot sift corrs";
+	CLOG(LTRACE) << "check shot sift corrs";
 	checkCorrespondences(*shotSiftCorrs, *common_source_keypoints, *common_target_keypoints);
 
 	out_correspondeces_sift.write(bestSiftCorrs);
-	CLOG(LWARNING) << "out_matrix_sift.write\n" << siftTransform.getElements();
+	CLOG(LTRACE) << "out_matrix_sift.write\n" << siftTransform.getElements();
 	out_matrix_sift.write(siftTransform);
 	out_source_keypoints_sift.write(sift_source_keypoints);
 	out_target_keypoints_sift.write(sift_target_keypoints);
 
 	out_correspondeces_shot.write(bestShotCorrs);
-	CLOG(LWARNING) << "out_matrix_shot.write\n" << shotTransform.getElements();
+	CLOG(LTRACE) << "out_matrix_shot.write\n" << shotTransform.getElements();
 	out_matrix_shot.write(shotTransform);
 	out_source_keypoints_shot.write(shot_source_keypoints);
 	out_target_keypoints_shot.write(shot_target_keypoints);
 
 	out_correspondeces_common_ransac.write(bestCommonCorrs);
-	CLOG(LWARNING) << "out_matrix_common_ransac.write\n" << commonTransform.getElements();
+	CLOG(LTRACE) << "out_matrix_common_ransac.write\n" << commonTransform.getElements();
 	out_matrix_common_ransac.write(commonTransform);
 	out_source_keypoints_common_ransac.write(common_source_keypoints);
 	out_target_keypoints_common_ransac.write(common_target_keypoints);
 
 	out_correspondeces_shot_sift.write(shotSiftCorrs);
 
-	out_source_cloud.write(model.cloud_xyzrgb);
+	out_source_cloud.write(model_xyzrgb);
 	out_target_cloud.write(cloud_xyzrgb);
 }
 
