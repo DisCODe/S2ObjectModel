@@ -61,7 +61,7 @@ bool SingleS2OMJsonReader::onStart() {
 }
 
 void SingleS2OMJsonReader::loadModel() {
-	LOG(LWARNING) << "SingleS2OMJsonReader::loadModel()";
+	LOG(LTRACE) << "SingleS2OMJsonReader::loadModel()";
 
 	std::string s = filenames;
 

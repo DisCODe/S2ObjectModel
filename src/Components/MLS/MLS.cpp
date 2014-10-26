@@ -92,7 +92,7 @@ void MLS::compute() {
 
 		out_cloud_xyzrgb.write(result);
 	} else {
-		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyzrgb cloud";
+		CLOG(LTRACE)<< "KepointsIssDetector: empty input xyzrgb cloud";
 	}
 }
 

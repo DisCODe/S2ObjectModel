@@ -63,7 +63,7 @@ bool Normals::onStart() {
 }
 
 void Normals::computeNormalsXYZ() {
-	LOG(LWARNING) << "Normals::computeNormalsXYZ";
+	LOG(LTRACE) << "Normals::computeNormalsXYZ";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -100,10 +100,10 @@ void Normals::computeNormalsXYZ() {
 }
 
 void Normals::computeNormalsXYZRGB() {
-	LOG(LWARNING) << "Normals::computeNormalsXYZRGB";
+	LOG(LTRACE) << "Normals::computeNormalsXYZRGB";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 
-	LOG(LWARNING) << "Normals: input size: " << cloud->size();
+	LOG(LTRACE) << "Normals: input size: " << cloud->size();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
 
@@ -113,7 +113,7 @@ void Normals::computeNormalsXYZRGB() {
 	cloud->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud, *copy, indicesNANs);
 
-	LOG(LWARNING) << "Normals: input size: " << copy->size();
+	LOG(LTRACE) << "Normals: input size: " << copy->size();
 
 	// compute centroid
 
@@ -132,7 +132,7 @@ void Normals::computeNormalsXYZRGB() {
 	  normalEstimation.setRadiusSearch (radius);
 //	  normalEstimation.setViewPoint(centroid[0], centroid[1], centroid[2]);
 
-	  LOG(LWARNING) << "Normals: compute normals!";
+	  LOG(LTRACE) << "Normals: compute normals!";
 	  normalEstimation.compute (*cloud_normals);
 
 
@@ -141,10 +141,10 @@ void Normals::computeNormalsXYZRGB() {
 	  pcl::copyPointCloud(*copy, *cloud_xyz_normals);
 	  pcl::copyPointCloud(*cloud_normals, *cloud_xyz_normals);
 
-	  LOG(LWARNING) << "Normals: out_cloud_xyzrgb_normals.write " << cloud_normals->size();
+	  LOG(LTRACE) << "Normals: out_cloud_xyzrgb_normals.write " << cloud_normals->size();
 	  out_cloud_xyzrgb_normals.write(cloud_xyz_normals);
 
-	  LOG(LWARNING) << "Normals: out_cloud_normals.write " << cloud_normals->size();
+	  LOG(LTRACE) << "Normals: out_cloud_normals.write " << cloud_normals->size();
 	  out_cloud_normals.write(cloud_normals);
 }
 

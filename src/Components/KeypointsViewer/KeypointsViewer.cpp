@@ -75,7 +75,7 @@ bool KeypointsViewer::onStart() {
 }
 
 void KeypointsViewer::display() {
-	LOG(LWARNING) << "S2ObjectViewer::display";
+	LOG(LTRACE) << "S2ObjectViewer::display";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr in_cloud_1_temp = in_cloud.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_1(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::copyPointCloud(*in_cloud_1_temp, *cloud_1);

@@ -59,7 +59,7 @@ void KepointsSusanDetector::computeXYZRGB() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-	LOG(LWARNING) << "KepointsSusanDetector::computeXYZRGB";
+	LOG(LTRACE) << "KepointsSusanDetector::computeXYZRGB";
 
 	// Remove NaNs.
 	std::vector<int> indicesNANs;
@@ -88,7 +88,7 @@ void KepointsSusanDetector::computeXYZRGB() {
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsHarris3dDetector: empty input xyzrgb cloud";
+		CLOG(LTRACE)<< "KepointsHarris3dDetector: empty input xyzrgb cloud";
 	}
 }
 

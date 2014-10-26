@@ -108,7 +108,7 @@ void KepointsIssDetector::computeXYZ() {
 		out_cloud_xyz.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyz cloud";
+		CLOG(LTRACE)<< "KepointsIssDetector: empty input xyz cloud";
 	}
 }
 
@@ -116,7 +116,7 @@ void KepointsIssDetector::computeXYZRGB() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-	LOG(LWARNING) << "KepointsIssDetector::computeXYZRGB";
+	LOG(LTRACE) << "KepointsIssDetector::computeXYZRGB";
 	// Remove NaNs.
 	std::vector<int> indicesNANs;
 	cloud->is_dense = false;
@@ -146,17 +146,17 @@ void KepointsIssDetector::computeXYZRGB() {
 		iss_detector.compute(*keypoints);
 		std::vector<int> indices = *(iss_detector.getIndices().get());
 
-		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints->size();
-		CLOG(LWARNING) << "KepointsIssDetector::out_indices.write" << indices.size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints->size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_indices.write" << indices.size();
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyzrgb cloud";
+		CLOG(LTRACE)<< "KepointsIssDetector: empty input xyzrgb cloud";
 	}
 }
 
 void KepointsIssDetector::computeXYZRGBNormals() {
-	CLOG(LWARNING) << "KepointsIssDetector::computeXYZRGBNormals";
+	CLOG(LTRACE) << "KepointsIssDetector::computeXYZRGBNormals";
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud = in_cloud_xyzrgb_normals.read();
 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
 
@@ -198,16 +198,16 @@ void KepointsIssDetector::computeXYZRGBNormals() {
 		pcl::copyPointCloud(*keypoints, *keypoints_rgb);
 		pcl::copyPointCloud(*keypoints, *keypoints_xyz);
 
-		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb_normals.write" << keypoints->size();
-		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints_rgb->size();
-		CLOG(LWARNING) << "KepointsIssDetector::out_cloud_xyz.write" << keypoints_xyz->size();
-		CLOG(LWARNING) << "KepointsIssDetector::out_indices.write" << indices.size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_cloud_xyzrgb_normals.write" << keypoints->size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_cloud_xyzrgb.write" << keypoints_rgb->size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_cloud_xyz.write" << keypoints_xyz->size();
+		CLOG(LTRACE) << "KepointsIssDetector::out_indices.write" << indices.size();
 		out_cloud_xyzrgb_normals.write(keypoints);
 		out_cloud_xyzrgb.write(keypoints_rgb);
 		out_cloud_xyz.write(keypoints_xyz);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsIssDetector: empty input xyzrgb cloud";
+		CLOG(LTRACE)<< "KepointsIssDetector: empty input xyzrgb cloud";
 	}
 }
 

@@ -205,7 +205,7 @@ void SingleS2OMMatcher::readModels() {
 		else
 		CLOG(LTRACE) << "Cannot read model"<< abstractObjects[i]->name;
 	}
-	CLOG(LWARNING)<< "SingleS2OMMatcher::models.size " << models.size();
+	CLOG(LTRACE)<< "SingleS2OMMatcher::models.size " << models.size();
 
 }
 

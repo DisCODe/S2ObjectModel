@@ -111,7 +111,7 @@ SHOTCloudPtr SHOTConverter::getSHOT(PointCloudPtr cloud, NormalCloudPtr normals,
 
 void SHOTConverter::process() {
 
-	CLOG(LWARNING)<< "SHOTConverter::process";
+	CLOG(LTRACE)<< "SHOTConverter::process";
 
 	std::clock_t t1, t2, t3;
 
@@ -174,7 +174,7 @@ void SHOTConverter::process() {
 	 shot_xyzs << "shot_xyz" << l << ".pcd";
 
 
-	 CLOG(LWARNING)<< "SHOTConverter: saving files...!";
+	 CLOG(LTRACE)<< "SHOTConverter: saving files...!";
 	 pcl::io::savePCDFileASCII(clouds.str(), *cloud);
 	 pcl::io::savePCDFileASCII(keypointss.str(), *keypoints);
 	 pcl::io::savePCDFileASCII(shotss.str(), *shotCloud);
@@ -187,7 +187,7 @@ void SHOTConverter::process() {
 }
 void SHOTConverter::processWithNormals() {
 
-	CLOG(LWARNING)<< "SHOTConverter::processWithNormals";
+	CLOG(LTRACE)<< "SHOTConverter::processWithNormals";
 
 
 	XYZRGBNormalCloudPtr cloudNormals = in_xyzrgb_normal_points.read();
@@ -203,13 +203,13 @@ void SHOTConverter::processWithNormals() {
 	pcl::copyPointCloud(*keypoints_temp, *keypoints);
 
 
-	CLOG(LWARNING)<< "SHOTConverter::removing NANs";
+	CLOG(LTRACE)<< "SHOTConverter::removing NANs";
 
 	std::vector<int> indices;
 	cloud->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
 
-	CLOG(LWARNING)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
+	CLOG(LTRACE)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
 
 	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
 
@@ -246,7 +246,7 @@ void SHOTConverter::processWithNormals() {
 	out_shots.write(shotCloud);
 	out_cloud_xyzshot.write(xyzshotcloud);
 
-	CLOG(LWARNING)<< "SHOTConverter write!";
+	CLOG(LTRACE)<< "SHOTConverter write!";
 }
 
 } //: namespace SHOTConverter

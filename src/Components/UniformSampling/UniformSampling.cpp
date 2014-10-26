@@ -86,7 +86,7 @@ void UniformSampling::computeXYZ() {
 		out_cloud_xyz.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsHarris3dDetector: empty input xyz cloud";
+		CLOG(LTRACE)<< "KepointsHarris3dDetector: empty input xyz cloud";
 	}
 }
 
@@ -115,7 +115,7 @@ void UniformSampling::computeXYZRGB() {
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsHarris3dDetector: empty input xyz cloud";
+		CLOG(LTRACE)<< "KepointsHarris3dDetector: empty input xyz cloud";
 	}
 }
 

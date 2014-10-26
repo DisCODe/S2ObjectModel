@@ -84,15 +84,15 @@ bool S2OMJSONWriter::onStart() {
 }
 
 void S2OMJSONWriter::on_cloud_xyzrgb() {
-	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzrgb";
+	LOG(LTRACE) << "S2OMJSONWriter::on_cloud_xyzrgb";
 	cloud_xyzrgb = in_cloud_xyzrgb.read();
 }
 void S2OMJSONWriter::on_cloud_xyzsift() {
-	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzsift";
+	LOG(LTRACE) << "S2OMJSONWriter::on_cloud_xyzsift";
 	cloud_xyzsift = in_cloud_xyzsift.read();
 }
 void S2OMJSONWriter::on_cloud_xyzshot() {
-	LOG(LWARNING) << "S2OMJSONWriter::on_cloud_xyzshot";
+	LOG(LTRACE) << "S2OMJSONWriter::on_cloud_xyzshot";
 	cloud_xyzshot = in_cloud_xyzshot.read();
 }
 
@@ -110,7 +110,7 @@ void S2OMJSONWriter::write() {
 		ss << "_";
 		ss << boost::posix_time::to_iso_extended_string(boost::posix_time::microsec_clock::local_time());
 		timestamp = ss.str();
-		CLOG(LWARNING) << "S2OMJSONWriter:: add to name timestamp " << timestamp;
+		CLOG(LTRACE) << "S2OMJSONWriter:: add to name timestamp " << timestamp;
 	} else {
 		timestamp = "";
 	}
@@ -121,7 +121,7 @@ void S2OMJSONWriter::write() {
 		ss << "_";
 		ss << counter;
 		number = ss.str();
-		CLOG(LWARNING) << "S2OMJSONWriter:: add to name number " << number << "(" << counter << ")";
+		CLOG(LTRACE) << "S2OMJSONWriter:: add to name number " << number << "(" << counter << ")";
 	} else {
 		number = "";
 	}
@@ -133,7 +133,7 @@ void S2OMJSONWriter::write() {
 	CLOG(LINFO) << "S2OMJSONWriter::Write cloud_xyzshot size : " << cloud_xyzshot->size() ;
 
 	if (cloud_xyzrgb->size() == 0 || cloud_xyzsift->size() == 0 || cloud_xyzshot->size() == 0) {
-		CLOG(LWARNING) << "S2OMJSONWriter::Write empty one or more cloud!";
+		CLOG(LTRACE) << "S2OMJSONWriter::Write empty one or more cloud!";
 		return;
 	}
 	// Try to save the model retrieved from the S2OM data stream.
@@ -191,19 +191,19 @@ void S2OMJSONWriter::write() {
 		std::string name_cloud_xyzrgb = std::string(dir) + std::string("/") +
 				std::string(S2OMname) + std::string(number) + std::string(timestamp) + std::string("_xyzrgb.pcd");
 		pcl::io::savePCDFileASCII (name_cloud_xyzrgb, *(cloud_xyzrgb));
-		CLOG(LWARNING) << "Write: saved " << cloud_xyzrgb->points.size () << " cloud points to "<< name_cloud_xyzrgb;
+		CLOG(LTRACE) << "Write: saved " << cloud_xyzrgb->points.size () << " cloud points to "<< name_cloud_xyzrgb;
 
 		// Save SIFT cloud.
 		std::string name_cloud_xyzsift = std::string(dir) + std::string("/") +
 				std::string(S2OMname)+ std::string(number) + std::string(timestamp) + std::string("_xyzsift.pcd");
 		pcl::io::savePCDFileASCII (name_cloud_xyzsift, *(cloud_xyzsift));
-		CLOG(LWARNING) << "Write: saved " << cloud_xyzsift->points.size () << " SIFT points to "<< name_cloud_xyzsift;
+		CLOG(LTRACE) << "Write: saved " << cloud_xyzsift->points.size () << " SIFT points to "<< name_cloud_xyzsift;
 
 		// Save SHOT cloud.
 		std::string name_cloud_xyzshot = std::string(dir) + std::string("/") +
 				std::string(S2OMname)+ std::string(number) + std::string(timestamp) + std::string("_xyzshot.pcd");
 		pcl::io::savePCDFileASCII (name_cloud_xyzshot, *(cloud_xyzshot));
-		CLOG(LWARNING) << "Write: saved " << cloud_xyzshot->points.size () << " SHOT points to "<< name_cloud_xyzshot;
+		CLOG(LTRACE) << "Write: saved " << cloud_xyzshot->points.size () << " SHOT points to "<< name_cloud_xyzshot;
 		
 		// Save JSON model description.
 		ptree ptree_file;
@@ -218,8 +218,8 @@ void S2OMJSONWriter::write() {
 		return;
 	}
 	
-	CLOG(LWARNING) << "There are no required datastreams enabling save of the SOM to file.";	
-	CLOG(LWARNING) << "in_cloud_xyzrgb.empty() == "<<in_cloud_xyzrgb.empty() << " in_cloud_xyzsift.empty() == "<< in_cloud_xyzsift.empty() <<
+	CLOG(LTRACE) << "There are no required datastreams enabling save of the SOM to file.";	
+	CLOG(LTRACE) << "in_cloud_xyzrgb.empty() == "<<in_cloud_xyzrgb.empty() << " in_cloud_xyzsift.empty() == "<< in_cloud_xyzsift.empty() <<
 	" in_cloud_xyzshot.empty()== "<<in_cloud_xyzshot.empty()<<endl;	
 }
 

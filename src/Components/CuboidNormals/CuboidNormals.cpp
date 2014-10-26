@@ -62,7 +62,7 @@ bool CuboidNormals::onStart() {
 }
 
 void CuboidNormals::computeNormalsXYZ() {
-	LOG(LWARNING) << "CuboidNormals::computeNormalsXYZ";
+	LOG(LTRACE) << "CuboidNormals::computeNormalsXYZ";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -106,10 +106,10 @@ void CuboidNormals::computeNormalsXYZ() {
 }
 
 void CuboidNormals::computeNormalsXYZRGB() {
-	LOG(LWARNING) << "CuboidNormals::computeNormalsXYZRGB";
+	LOG(LTRACE) << "CuboidNormals::computeNormalsXYZRGB";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 
-	LOG(LWARNING) << "CuboidNormals: input size: " << cloud->size();
+	LOG(LTRACE) << "CuboidNormals: input size: " << cloud->size();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
 
 
@@ -119,7 +119,7 @@ void CuboidNormals::computeNormalsXYZRGB() {
 	cloud->is_dense = false;
 	pcl::removeNaNFromPointCloud(*cloud, *copy, indicesNANs);
 
-	LOG(LWARNING) << "CuboidNormals: input size: " << copy->size();
+	LOG(LTRACE) << "CuboidNormals: input size: " << copy->size();
 
 	// compute centroid
 
@@ -142,7 +142,7 @@ void CuboidNormals::computeNormalsXYZRGB() {
 	  normalEstimation.compute (*cloud_normals);
 
 	  // flip normlas orientation
-	  LOG(LWARNING) << "CuboidNormals: flip normals!";
+	  LOG(LTRACE) << "CuboidNormals: flip normals!";
 
 
 	  for (int i = 0; i < cloud_normals->size(); ++i) {
@@ -158,7 +158,7 @@ void CuboidNormals::computeNormalsXYZRGB() {
 
 	  out_cloud_xyzrgb_normals.write(cloud_xyz_normals);
 
-	  LOG(LWARNING) << "CuboidNormals: sending normals! " << cloud_normals->size();
+	  LOG(LTRACE) << "CuboidNormals: sending normals! " << cloud_normals->size();
 	  out_cloud_normals.write(cloud_normals);
 }
 

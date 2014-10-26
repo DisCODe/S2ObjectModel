@@ -287,7 +287,7 @@ void ClosedCloudMerge::addViewToModel() {
 	*rgb_views[counter -1] = *cloudrgb;
 	*shot_views[counter-1] = *cloud_shot;
 
-	CLOG(LWARNING) << " ADD RGB_VIEW SIZE :" << cloudrgb->size() << "INDEX :" << counter-1;
+	CLOG(LTRACE) << " ADD RGB_VIEW SIZE :" << cloudrgb->size() << "INDEX :" << counter-1;
 
 	/*
 	 rgb_views.push_back(cloudrgb);// index == counter - 1

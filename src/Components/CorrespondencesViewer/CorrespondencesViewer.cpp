@@ -111,7 +111,7 @@ bool CorrespondencesViewer::onInit() {
 	viewer->initCameraParameters();
 
 	if (all_viewpoints) {
-		CLOG(LWARNING)<< "CorrespondencesViewer::onInit : create 4 viewports";
+		CLOG(LTRACE)<< "CorrespondencesViewer::onInit : create 4 viewports";
 		left_down = int(3);
 		right_down = int(4);
 
@@ -149,7 +149,7 @@ bool CorrespondencesViewer::onStart() {
 }
 
 void CorrespondencesViewer::display() {
-	LOG(LWARNING)<< "CorrespondencesViewer::display";
+	LOG(LTRACE)<< "CorrespondencesViewer::display";
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces.read();
 
@@ -168,7 +168,7 @@ void CorrespondencesViewer::display() {
 }
 
 void CorrespondencesViewer::display2() {
-	LOG(LWARNING)<< "CorrespondencesViewer::display2";
+	LOG(LTRACE)<< "CorrespondencesViewer::display2";
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces2.read();
 
@@ -187,7 +187,7 @@ void CorrespondencesViewer::display2() {
 }
 
 void CorrespondencesViewer::display3() {
-	LOG(LWARNING)<< "CorrespondencesViewer::display3";
+	LOG(LTRACE)<< "CorrespondencesViewer::display3";
 
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces3.read();
@@ -209,7 +209,7 @@ void CorrespondencesViewer::display3() {
 }
 
 void CorrespondencesViewer::display4() {
-	LOG(LWARNING)<< "CorrespondencesViewer::display4";
+	LOG(LTRACE)<< "CorrespondencesViewer::display4";
 
 
 	pcl::CorrespondencesPtr corrs = in_correspondeces4.read();

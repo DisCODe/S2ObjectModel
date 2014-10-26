@@ -204,7 +204,7 @@ void S2OMSequence::onLoadImage() {
 
 		}
 
-		CLOG(LWARNING) << "Sequence: reading image " << files[frame] << " " << frame + 1 << "/" << files.size();
+		CLOG(LTRACE) << "Sequence: reading image " << files[frame] << " " << frame + 1 << "/" << files.size();
 		readModel(files[frame]);
 	}
 }

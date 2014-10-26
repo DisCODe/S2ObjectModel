@@ -61,7 +61,7 @@ bool KepointsHarris3dDetector::onStart() {
 }
 
 void KepointsHarris3dDetector::computeXYZ() {
-	LOG(LWARNING) << "KepointsHarris3dDetector::computeXYZ";
+	LOG(LTRACE) << "KepointsHarris3dDetector::computeXYZ";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr copy(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -99,12 +99,12 @@ void KepointsHarris3dDetector::computeXYZ() {
 		out_cloud_xyz.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsHarris3dDetector: empty input xyz cloud";
+		CLOG(LTRACE)<< "KepointsHarris3dDetector: empty input xyz cloud";
 	}
 }
 
 void KepointsHarris3dDetector::computeXYZRGB() {
-	LOG(LWARNING) << "KepointsHarris3dDetector::computeXYZRGB";
+	LOG(LTRACE) << "KepointsHarris3dDetector::computeXYZRGB";
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr copy(new pcl::PointCloud<pcl::PointXYZRGB>());
@@ -143,7 +143,7 @@ void KepointsHarris3dDetector::computeXYZRGB() {
 		out_cloud_xyzrgb.write(keypoints);
 		out_indices.write(indices);
 	} else {
-		CLOG(LWARNING)<< "KepointsHarris3dDetector: empty input xyzrgb cloud";
+		CLOG(LTRACE)<< "KepointsHarris3dDetector: empty input xyzrgb cloud";
 	}
 }
 

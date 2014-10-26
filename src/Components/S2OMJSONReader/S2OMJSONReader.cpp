@@ -58,7 +58,7 @@ bool S2OMJSONReader::onStart() {
 }
 
 void S2OMJSONReader::loadModels() {
-	CLOG(LWARNING) << "S2OMJSONReader::loadModels";
+	CLOG(LTRACE) << "S2OMJSONReader::loadModels";
 
 	// List of the returned S2OMs.
 	std::vector<AbstractObject*> models;
@@ -131,7 +131,7 @@ void S2OMJSONReader::loadModels() {
 	}//: for
 
 	// Push models to output datastream.
-	CLOG(LWARNING) << "S2OMJSONReader::out_models.write";
+	CLOG(LTRACE) << "S2OMJSONReader::out_models.write";
 	out_models.write(models);
 }
 
