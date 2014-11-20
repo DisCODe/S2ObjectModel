@@ -18,13 +18,13 @@
 			<Executor name="Exec1"  period="0.1">
 				
 				<Component name="Reader" type="S2ObjectModel:S2OMJSONReader" priority="1" bump="0">
-					<param name="filenames">/home/jkrasnod/data/sceny/v1/g1/gigabyte_5.json</param>
+					<param name="filenames">/home/jkrasnod/data/sceny/v1/gigabyte/gigabyte_5.json</param>
 				</Component>	
 				                         
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="2" bump="0">
 				</Component>
 				<Component name="Sequence" type="S2ObjectModel:S2OMSequence" priority="3" bump="0">
-					<param name="sequence.directory">/home/jkrasnod/data/sceny/v1/g1/</param>
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/v1/gigabyte/</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">0</param>						
 					<param name="read_on_init">0</param>						

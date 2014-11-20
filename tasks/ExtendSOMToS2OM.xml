@@ -18,7 +18,7 @@
 			<Executor name="Processing"  period="5">
 
 				<Component name="Reader" type="S2ObjectModel:SingleSOMJsonReader" priority="1" bump="0">
-					<param name="filenames">/media/Dokumenty/data/cuboid/models/loyd.json</param>
+					<param name="filenames">/home/jkrasnod/data/cuboid/models/loyd.json</param>
 				</Component>		
 
 				<Component name="Normals" type="S2ObjectModel:CuboidNormals" priority="2" bump="2">

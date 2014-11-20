@@ -20,14 +20,14 @@
 				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
 				</Component>
 				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/raw/kinect/gigabyte/</param>
 					<param name="sequence.pattern">.*\_rgb\.png</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>						
 					<param name="read_on_init">1</param>						
 				</Component>
 				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
-					<param name="sequence.directory">/media/Dokumenty/data/kinect/loyd/</param>
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/raw/kinect/gigabyte/</param>
 					<param name="sequence.pattern">.*\_xyz\.yml</param>
 					<param name="mode.loop">0</param>
 					<param name="mode.auto_trigger">1</param>		
