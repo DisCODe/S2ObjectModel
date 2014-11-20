@@ -1,0 +1,88 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>joanna</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>Generates S2OM and stores it in PCD file</brief>
+			<full>Loads a sequence of object views and joins them into SIFT and SHOT object model (S2OM)</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="5">
+
+				<Component name="Reader" type="S2ObjectModel:SingleSOMJsonReader" priority="1" bump="0">
+					<param name="filenames">/home/jkrasnod/data/cuboid/models/loyd.json</param>
+				</Component>		
+
+				<Component name="Normals" type="S2ObjectModel:CuboidNormals" priority="2" bump="2">
+					<param name="radius">0.02</param>					
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="3" bump="0">
+					<param name="model_resolution">0.001</param>
+					<param name="gamma_21">0.7</param>
+					<param name="gamma_32">0.7</param>
+					<param name="min_neighbors">20</param>
+				</Component>
+				
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="4" bump="0">
+					<param name="shot_radius">0.075</param>
+				</Component>
+				
+				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="5" bump="10">
+					<param name="S2OMname">loyd</param>
+					<param name="dir">/home/joanna/data/modele/v2</param>
+			    </Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+			
+			
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		
+		<Source name="Reader.out_cloud_xyzsift">
+			<sink>WindowPCL.in_sifts</sink>	
+			<sink>Writer.in_cloud_xyzsift</sink>
+		</Source>
+		
+		<Source name="Reader.out_cloud_xyzrgb">
+			<sink>WindowPCL.in_cloud</sink>
+			<sink>Normals.in_cloud_xyzrgb</sink>
+			<sink>Writer.in_cloud_xyzrgb</sink>
+		</Source>
+
+		<Source name="Normals.out_cloud_xyzrgb_normals">
+			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
+			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
+		</Source>
+
+		<Source name="Keypoints.out_cloud_xyz">
+			<sink>SHOTConverter.in_keypoints</sink>
+		</Source>	
+		
+		<Source name="SHOTConverter.out_cloud_xyzshot">
+			<sink>WindowPCL.in_shots</sink>	
+			<sink>Writer.in_cloud_xyzshot</sink>	
+		</Source>
+		
+	</DataStreams>
+</Task>
+
+
+
+

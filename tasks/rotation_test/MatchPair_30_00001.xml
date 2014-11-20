@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>jkrasnod</name>
+		</Author>
+		
+		<Description>
+			<brief>Simple PCL viewer</brief>
+			<full>Simple PCL viewer, using PCD as source of depth data.</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Processing">
+			<Executor name="Exec1"  period="0.1">
+				
+        
+			<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
+			</Component>
+			<Component name="SequenceModel" type="S2ObjectModel:S2OMSequence" priority="2" bump="0">
+				<param name="sequence.directory">/home/jkrasnod/data/sceny/v1/all/</param>
+				<param name="mode.loop">0</param>
+				<param name="mode.auto_trigger">1</param>						
+				<param name="read_on_init">1</param>						
+			</Component>
+			<Component name="SequenceScene" type="S2ObjectModel:S2OMSequence" priority="3" bump="0">
+				<param name="sequence.directory">/home/jkrasnod/data/sceny/v1/all/</param>
+				<param name="mode.loop">0</param>
+				<param name="mode.auto_trigger">1</param>						
+				<param name="read_on_init">1</param>						
+			</Component>
+
+			 <Component name="CutModel" type="PCL:PassThrough" priority="4" bump="0">
+				<param name="x.a">-20</param>
+				<param name="x.b">20</param>
+				<param name="y.a">-20</param>
+				<param name="y.b">20</param>
+				<param name="z.a">0</param>
+				<param name="z.b">20</param>
+				<param name="negative_x">0</param>
+				<param name="negative_y">0</param>
+				<param name="negative_z">0</param>
+			</Component>
+
+			<Component name="HMP2" type="CvCoreTypes:HomogenousMatrixProvider" priority="5" bump="0">
+				<param name="offset.x">0</param>
+				<param name="offset.y">0</param>
+				<param name="offset.z">0</param>
+				<param name="offset.roll">0</param>
+				<param name="offset.pitch">0</param>
+				<param name="offset.yaw">0.5235</param>
+			</Component>
+			
+			<Component name="TransformModel" type="PCL:CloudTransformer" priority="6" bump="0">
+			</Component>
+			           
+			<Component name="Match" type="S2ObjectModel:SingleS2OMMatcher" priority="7" bump="0">
+				<param name="shot.max_disance">2</param>
+				<param name="sift.max_disance">1000000</param>
+				<param name="shot.oneToOne">1</param>
+				<param name="sift.oneToOne">1</param>
+				<param name="ransac.inlier_threshold">0.00001</param>
+				<param name="ransac.max_iterations">150</param>
+				<param name="shot.nextBest">0</param>
+				<param name="sift.nextBest">0</param>					
+			</Component>
+				
+			<Component name="AvgMatrix" type="CvBasic:CalcObjectLocation" priority="8" bump="0">
+			</Component>
+			
+			<Component name="TransformSift" type="PCL:CloudTransformer" priority="9" bump="0">
+			</Component>
+				
+			<Component name="TransformShot" type="PCL:CloudTransformer" priority="10" bump="0">
+			</Component>
+		
+			<Component name="TransformRansac" type="PCL:CloudTransformer" priority="11" bump="0">
+			</Component>
+				
+			<Component name="TransformAvg" type="PCL:CloudTransformer" priority="12" bump="0">
+			</Component>
+				
+			<Component name="ErrorSift" type="S2ObjectModel:ReprojectionError" priority="13" bump="0">						
+				<param name="group_id">1</param>
+			</Component>
+				
+			<Component name="ErrorShot" type="S2ObjectModel:ReprojectionError" priority="14" bump="0">										
+				<param name="group_id">2</param>
+			</Component>
+				
+			<Component name="ErrorRansac" type="S2ObjectModel:ReprojectionError" priority="15" bump="0">						
+				<param name="group_id">3</param>
+			</Component>
+				
+			<Component name="ErrorAvg" type="S2ObjectModel:ReprojectionError" priority="16" bump="0">						
+				<param name="group_id">4</param>
+			</Component>
+				
+			<Component name="Errors" type="S2ObjectModel:ErrorAggregation" priority="17" bump="0">
+				<param name="names.group1">sifty</param>					
+				<param name="names.group2">shoty</param>					
+				<param name="names.group3">sifty+shoty (wspolny RANSAC)</param>					
+				<param name="names.group4">sifty+shoty (srednia)</param>					
+			</Component>					
+			</Executor>
+		</Subtask>
+		
+	<!--  	<Subtask name="Visualisation">
+			<Executor name="Exec2" period="0.01">
+				<Component name="CorrespondencesViewer" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
+					<param name="display.all_viewpoints">0</param>
+				</Component>
+			</Executor>
+		</Subtask> 
+		
+	-->
+	</Subtasks> 
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>SequenceModel.in_trigger</sink>
+			<sink>SequenceScene.in_trigger</sink>
+		</Source>
+		
+		<!-- Wczytywanie danych	-->
+
+
+ <Source name="SequenceModel.out_cloud_xyzrgb">
+<sink>CutModel.in_cloud_xyzrgb</sink>
+</Source>
+<Source name="SequenceModel.out_cloud_xyzsift">
+<sink>CutModel.in_cloud_xyzsift</sink>
+</Source>
+<Source name="SequenceModel.out_cloud_xyzshot">
+<sink>CutModel.in_cloud_xyzshot</sink>
+</Source>
+
+ <Source name="CutModel.out_cloud_xyzrgb">
+<sink>TransformModel.in_cloud_xyzrgb</sink>
+</Source>
+<Source name="CutModel.out_cloud_xyzsift">
+<sink>TransformModel.in_cloud_xyzsift</sink>
+</Source>
+<Source name="CutModel.out_cloud_xyzshot">
+<sink>TransformModel.in_cloud_xyzshot</sink>
+</Source>
+
+<Source name="TransformModel.out_cloud_xyzsift">
+<sink>Match.in_cloud_xyzsift1</sink>
+</Source>
+
+<Source name="TransformModel.out_cloud_xyzshot">
+<sink>Match.in_cloud_xyzshot1</sink>
+</Source>
+
+<Source name="TransformModel.out_cloud_xyzrgb">
+<sink>Match.in_cloud_xyzrgb1</sink>
+</Source>
+
+<Source name="SequenceScene.out_cloud_xyzsift">
+<sink>Match.in_cloud_xyzsift2</sink>
+</Source>
+
+<Source name="SequenceScene.out_cloud_xyzshot">
+<sink>Match.in_cloud_xyzshot2</sink>
+</Source>
+
+<Source name="SequenceScene.out_cloud_xyzrgb">
+<sink>Match.in_cloud_xyzrgb2</sink>
+</Source>
+
+ <Source name="HMP2.out_homogMatrix">
+<sink>TransformModel.in_hm</sink>
+</Source>
+
+
+<!-- SIFTy -->
+
+		<Source name="Match.out_matrix_sift">	
+			<sink>TransformSift.in_hm</sink>		
+		</Source>
+		
+		<Source name="Match.out_source_keypoints_sift">
+			<sink>TransformSift.in_cloud_xyz</sink>				
+		</Source>
+		
+		<Source name="TransformSift.out_cloud_xyz">
+			<sink>ErrorSift.in_xyz_cloud_obtained</sink>				
+		</Source>
+			
+		<Source name="Match.out_target_keypoints_sift">
+			<sink>ErrorSift.in_xyz_cloud_expected</sink>	
+		</Source>
+		
+		<Source name="Match.out_correspondeces_sift">
+			<sink>ErrorSift.in_correspondences</sink>
+		</Source>
+		
+		<Source name="ErrorSift.out_error">
+			<sink>Errors.in_error_1</sink>
+		</Source>	
+		
+		<Source name="ErrorSift.out_base">
+			<sink>Errors.in_base_1</sink>
+		</Source>
+		
+		
+<!-- SHOTy -->	
+	
+		<Source name="Match.out_matrix_shot">
+			<sink>TransformShot.in_hm</sink>
+		</Source>	
+				
+		<Source name="Match.out_source_keypoints_shot">
+			<sink>TransformShot.in_cloud_xyz</sink>
+		</Source>
+	
+		<Source name="TransformShot.out_cloud_xyz">
+			<sink>ErrorShot.in_xyz_cloud_obtained</sink>				
+		</Source>	
+		
+		<Source name="Match.out_target_keypoints_shot">
+			<sink>ErrorShot.in_xyz_cloud_expected</sink>	
+		</Source>
+		
+		<Source name="Match.out_correspondeces_shot">
+			<sink>ErrorShot.in_correspondences</sink>
+		</Source>
+
+		<Source name="ErrorShot.out_error">
+			<sink>Errors.in_error_2</sink>
+		</Source>
+		
+		<Source name="ErrorShot.out_base">
+			<sink>Errors.in_base_2</sink>
+		</Source>							
+					
+		
+<!-- SHOTy + SIFTy, wspolny RANSAC -->	
+	
+		<Source name="Match.out_matrix_common_ransac">
+			<sink>TransformRansac.in_hm</sink>
+		</Source>
+		
+		<Source name="Match.out_source_keypoints_common_ransac">
+			<sink>TransformRansac.in_cloud_xyz</sink>
+		</Source>
+			
+		<Source name="TransformRansac.out_cloud_xyz">
+			<sink>ErrorRansac.in_xyz_cloud_obtained</sink>				
+		</Source>	
+		
+		<Source name="Match.out_target_keypoints_common_ransac">
+			<sink>ErrorRansac.in_xyz_cloud_expected</sink>
+		</Source>	
+			
+		<Source name="Match.out_correspondeces_common_ransac">
+			<sink>ErrorRansac.in_correspondences</sink>
+		</Source>
+		
+		<Source name="ErrorRansac.out_error">
+			<sink>Errors.in_error_3</sink>
+		</Source>
+								
+		<Source name="ErrorRansac.out_base">
+			<sink>Errors.in_base_3</sink>
+		</Source>					
+
+		<!-- SHOTy + SIFTy -->
+		
+
+		<Source name="Match.out_matrix_sift">	
+			<sink>AvgMatrix.in_homogMatrix</sink>		
+		</Source>		
+		
+		<Source name="Match.out_matrix_shot">
+			<sink>AvgMatrix.in_homogMatrix</sink>	
+		</Source>	
+				
+		<Source name="AvgMatrix.out_homogMatrix">
+			<sink>TransformAvg.in_hm</sink>
+		</Source>
+		
+		<Source name="Match.out_source_keypoints_common_ransac">
+			<sink>TransformAvg.in_cloud_xyz</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_common_ransac">
+			<sink>ErrorAvg.in_xyz_cloud_expected</sink>
+		</Source>
+		
+		<Source name="TransformAvg.out_cloud_xyz">
+			<sink>ErrorAvg.in_xyz_cloud_obtained</sink>				
+		</Source>	
+			
+		<Source name="Match.out_correspondeces_shot_sift">
+			<sink>ErrorAvg.in_correspondences</sink>
+		</Source>
+		
+		<Source name="ErrorAvg.out_error">
+			<sink>Errors.in_error_4</sink>
+		</Source>		
+
+		<Source name="ErrorAvg.out_base">
+			<sink>Errors.in_base_4</sink>
+		</Source>	
+	
+<!-- chmury RGB -->	
+				
+		<Source name="Match.out_source_cloud">
+			<sink>TransformSift.in_cloud_xyzrgb</sink>
+			<sink>TransformShot.in_cloud_xyzrgb</sink>
+			<sink>TransformRansac.in_cloud_xyzrgb</sink>
+			<sink>TransformAvg.in_cloud_xyzrgb</sink>
+		</Source>	
+			
+<!--	1st viewer : left: shots, right: sifts		-->
+		
+<!--		<Source name="TransformShot.out_cloud_xyzrgb">
+			<sink>CorrespondencesViewer.in_source_cloud</sink>
+		</Source>
+
+		<Source name="Match.out_target_cloud">
+			<sink>CorrespondencesViewer.in_target_cloud</sink>
+		</Source>
+		
+		<Source name="TransformShot.out_cloud_xyz">
+			<sink>CorrespondencesViewer.in_source_keypoints</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_shot">
+			<sink>CorrespondencesViewer.in_target_keypoints</sink>
+		</Source>
+
+		<Source name="Match.out_correspondeces_shot">
+			<sink>CorrespondencesViewer.in_correspondeces</sink>
+		</Source>   	
+		
+		 
+		<Source name="TransformSift.out_cloud_xyzrgb">
+			<sink>CorrespondencesViewer.in_source_cloud2</sink>
+		</Source>
+
+		<Source name="Match.out_target_cloud">
+			<sink>CorrespondencesViewer.in_target_cloud2</sink>
+		</Source>
+		
+		<Source name="TransformSift.out_cloud_xyz">
+			<sink>CorrespondencesViewer.in_source_keypoints2</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_sift">
+			<sink>CorrespondencesViewer.in_target_keypoints2</sink>
+		</Source>
+
+		<Source name="Match.out_correspondeces_sift">
+			<sink>CorrespondencesViewer.in_correspondeces2</sink>
+		</Source> 
+		-->
+				
+<!--	2st viewer : left: shot-sifts common ransac, right: shot-sifts-avg		-->
+		
+	<!--	<Source name="TransformRansac.out_cloud_xyzrgb">
+			<sink>CorrespondencesViewer.in_source_cloud3</sink>
+		</Source>
+
+		<Source name="Match.out_target_cloud">
+			<sink>CorrespondencesViewer.in_target_cloud3</sink>
+		</Source>
+		
+		<Source name="TransformRansac.out_cloud_xyz">
+			<sink>CorrespondencesViewer.in_source_keypoints3</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_common_ransac">
+			<sink>CorrespondencesViewer.in_target_keypoints3</sink>
+		</Source>
+
+		<Source name="Match.out_correspondeces_common_ransac">
+			<sink>CorrespondencesViewer.in_correspondeces3</sink>
+		</Source>  
+		
+		
+		<Source name="TransformAvg.out_cloud_xyzrgb">
+			<sink>CorrespondencesViewer.in_source_cloud4</sink>
+		</Source>
+
+		<Source name="Match.out_target_cloud">
+			<sink>CorrespondencesViewer.in_target_cloud4</sink>
+		</Source>
+		
+		<Source name="TransformAvg.out_cloud_xyz">
+			<sink>CorrespondencesViewer.in_source_keypoints4</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_common_ransac">
+			<sink>CorrespondencesViewer.in_target_keypoints4</sink>
+		</Source>
+
+		<Source name="Match.out_correspondeces_shot_sift">
+			<sink>CorrespondencesViewer.in_correspondeces4</sink>
+		</Source>    -->
+	   
+	
+	</DataStreams>
+</Task>
+
+
+
+

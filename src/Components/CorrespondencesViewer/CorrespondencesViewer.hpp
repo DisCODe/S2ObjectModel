@@ -18,6 +18,8 @@
 #include <pcl/point_cloud.h>
 
 #include <Types/PointXYZSHOT.hpp>
+#include <Types/PointXYZSIFT.hpp>
+#include <Types/HomogMatrix.hpp>
 
 
 namespace Processors {
@@ -70,20 +72,64 @@ protected:
 	 */
 	bool onStop();
 
+
 	void display();
+	void display2();
+	void display3();
+	void display4();
+	void displayOnPort(int port, pcl::PointCloud<pcl::PointXYZ>::Ptr source_keypoints,
+			pcl::PointCloud<pcl::PointXYZ>::Ptr target_keypoints,
+			pcl::CorrespondencesPtr corrs,
+			pcl::PointCloud<pcl::PointXYZRGB>::Ptr source_cloud,
+			pcl::PointCloud<pcl::PointXYZRGB>::Ptr target_cloud);
 	void on_spin();
 
-	Base::EventHandler2 h_display;
-	Base::EventHandler2 h_on_spin;
-
-	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud;
-	Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_shots;
-
 	pcl::visualization::PCLVisualizer * viewer;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces2;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints2;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints2;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud2;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud2;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces3;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints3;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints3;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud3;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud3;
+
+	Base::DataStreamIn<pcl::CorrespondencesPtr> in_correspondeces4;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_source_keypoints4;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_target_keypoints4;
+
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_source_cloud4;
+	Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_target_cloud4;
 	
-	int v1, v2;
+	Base::Property<bool> display_source_cloud;
+	Base::Property<bool> display_target_cloud;
+	Base::Property<bool> display_target_keypoints;
+	Base::Property<bool> display_source_keypoints;
+	Base::Property<bool> all_viewpoints;
+	Base::Property<int> correspondences_size;
 
+	int left;
+	int right;
 
+	int left_down;
+	int right_down;
 };
 
 } //: namespace CorrespondencesViewer

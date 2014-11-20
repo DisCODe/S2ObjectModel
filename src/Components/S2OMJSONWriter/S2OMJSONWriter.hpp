@@ -84,10 +84,12 @@ protected:
 	// Properties
 	Base::Property<std::string> S2OMname;
 	Base::Property<std::string> dir;
+	Base::Property<bool> addNumber;
+	Base::Property<bool> addTimestamp;
 
 	
 	// Handlers
-	void Write();
+	void write();
 	void on_cloud_xyzrgb();
 	void on_cloud_xyzsift();
 	void on_cloud_xyzshot();
@@ -95,6 +97,7 @@ protected:
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb; 
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud_xyzsift; 
 	pcl::PointCloud<PointXYZSHOT>::Ptr cloud_xyzshot; 
+	int counter;
 
 };
 

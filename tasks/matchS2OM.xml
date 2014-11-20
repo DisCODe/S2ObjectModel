@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>jkrasnod</name>
+		</Author>
+		
+		<Description>
+			<brief>Simple PCL viewer</brief>
+			<full>Simple PCL viewer, using PCD as source of depth data.</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Processing">
+			<Executor name="Exec1"  period="0.1">
+				
+				<Component name="Reader" type="S2ObjectModel:S2OMJSONReader" priority="1" bump="0">
+					<param name="filenames">/home/joanna/test/test/remsey.json</param>
+				</Component>	
+				
+				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="2" bump="0">
+				</Component>
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+					<param name="sequence.pattern">.*\_rgb\.png</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>						
+					<param name="read_on_init">0</param>						
+				</Component>
+				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="4" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+					<param name="sequence.pattern">.*\_xyz\.yml</param>
+					<param name="mode.loop">1</param>
+					<param name="mode.auto_trigger">0</param>		
+					<param name="read_on_init">0</param>				
+				</Component>
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="5" bump="0">
+					<param name="sequence.directory">/media/Dokumenty/data/kinect/gigabyte_single/</param>
+                    <param name="sequence.pattern">.*\_mask\.png</param>
+                    <param name="mode.loop">1</param>
+                    <param name="mode.auto_trigger">0</param>
+                    <param name="read_on_init">0</param>
+				</Component>
+                
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="6" bump="0">
+				</Component>
+				
+				<Component name="Converter" type="PCL:DepthConverter" priority="7" bump="0">
+				</Component>
+				
+				<Component name="FeatureCloudConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="8" bump="0">
+				</Component>
+				
+				
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="9" bump="0">
+					<param name="LeafSize.x">0.002</param>
+					<param name="LeafSize.y">0.002</param>
+					<param name="LeafSize.z">0.002</param>
+				</Component>
+				
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="10" bump="0">
+					<param name="LeafSize.x">0.002</param>
+					<param name="LeafSize.y">0.002</param>
+					<param name="LeafSize.z">0.002</param>
+				</Component>
+								
+
+				<Component name="Normals" type="S2ObjectModel:Normals" priority="11" bump="0">
+					<param name="radius">0.02</param>					
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="12" bump="0">
+					<param name="model_resolution">0.002</param>
+					<param name="gamma_21">0.65</param>
+					<param name="gamma_32">0.65</param>
+					<param name="min_neighbors">15</param>
+				</Component>
+				
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="11" bump="0">
+				</Component>
+				
+				<Component name="Match" type="S2ObjectModel:SingleS2OMMatcher" priority="12" bump="0">
+				</Component>
+				
+			</Executor>
+		</Subtask>
+		
+	 	<Subtask name="Visualisation">
+			<Executor name="Exec2" period="0.01">
+				<Component name="CorrespondencesViewer" type="S2ObjectModel:CorrespondencesViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>  
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="Reader.out_models">
+			<sink>Match.in_models</sink>
+		</Source>
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>SequenceRGB.in_trigger</sink>
+			<sink>SequenceXYZ.in_trigger</sink>
+            <sink>SequenceMask.in_trigger</sink>
+		</Source>
+		<Source name="SequenceRGB.out_img">
+			<sink>SIFT.in_img</sink>
+            <sink>Converter.in_rgb_stereo</sink>
+		</Source>
+        <Source name="SequenceXYZ.out_img">
+            <sink>Converter.in_depth_xyz</sink>
+            <sink>FeatureCloudConverter.in_depth_xyz</sink>
+		</Source>
+		
+	<!-- 	<Source name="SequenceMask.out_img">
+			<sink>Converter.in_mask</sink>	
+			<sink>FeatureCloudConverter.in_mask</sink>		
+		</Source> -->
+	
+		<Source name="SIFT.out_descriptors">
+			<sink>FeatureCloudConverter.in_descriptors</sink>	
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>FeatureCloudConverter.in_features</sink>	
+		</Source>	
+		<Source name="Converter.out_cloud_xyzrgb">
+			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+			<sink>Normals.in_cloud_xyzrgb</sink>	
+			<sink>Match.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="Normals.out_cloud_xyzrgb_normals">
+			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
+			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
+		</Source>
+
+		<Source name="Keypoints.out_cloud_xyz">
+			<sink>SHOTConverter.in_keypoints</sink>
+		</Source>
+		
+		<Source name="SHOTConverter.out_cloud_xyzshot">
+			<sink>Match.in_cloud_xyzshot</sink>
+		</Source>
+
+		<Source name="FeatureCloudConverter.out_cloud_xyzsift">
+			<sink>Match.in_cloud_xyzsift</sink>
+		</Source>
+
+		<Source name="Match.out_source_cloud">
+			<sink>CorrespondencesViewer.in_source_cloud</sink>
+		</Source>
+
+		<Source name="Match.out_target_cloud">
+			<sink>CorrespondencesViewer.in_target_cloud</sink>
+		</Source>
+		
+		<Source name="Match.out_source_keypoints_shot">
+			<sink>CorrespondencesViewer.in_source_keypoints</sink>
+		</Source>
+
+		<Source name="Match.out_target_keypoints_shot">
+			<sink>CorrespondencesViewer.in_target_keypoints</sink>
+		</Source>
+
+		<Source name="Match.out_correspondeces_shot">
+			<sink>CorrespondencesViewer.in_correspondeces</sink>
+		</Source>  
+	
+	</DataStreams>
+</Task>
+
+
+
+

@@ -1,0 +1,201 @@
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>joanna</name>
+			<link></link>
+		</Author>
+		
+		<Description>
+			<brief>Generates S2OM and stores it in PCD file</brief>
+			<full>Loads a sequence of object views and joins them into SIFT and SHOT object model (S2OM)</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Main">
+			<Executor name="Processing"  period="5">
+				
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="1" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_color.png</param>
+					<param name="mode.loop">0</param>					
+				</Component>
+				
+				<Component name="SequenceDepth" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_depth.png</param>	
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="SequenceMask" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/joanna/data/food_box_3R/</param>
+					<param name="sequence.pattern">.*\_mask.png</param>
+					<param name="mode.loop">0</param>	
+				</Component>
+				
+				<Component name="CameraInfo" type="CvCoreTypes:CameraInfoProvider" priority="4" bum="0">
+					<param name="camera_matrix">525 0 319.5; 0 525 239.5; 0 0 1</param>
+				</Component>
+				
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="5" bump="0">
+				</Component>
+						
+				<Component name="SIFTConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="6" bump="0">
+				</Component>
+									
+				<Component name="ConverterRGB" type="PCL:DepthConverter" priority="7" bump="0">
+				</Component>
+				
+				<Component name="Converter" type="PCL:DepthConverter" priority="8" bump="0">
+				</Component>
+				
+				<Component name="StatisticalOutlierRemoval" type="PCL:StatisticalOutlierRemoval" priority="9" bump="0">
+					<param name="MeanK">15</param>
+					<param name="StddevMulThresh">0.10</param>
+				</Component>
+				
+				<Component name="Normals" type="SIFTObjectModel:NormalEstimation" priority="10">
+					<param name="radius">0.02</param>
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:Harris3DKeypoints" priority="11" bump="0">
+				</Component>
+	
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="12" bump="0">
+					<param name="shot_radius">0.1</param>
+				</Component>					
+	
+                <Component name="Generator" type="S2ObjectModel:ClosedCloudMerge" priority="13" bump="1">
+					<param name="threshold">19</param>
+					<param name="Interations.Max">10</param>
+				</Component>
+
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="14" bump="0">
+					<param name="LeafSize.x">0.0005</param>
+					<param name="LeafSize.y">0.0005</param>
+					<param name="LeafSize.z">0.0005</param>
+				</Component>
+				
+				<Component name="VoxelGrid" type="PCL:VoxelGrid" priority="15" bump="0">
+					<param name="LeafSize.x">0.0005</param>
+					<param name="LeafSize.y">0.0005</param>
+					<param name="LeafSize.z">0.0005</param>
+				</Component>
+								
+		        <Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="16" bump="10">
+					<param name="S2OMname">food_box_3R</param>
+					<param name="dir">/home/joanna/test/test</param>
+			    </Component>
+			</Executor>
+
+			<Executor name="Visualization" period="1">
+				<Component name="WindowPCL" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
+				</Component>
+			</Executor>
+		</Subtask>	
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="SequenceRGB.out_img">
+			<sink>SIFT.in_img</sink>
+			<sink>ConverterRGB.in_color</sink>
+		</Source>
+		<Source name="SequenceDepth.out_img">	
+			<sink>ConverterRGB.in_depth</sink>
+			<sink>Converter.in_depth</sink>	
+			<sink>SIFTConverter.in_depth</sink>	
+		</Source>
+		<Source name="SequenceMask.out_img">
+			<sink>ConverterRGB.in_mask</sink>	
+			<sink>Converter.in_mask</sink>
+			<sink>SIFTConverter.in_mask</sink>
+		</Source>
+		<Source name="CameraInfo.out_camera_info">
+			<sink>ConverterRGB.in_camera_info</sink>	
+			<sink>Converter.in_camera_info</sink>
+			<sink>SIFTConverter.in_camera_info</sink>
+		</Source>
+		<Source name="SIFT.out_descriptors">
+			<sink>SIFTConverter.in_descriptors</sink>	
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>SIFTConverter.in_features</sink>	
+		</Source>	
+		
+		<Source name="SIFTConverter.out_cloud_xyzsift">
+			<sink>Generator.in_cloud_xyzsift</sink>	
+		</Source>
+		
+		<Source name="ConverterRGB.out_cloud_xyzrgb">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="Converter.out_cloud_xyz">
+			<sink>StatisticalOutlierRemoval.in_cloud_xyz</sink>
+		</Source>
+			
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyzrgb">
+			<sink>Normals.in_cloud_xyzrgb</sink>
+			<sink>Generator.in_cloud_xyzrgb</sink>
+		</Source>
+
+		<Source name="StatisticalOutlierRemoval.out_cloud_xyz">
+			<sink>Keypoints.in_cloud</sink>
+			<sink>SHOTConverter.in_points</sink>
+		</Source>
+		
+		<Source name="Keypoints.out_keypoints">
+			<sink>SHOTConverter.in_keypoints</sink>
+		</Source>
+
+		<Source name="SHOTConverter.out_cloud_xyzshot">
+			<sink>Generator.in_cloud_xyzshot</sink>
+		</Source>
+
+		<Source name="Normals.out_cloud_xyzrgb_normals">
+			<sink>Generator.in_cloud_xyzrgb_normals</sink>
+		</Source>
+			
+		<Source name="Generator.out_cloud_xyzrgb">
+			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+	<!--	<Source name="Generator.out_cloud_xyzrgb"> -->
+			<sink>Writer.in_cloud_xyzrgb</sink>
+			<sink>WindowPCL.in_cloud</sink>
+		</Source>
+			
+		<Source name="Generator.out_cloud_xyzrgb_normals">
+			<sink>VoxelGrid.in_cloud_xyzrgb_normal</sink>
+		</Source>
+		
+<!--		<Source name="VoxelGrid.out_cloud_xyzrgb_normal">-->
+
+<!--		</Source> -->
+		
+		<Source name="Generator.out_cloud_xyzsift">
+			<sink>WindowPCL.in_sifts</sink>	
+			<sink>Writer.in_cloud_xyzsift</sink>	
+		</Source>
+
+		<Source name="Generator.out_mean_viewpoint_features_number">
+			<!-- TODO		-->
+		<!--	<sink>Writer.in_mean_viewpoint_features_number</sink> -->
+		</Source>
+		
+		<Source name="Generator.out_cloud_xyzshot">
+			<sink>Writer.in_cloud_xyzshot</sink>
+			<sink>WindowPCL.in_shots</sink>
+		</Source>
+	
+	</DataStreams>
+</Task>
+
+
+
+

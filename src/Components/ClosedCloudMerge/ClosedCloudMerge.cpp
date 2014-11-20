@@ -80,6 +80,18 @@ public:
 	}
 };
 
+void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
+		const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg, const pcl::CorrespondencesPtr& correspondences) {
+	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
+	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
+	correst.setPointRepresentation(point_representation);
+	correst.setInputSource(cloud_src);
+	correst.setInputTarget(cloud_trg);
+	// Find correspondences.
+	correst.determineReciprocalCorrespondences(*correspondences);
+
+}
+
 ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
 		Base::Component(name), prop_ICP_alignment("ICP.Points", true), prop_ICP_alignment_normal("ICP.Normals", true), prop_ICP_alignment_color(
 				"ICP.Color", false), ICP_transformation_epsilon("ICP.Tranformation_epsilon", 1e-6), ICP_max_correspondence_distance(
@@ -107,17 +119,6 @@ ClosedCloudMerge::ClosedCloudMerge(const std::string & name) :
 ClosedCloudMerge::~ClosedCloudMerge() {
 }
 
-void computeCorrespondences(const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_src,
-		const pcl::PointCloud<PointXYZSHOT>::ConstPtr &cloud_trg, const pcl::CorrespondencesPtr& correspondences) {
-	pcl::registration::CorrespondenceEstimation<PointXYZSHOT, PointXYZSHOT> correst;
-	SHOTonlyDescriptorRepresentation::Ptr point_representation(new SHOTonlyDescriptorRepresentation());
-	correst.setPointRepresentation(point_representation);
-	correst.setInputSource(cloud_src);
-	correst.setInputTarget(cloud_trg);
-	// Find correspondences.
-	correst.determineReciprocalCorrespondences(*correspondences);
-
-}
 
 void ClosedCloudMerge::prepareInterface() {
 	// Register data streams.
@@ -286,7 +287,7 @@ void ClosedCloudMerge::addViewToModel() {
 	*rgb_views[counter -1] = *cloudrgb;
 	*shot_views[counter-1] = *cloud_shot;
 
-	CLOG(LWARNING) << " ADD RGB_VIEW SIZE :" << cloudrgb->size() << "INDEX :" << counter-1;
+	CLOG(LTRACE) << " ADD RGB_VIEW SIZE :" << cloudrgb->size() << "INDEX :" << counter-1;
 
 	/*
 	 rgb_views.push_back(cloudrgb);// index == counter - 1
@@ -456,12 +457,12 @@ void ClosedCloudMerge::addViewToModel() {
 
 	CLOG(LINFO) << "addViewToModel before uniform sampling: "<<cloud_merged->size();
 
-	pcl::PointCloud<int> sampled_indices;
+/*	pcl::PointCloud<int> sampled_indices;
 	pcl::UniformSampling<pcl::PointXYZRGB> uniform_sampling;
 	uniform_sampling.setInputCloud (cloud_merged);
 	uniform_sampling.setRadiusSearch (0.001);
 	uniform_sampling.compute (sampled_indices);
-	pcl::copyPointCloud (*cloud_merged, sampled_indices.points, *cloud_merged);
+	pcl::copyPointCloud (*cloud_merged, sampled_indices.points, *cloud_merged);*/
 
 	CLOG(LINFO) << "addViewToModel after uniform sampling: "<<cloud_merged->size();
 

@@ -25,13 +25,13 @@
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
 #include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/filters/filter.h>
 
 #include <iostream>
 
 #include <pcl/io/pcd_io.h>
 
 #include <time.h>
-
 
 #include <pcl/filters/extract_indices.h>
 #include <vector>
@@ -54,6 +54,7 @@ void SHOTConverter::prepareInterface() {
 	// Register data streams, events and event handlers HERE!
 	registerStream("in_keypoints", &in_keypoints);
 	registerStream("in_points", &in_points);
+	registerStream("in_xyzrgb_normal_points", &in_xyzrgb_normal_points);
 	registerStream("out_shots", &out_shots);
 	registerStream("out_cloud_xyzshot", &out_cloud_xyzshot);
 	// Register handlers
@@ -61,6 +62,11 @@ void SHOTConverter::prepareInterface() {
 	registerHandler("process", &h_process);
 	addDependency("process", &in_points);
 	addDependency("process", &in_keypoints);
+	// Register handlers
+	h_process_with_normals.setup(boost::bind(&SHOTConverter::processWithNormals, this));
+	registerHandler("process_with_normals", &h_process_with_normals);
+	addDependency("process_with_normals", &in_keypoints);
+	addDependency("process_with_normals", &in_xyzrgb_normal_points);
 
 }
 
@@ -105,13 +111,12 @@ SHOTCloudPtr SHOTConverter::getSHOT(PointCloudPtr cloud, NormalCloudPtr normals,
 
 void SHOTConverter::process() {
 
-	std::clock_t t1,t2,t3;
+	CLOG(LTRACE)<< "SHOTConverter::process";
+
+	std::clock_t t1, t2, t3;
 
 	PointCloudPtr cloud = in_points.read();
-//	PointCloudPtr cloud(new PointCloud(*temp));
-
 	PointCloudPtr keypoints = in_keypoints.read();
-//	PointCloudPtr keypoints(new PointCloud(*temp2));
 
 	std::vector<int> indices;
 	cloud->is_dense = false;
@@ -119,15 +124,15 @@ void SHOTConverter::process() {
 
 	CLOG(LNOTICE)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
 
-	t1=clock();
+	t1 = clock();
 	NormalCloudPtr normals = getNormals(cloud);
-	t2=clock();
+	t2 = clock();
 	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
-	t3=clock();
-	float diff1 ((float)t2-(float)t1);
-	float diff2 ((float)t3-(float)t2);
+	t3 = clock();
+	float diff1((float) t2 - (float) t1);
+	float diff2((float) t3 - (float) t2);
 
-	CLOG(LINFO) << "Computing normals [sec] : " << float(diff1/CLOCKS_PER_SEC) << ". Computing shots [sec] : " << float(diff2/CLOCKS_PER_SEC);
+	CLOG(LINFO)<< "Computing normals [sec] : " << float(diff1/CLOCKS_PER_SEC) << ". Computing shots [sec] : " << float(diff2/CLOCKS_PER_SEC);
 
 	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
 	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
@@ -136,7 +141,7 @@ void SHOTConverter::process() {
 
 	//int pointId = 1;
 	for (int i = 0; i < xyzshotcloud->size(); ++i) {
-		if(pcl_isfinite (shotCloud->points[i].descriptor[0])) {
+		if (pcl_isfinite (shotCloud->points[i].descriptor[0])) {
 			indices2.push_back(i);
 		} else {
 			continue;
@@ -152,33 +157,96 @@ void SHOTConverter::process() {
 		}
 	}
 
-	boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices2));
+	boost::shared_ptr<vector<int> > indicesptr(new vector<int>(indices2));
 
-	pcl::ExtractIndices<PointXYZSHOT> eifilter (true); // Initializing with true will allow us to extract the removed indices
-	eifilter.setInputCloud (xyzshotcloud);
-	 eifilter.setIndices (indicesptr);
-	 eifilter.filter (*xyzshotcloud);
+	pcl::ExtractIndices<PointXYZSHOT> eifilter(true); // Initializing with true will allow us to extract the removed indices
+	eifilter.setInputCloud(xyzshotcloud);
+	eifilter.setIndices(indicesptr);
+	eifilter.filter(*xyzshotcloud);
 
-/*		std::ostringstream clouds;
-		clouds << "cloud" << l << ".pcd";
-	std::ostringstream keypointss;
-	keypointss << "keypoints" << l << ".pcd";
-	std::ostringstream shotss;
-	shotss << "shot" << l << ".pcd";
-	std::ostringstream shot_xyzs;
-	shot_xyzs << "shot_xyz" << l << ".pcd";
+	/*		std::ostringstream clouds;
+	 clouds << "cloud" << l << ".pcd";
+	 std::ostringstream keypointss;
+	 keypointss << "keypoints" << l << ".pcd";
+	 std::ostringstream shotss;
+	 shotss << "shot" << l << ".pcd";
+	 std::ostringstream shot_xyzs;
+	 shot_xyzs << "shot_xyz" << l << ".pcd";
 
 
-	CLOG(LWARNING)<< "SHOTConverter: saving files...!";
-	pcl::io::savePCDFileASCII(clouds.str(), *cloud);
-	pcl::io::savePCDFileASCII(keypointss.str(), *keypoints);
-	pcl::io::savePCDFileASCII(shotss.str(), *shotCloud);
-	pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
+	 CLOG(LTRACE)<< "SHOTConverter: saving files...!";
+	 pcl::io::savePCDFileASCII(clouds.str(), *cloud);
+	 pcl::io::savePCDFileASCII(keypointss.str(), *keypoints);
+	 pcl::io::savePCDFileASCII(shotss.str(), *shotCloud);
+	 pcl::io::savePCDFileASCII(shot_xyzs.str(), *xyzshotcloud);
 
-	l++;*/
+	 l++;*/
 
 	out_shots.write(shotCloud);
 	out_cloud_xyzshot.write(xyzshotcloud);
+}
+void SHOTConverter::processWithNormals() {
+
+	CLOG(LTRACE)<< "SHOTConverter::processWithNormals";
+
+
+	XYZRGBNormalCloudPtr cloudNormals = in_xyzrgb_normal_points.read();
+
+	PointCloudPtr cloud(new PointCloud());
+	pcl::copyPointCloud(*cloudNormals, *cloud);
+
+	NormalCloudPtr normals(new NormalCloud());
+	pcl::copyPointCloud(*cloudNormals, *normals);
+
+	PointCloudPtr keypoints_temp = in_keypoints.read();
+	PointCloudPtr keypoints(new PointCloud());
+	pcl::copyPointCloud(*keypoints_temp, *keypoints);
+
+
+	CLOG(LTRACE)<< "SHOTConverter::removing NANs";
+
+	std::vector<int> indices;
+	cloud->is_dense = false;
+	pcl::removeNaNFromPointCloud(*cloud, *cloud, indices);
+
+	CLOG(LTRACE)<< "SHOTConverter: point cloud size (no NANs) : " << cloud->size() << ", keypoints : " << keypoints->size();
+
+	SHOTCloudPtr shotCloud = getSHOT(cloud, normals, keypoints);
+
+	XYZSHOTCloudPtr xyzshotcloud(new XYZSHOTCloud());
+	pcl::copyPointCloud(*keypoints, *xyzshotcloud);
+
+	std::vector<int> indices2;
+
+	//int pointId = 1;
+	for (int i = 0; i < xyzshotcloud->size(); ++i) {
+		if (pcl_isfinite (shotCloud->points[i].descriptor[0])) {
+			indices2.push_back(i);
+		} else {
+			continue;
+		}
+		xyzshotcloud->points[i].multiplicity = 1;
+		//xyzshotcloud->points[i].pointId = pointId++;
+		xyzshotcloud->points[i].pointId = 0;
+		for (int j = 0; j < 352; ++j) {
+			xyzshotcloud->points[i].descriptor[j] = shotCloud->points[i].descriptor[j];
+		}
+		for (int j = 0; j < 9; ++j) {
+			xyzshotcloud->points[i].rf[j] = shotCloud->points[i].rf[j];
+		}
+	}
+
+	boost::shared_ptr<vector<int> > indicesptr(new vector<int>(indices2));
+
+	pcl::ExtractIndices<PointXYZSHOT> eifilter(true); // Initializing with true will allow us to extract the removed indices
+	eifilter.setInputCloud(xyzshotcloud);
+	eifilter.setIndices(indicesptr);
+	eifilter.filter(*xyzshotcloud);
+
+	out_shots.write(shotCloud);
+	out_cloud_xyzshot.write(xyzshotcloud);
+
+	CLOG(LTRACE)<< "SHOTConverter write!";
 }
 
 } //: namespace SHOTConverter

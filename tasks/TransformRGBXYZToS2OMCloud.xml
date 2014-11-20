@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- reference task information -->
+	<Reference>
+		<Author>
+			<name>jkrasnod</name>
+		</Author>
+		
+		<Description>
+			<brief>Simple PCL viewer</brief>
+			<full>Simple PCL viewer, using PCD as source of depth data.</full>	
+		</Description>
+	</Reference>
+	
+	<!-- task definition -->
+	<Subtasks>
+		<Subtask name="Processing">
+			<Executor name="Exec1"  period="0.1">
+					
+				<Component name="NextImageTrigger" type="CvBasic:Trigger" priority="1" bump="0">
+				</Component>
+				<Component name="SequenceRGB" type="CvBasic:Sequence" priority="2" bump="0">
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/raw/kinect/gigabyte/</param>
+					<param name="sequence.pattern">.*\_rgb\.png</param>
+					<param name="mode.loop">0</param>
+					<param name="mode.auto_trigger">1</param>						
+					<param name="read_on_init">1</param>						
+				</Component>
+				<Component name="SequenceXYZ" type="CvBasic:Sequence" priority="3" bump="0">
+					<param name="sequence.directory">/home/jkrasnod/data/sceny/raw/kinect/gigabyte/</param>
+					<param name="sequence.pattern">.*\_xyz\.yml</param>
+					<param name="mode.loop">0</param>
+					<param name="mode.auto_trigger">1</param>		
+					<param name="read_on_init">1</param>				
+				</Component>              
+				<Component name="SIFT" type="CvBasic:CvSIFT" priority="4" bump="0">
+				</Component>
+				
+				<Component name="Converter" type="PCL:DepthConverter" priority="5" bump="0">
+				</Component>
+				
+				<Component name="FeatureCloudConverter" type="SIFTObjectModel:FeatureCloudConverter" priority="6" bump="0">
+				</Component>
+				
+				<Component name="PassThrough" type="PCL:PassThrough" priority="7" bump="0">
+					<param name="x.a">-30.0</param>
+					<param name="x.b">30.0</param>
+					<param name="y.a">-30.0</param>
+					<param name="y.b">30.0</param>
+					<param name="z.a">0.0</param>
+					<param name="z.b">3.0</param>
+				</Component>
+
+				<Component name="VoxelGridRGB" type="PCL:VoxelGrid" priority="8" bump="0">
+					<param name="LeafSize.x">0.002</param>
+					<param name="LeafSize.y">0.002</param>
+					<param name="LeafSize.z">0.002</param>
+				</Component>
+				
+				<Component name="Normals" type="S2ObjectModel:Normals" priority="9" bump="0">
+					<param name="radius">0.02</param>					
+				</Component>
+				
+				<Component name="Keypoints" type="S2ObjectModel:KepointsIssDetector" priority="10" bump="0">
+					<param name="model_resolution">0.002</param>
+					<param name="gamma_21">0.65</param>
+					<param name="gamma_32">0.65</param>
+					<param name="min_neighbors">10</param>
+				</Component>
+				
+				<Component name="SHOTConverter" type="S2ObjectModel:SHOTConverter" priority="10" bump="0">
+					<param name="shot_radius">0.075</param>
+				</Component>
+				
+				<Component name="Writer" type="S2ObjectModel:S2OMJSONWriter" priority="11" bump="0">
+					<param name="dir">/home/joanna/data/sceny/v2/loyd</param>
+					<param name="S2OMname">loyd</param>
+					<param name="addNumber">1</param>
+					<param name="addTimestamp">0</param>
+				</Component>
+				
+			</Executor>
+		</Subtask>
+		
+	 	<Subtask name="Visualisation">
+			<Executor name="Exec2" period="0.01">
+				<Component name="S2ObjectViewer" type="S2ObjectModel:S2ObjectViewer" priority="1" bump="0">
+					<param name="sifts.size">2</param>
+					<param name="shots.size">6</param>
+					
+					
+					</Component>
+			</Executor>
+		</Subtask>  
+	
+	</Subtasks>
+	
+	<!-- pipes connecting datastreams -->
+	<DataStreams>
+		<Source name="NextImageTrigger.out_trigger">
+			<sink>SequenceRGB.in_trigger</sink>
+			<sink>SequenceXYZ.in_trigger</sink>
+		</Source>
+		<Source name="SequenceRGB.out_img">
+			<sink>SIFT.in_img</sink>
+            <sink>Converter.in_rgb_stereo</sink>
+		</Source>
+        <Source name="SequenceXYZ.out_img">
+            <sink>Converter.in_depth_xyz</sink>
+            <sink>FeatureCloudConverter.in_depth_xyz</sink>
+		</Source>	
+		<Source name="SIFT.out_descriptors">
+			<sink>FeatureCloudConverter.in_descriptors</sink>	
+		</Source>
+		<Source name="SIFT.out_features">
+			<sink>FeatureCloudConverter.in_features</sink>	
+		</Source>	
+		
+		<Source name="Converter.out_cloud_xyzrgb">
+		<sink>PassThrough.in_cloud_xyzrgb</sink>
+		</Source>
+
+		<Source name="PassThrough.out_cloud_xyzrgb">
+			<sink>VoxelGridRGB.in_cloud_xyzrgb</sink>
+		</Source>
+		
+		<Source name="VoxelGridRGB.out_cloud_xyzrgb">
+			<sink>Normals.in_cloud_xyzrgb</sink>	
+			<sink>Writer.in_cloud_xyzrgb</sink>
+			<sink>S2ObjectViewer.in_cloud</sink>
+		</Source>
+		
+		<Source name="Normals.out_cloud_xyzrgb_normals">
+			<sink>Keypoints.in_cloud_xyzrgb_normals</sink>
+			<sink>SHOTConverter.in_xyzrgb_normal_points</sink>
+		</Source>
+
+		<Source name="Keypoints.out_cloud_xyz">
+			<sink>SHOTConverter.in_keypoints</sink>
+		</Source>
+		
+		<Source name="SHOTConverter.out_cloud_xyzshot">
+			<sink>Writer.in_cloud_xyzshot</sink>
+			<sink>S2ObjectViewer.in_shots</sink>
+		</Source>
+
+		<Source name="FeatureCloudConverter.out_cloud_xyzsift">
+			<sink>Writer.in_cloud_xyzsift</sink>
+			<sink>S2ObjectViewer.in_sifts</sink>
+		</Source>
+	
+	</DataStreams>
+</Task>
+
+
+
+
